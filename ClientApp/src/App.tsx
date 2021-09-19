@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router';
 
 import './custom.css'
 
@@ -8,7 +7,11 @@ export default class App extends Component {
 
   render () {
       return (
-          <h1>Hello</h1>
+          <>
+              <h1>Hello</h1>
+              <h3>{App.displayName}</h3>
+          </>
+
     );
   }
 }
