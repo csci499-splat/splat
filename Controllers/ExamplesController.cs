@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "ElevatedRights")]
     public class ExamplesController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -22,6 +24,7 @@ namespace splat.Controllers
 
         // GET: api/Examples
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Example>>> GetExamples()
         {
             return await _context.Examples.ToListAsync();
@@ -29,6 +32,7 @@ namespace splat.Controllers
 
         // GET: api/Examples/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Example>> GetExample(int id)
         {
             var example = await _context.Examples.FindAsync(id);
@@ -85,6 +89,7 @@ namespace splat.Controllers
 
         // DELETE: api/Examples/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> DeleteExample(int id)
         {
             var example = await _context.Examples.FindAsync(id);
