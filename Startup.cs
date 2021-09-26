@@ -171,7 +171,7 @@ namespace splat
         {
             var _roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
             var _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var roles = new string[] { "Administrator", "Staff"};
+            var roles = new string[] { "Administrator", "Staff", "Student"};
             IdentityResult roleResult;
 
             foreach(var role in roles)
