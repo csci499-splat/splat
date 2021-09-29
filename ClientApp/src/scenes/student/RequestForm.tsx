@@ -5,6 +5,8 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogContent,
     DialogTitle, 
     Grid, IconButton, TextField } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
+import CategoryAutocomplete from './CategoryAutocomplete';
+import ItemAutocomplete from './ItemAutocomplete';
 
 type RequestFormProps = {
     onClose: () => void,
@@ -21,9 +23,15 @@ const initialValues = {
         {
             category: {
                 id: '',
+                description: '',
                 name: '',
             },
             item: {
+                category: {
+                    id: '',
+                    description: '',
+                    name: '',
+                },
                 id: '',
                 name: '',
                 description: '',
@@ -34,7 +42,15 @@ const initialValues = {
 };
 
 const validationSchema = yup.object({
+    email: yup.string()
+    .required(),
+    householdInfo: yup.object({
 
+    }),
+    items: yup.array()
+    .of(yup.object().shape({
+        
+    }))
 });
 
 const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElement => {
@@ -46,7 +62,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             console.log(values);
             props.onClose();
         },
-    })
+    });
 
     return (
         <>
@@ -67,34 +83,33 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             name="items">
                 {({ insert, remove, push}) => (
                     <>
-                    <Grid container spacing={2} style={{marginTop: '10px'}}>
+                    <Grid container spacing={2} style={{marginTop: '10px'}} alignItems="center">
                         {formik.values.items.length > 0 && 
                         formik.values.items.map((item, index: number) => (
                             <>
                             <Grid item xs={3}>
-                                <Autocomplete
-                                disablePortal
-                                id="category-box"
-                                options={['test1', 'test2']}
-                                sx={{width: '100%'}}
-                                renderInput={(params) => <TextField {...params} label="Category" />}
-                                renderOption={(props, option) => option}
+                                <CategoryAutocomplete
+                                value={formik.values.items[index].category}
+                                onValueChange={(newValue) => { 
+                                    formik.setFieldValue(`items[${index}].category`, newValue);
+                                    formik.setFieldValue(`items[${index}].item`, null);
+                                }}
                                 /> 
                             </Grid>
                             <Grid item xs={7}>
-                                <Autocomplete
-                                disablePortal
-                                id="item-box"
-                                options={['test item 1', 'test item 2']}
-                                sx={{width: '100%'}}
-                                renderInput={(params) => <TextField {...params} label="Item" />}
-                                /> 
+                                <ItemAutocomplete
+                                value={formik.values.items[index].item}
+                                category={formik.values.items[index].category}
+                                onValueChange={(newValue) => formik.setFieldValue(`items[${index}].item`, newValue)}
+                                />
                             </Grid>
                             <Grid item xs={1}>
                                 <TextField
                                 label="Count"
                                 type="number"
                                 variant="outlined"
+                                value={formik.values.items[index].quantity}
+                                onChange={(event) => formik.setFieldValue(`items[${index}].quantity`, event.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -111,14 +126,20 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                     onClick={() => push({
                         category: {
                             id: '',
+                            description: '',
                             name: '',
                         },
                         item: {
+                            category: {
+                                id: '',
+                                description: '',
+                                name: '',
+                            },
                             id: '',
                             name: '',
                             description: '',
                         },
-                        quantity: 0
+                        quantity: 0,
                     })}
                     sx={{marginTop: 2}}
                     >
