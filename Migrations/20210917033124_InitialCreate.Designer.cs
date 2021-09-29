@@ -10,8 +10,8 @@ using splat.Models;
 namespace splat.Migrations
 {
     [DbContext(typeof(SplatContext))]
-    [Migration("20210916173310_AddExampleNewValue")]
-    partial class AddExampleNewValue
+    [Migration("20210917033124_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
