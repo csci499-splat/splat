@@ -11,9 +11,11 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public string? MonetaryValue { get; set; }
+        public double? MonetaryValue { get; set; }
         public double Weight { get; set; }
         public string Donor { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DonatedAt { get; set; }
     }
 }

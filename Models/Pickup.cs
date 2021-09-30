@@ -11,11 +11,25 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public Request Request { get; set; }
         public double? Weight { get; set; }
-        PickupStatus PickupStatus { get; set; }
+        public PickupStatus PickupStatus { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? pickupTime { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? canceledTime { get; set; }
+
+        public Student Student { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime submittedAt { get; set; }
+        public HouseholdInfo? HouseholdInfo { get; set; }
+        public ItemRequest[] itemRequests { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime RequestedPickupTime { get; set; }
+        public string OtherNotes { get; set; }
     }
     enum PickupStatus
     {

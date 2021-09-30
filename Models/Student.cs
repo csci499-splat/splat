@@ -9,8 +9,8 @@ namespace splat.Models
 {
     public class Student
     {
-        public string studentId { get; set; }
-        public int age { get; set; }
-        public bool onMealPlan { get; set; }
+        public string StudentId { get; set; }
+        public int Age { get; set; }
+        public bool OnMealPlan { get; set; }
     }
 }
