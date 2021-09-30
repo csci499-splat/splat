@@ -1,4 +1,4 @@
-import { Category } from './Category';
+import Category from './Category';
 
 type Item = {
     id: string;
@@ -7,7 +7,6 @@ type Item = {
     description: string;
     visible: boolean;
     createdAt: string;
-
 };
 
-export type { Item };
+export default Item;

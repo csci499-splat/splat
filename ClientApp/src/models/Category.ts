@@ -5,7 +5,6 @@ type Category = {
     visible: boolean;
     maxItemsRequest: number;
     createdAt: string;
-
 };
 
-export type { Category };
+export default Category;
