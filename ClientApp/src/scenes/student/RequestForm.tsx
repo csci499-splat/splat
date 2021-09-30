@@ -13,13 +13,14 @@ type RequestFormProps = {
 }
 
 const initialValues = {
-    email: 'test@test.com',
-    householdInfo: {
-        minors: 0,
-        adults: 0,
-        seniors: 0,
+    student: {
+        studentId: '',
+        age: null,
+        onMealPlan: false,
     },
-    items: [
+    householdInfo: null,
+    desiredPickupTime: new Date(),
+    selections: [
         {
             category: {
                 id: '',
@@ -42,14 +43,66 @@ const initialValues = {
 };
 
 const validationSchema = yup.object({
-    email: yup.string()
-    .required(),
-    householdInfo: yup.object({
-
+    student: yup.object().shape({
+        studentId: yup.string()
+        .required('Student ID is required'),
+        age: yup.number()
+        .positive()
+        .integer()
+        .max(80, 'Maximum age of 80 years old')
+        .required('Age is required'),
+        onMealPlan: yup.boolean().required(),
     }),
-    items: yup.array()
+    householdInfo: yup.object({
+        numMinors: yup.number()
+        .integer()
+        .min(0)
+        .max(10)
+        .required(),
+        numAdults: yup.number()
+        .integer()
+        .min(0)
+        .max(10)
+        .required(),
+        numSeniors: yup.number()
+        .integer()
+        .min(0)
+        .max(10)
+        .required(),
+    }).nullable().notRequired(),
+    desiredPickupTime: yup.date()
+    .min(new Date())
+    .required(),
+    selections: yup.array()
     .of(yup.object().shape({
-        
+        category: yup.object().shape({
+            id: yup.string()
+            .required(),
+            name: yup.string()
+            .required(),
+            description: yup.string()
+            .required(),
+        }),
+        item: yup.object().shape({
+            category: yup.object().shape({
+                id: yup.string()
+                .required(),
+                name: yup.string()
+                .required(),
+                description: yup.string()
+                .required(),
+            }),
+            id: yup.string()
+            .required(),
+            name: yup.string()
+            .required(),
+            description: yup.string()
+            .required(),
+        }),
+        quantity: yup.number()
+        .integer()
+        .positive()
+        .required(),
     }))
 });
 
@@ -80,27 +133,27 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         <Form
         style={{height: '500px'}}>
             <FieldArray 
-            name="items">
+            name="selections">
                 {({ insert, remove, push}) => (
                     <>
                     <Grid container spacing={2} style={{marginTop: '10px'}} alignItems="center">
-                        {formik.values.items.length > 0 && 
-                        formik.values.items.map((item, index: number) => (
+                        {formik.values.selections.length > 0 && 
+                        formik.values.selections.map((selection, index: number) => (
                             <>
                             <Grid item xs={3}>
                                 <CategoryAutocomplete
-                                value={formik.values.items[index].category}
+                                value={formik.values.selections[index].category}
                                 onValueChange={(newValue) => { 
-                                    formik.setFieldValue(`items[${index}].category`, newValue);
-                                    formik.setFieldValue(`items[${index}].item`, null);
+                                    formik.setFieldValue(`selections[${index}].category`, newValue);
+                                    formik.setFieldValue(`selections[${index}].item`, null);
                                 }}
                                 /> 
                             </Grid>
                             <Grid item xs={7}>
                                 <ItemAutocomplete
-                                value={formik.values.items[index].item}
-                                category={formik.values.items[index].category}
-                                onValueChange={(newValue) => formik.setFieldValue(`items[${index}].item`, newValue)}
+                                value={formik.values.selections[index].item}
+                                category={formik.values.selections[index].category}
+                                onValueChange={(newValue) => formik.setFieldValue(`selections[${index}].item`, newValue)}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -108,8 +161,8 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                 label="Count"
                                 type="number"
                                 variant="outlined"
-                                value={formik.values.items[index].quantity}
-                                onChange={(event) => formik.setFieldValue(`items[${index}].quantity`, event.target.value)}
+                                value={formik.values.selections[index].quantity}
+                                onChange={(event) => formik.setFieldValue(`selections[${index}].quantity`, event.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={1}>
