@@ -11,11 +11,11 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public Request request { get; set; }
-        public double weight { get; set; }
-        PickupStatus pickupStatus { get; set; }
-        public string pickupTime { get; set; }
-        public string? canceledTime { get; set; }
+        public Request Request { get; set; }
+        public double? Weight { get; set; }
+        PickupStatus PickupStatus { get; set; }
+        public DateTime? pickupTime { get; set; }
+        public DateTime? canceledTime { get; set; }
     }
     enum PickupStatus
     {

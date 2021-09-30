@@ -11,11 +11,11 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public Student student { get; set; }
-        public string submittedAt { get; set; }
-        public HouseholdInfo householdInfo { get; set; }
+        public ApplicationUser User{ get; set; }
+        public DateTime submittedAt { get; set; }
+        public HouseholdInfo? HouseholdInfo { get; set; }
         public ItemRequest[] itemRequests { get; set; }
-        public string requestedPickupTime { get; set; }
-        public string ontherNotes { get; set; }
+        public DateTime RequestedPickupTime { get; set; }
+        public string OtherNotes { get; set; }
     }
 }

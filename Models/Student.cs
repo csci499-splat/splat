@@ -9,7 +9,6 @@ namespace splat.Models
 {
     public class Student
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string studentId { get; set; }
         public int age { get; set; }
         public bool onMealPlan { get; set; }

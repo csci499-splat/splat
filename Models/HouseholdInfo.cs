@@ -9,9 +9,11 @@ namespace splat.Models
 {
     public class HouseholdInfo
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string? NewValue { get; set; }
+        [Range(0, 10)]
+        public int NumSeniors { get; set; }
+        [Range(0, 10)]
+        public int NumAdults { get; set; }
+        [Range(0, 10)]
+        public int NumMinors { get; set; }
     }
 }

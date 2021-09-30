@@ -10,5 +10,7 @@ namespace splat.Models
     {
         [PersonalData]
         public string Name { get; set; }
+        public string Password { get; set; }
+        public string Type { get; set; }
     }
 }

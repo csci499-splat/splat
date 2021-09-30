@@ -11,9 +11,9 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public string? value { get; set; }
-        public double weight { get; set; }
-        public string donor { get; set; }
-        public string donatedAt { get; set; }
+        public string? MonetaryValue { get; set; }
+        public double Weight { get; set; }
+        public string Donor { get; set; }
+        public DateTime DonatedAt { get; set; }
     }
 }

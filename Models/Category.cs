@@ -11,10 +11,12 @@ namespace splat.Models
     public class Category
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string name { get; set; }
-        public string description { get; set; }
-        public Boolean visible { get; set; }
-        public int maxItemRequest { get; set; }
-        public string createdAt { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public int Limit { get; set; }
+        public string Icon { get; set; }
+        public string Description { get; set; }
+        public Boolean Visible { get; set; }
+        public DateTime createdAt { get; set; }
     }
 }

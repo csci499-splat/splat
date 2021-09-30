@@ -10,10 +10,11 @@ namespace splat.Models
     public class Item
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string name { get; set; }
-        public Category category { get; set; }
-        public string description { get; set; }
-        public bool visible { get; set; }
-        public string createdAt { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public Category Category { get; set; }
+        public string Description { get; set; }
+        public bool Visible { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

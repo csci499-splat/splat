@@ -9,8 +9,7 @@ namespace splat.Models
 {
     public class ItemRequest
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Item item { get; set; }
-        public int quantity { get; set; }
+        public Item Item { get; set; }
+        public int Quantity { get; set; }
     }
 }
