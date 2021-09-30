@@ -1,7 +1,7 @@
 enum PickupStatus {
-    pending = "PENDING",
-    waiting = "WAITING",
-    disbursed = "DISBURSED",
-    cancled = "CANCELED"
+    PENDING = "PENDING",
+    WAITING = "WAITING",
+    DISBURSED = "DISBURSED",
+    CANCLED = "CANCELED"
 
 };

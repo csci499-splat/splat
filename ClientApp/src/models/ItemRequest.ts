@@ -1,5 +1,7 @@
+import { Item } from './Item';
+
 type ItemRequest = {
-    Item: string;
+    Item: Item;
     quantity: number;
 
 };

@@ -1,6 +1,5 @@
-
-
 type Category = {
+    id: string;
     name: string;
     description: string;
     visible: boolean;
@@ -8,3 +7,5 @@ type Category = {
     createdAt: string;
 
 };
+
+export type { Category };
