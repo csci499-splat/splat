@@ -1,10 +1,11 @@
 type Category = {
-    id: string;
+    id: string | null;
     name: string;
+    limit: number;
+    icon: string;
     description: string;
     visible: boolean;
-    maxItemsRequest: number;
-    createdAt: string;
+    createdAt: string | null;
 };
 
 export default Category;

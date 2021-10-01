@@ -1,10 +1,9 @@
 type Donation = {
     id: string;
-    value: number;
-    weight: number;
+    monetaryValue?: number;
+    weight?: number;
     donor: string;
     donatedAt: string;
-
 };
 
 export default Donation;
