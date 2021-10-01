@@ -10,8 +10,8 @@ using splat.Models;
 namespace splat.Migrations
 {
     [DbContext(typeof(SplatContext))]
-    [Migration("20210919160359_AddAuth")]
-    partial class AddAuth
+    [Migration("20211001051950_AddModels")]
+    partial class AddModels
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -217,6 +217,72 @@ namespace splat.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("splat.Models.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Limit")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("Visible")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name", "Description");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("splat.Models.Donation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DonatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+                    b.Property<string>("Donor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double?>("MonetaryValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Donor");
+
+                    b.ToTable("Donations");
+                });
+
             modelBuilder.Entity("splat.Models.Example", b =>
                 {
                     b.Property<Guid>("Id")
@@ -232,6 +298,90 @@ namespace splat.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Examples");
+                });
+
+            modelBuilder.Entity("splat.Models.Item", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("Visible")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Name", "Description");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("splat.Models.Pickup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CanceledTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<HouseholdInfo>("HouseholdInfo")
+                        .HasColumnType("jsonb");
+
+                    b.Property<ItemRequest[]>("ItemRequests")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("OtherNotes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PickupStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("PickupTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("RequestedPickupTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Student>("StudentInfo")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+                    b.Property<double?>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PickupStatus", "StudentInfo");
+
+                    b.ToTable("Pickups");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -283,6 +433,15 @@ namespace splat.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("splat.Models.Item", b =>
+                {
+                    b.HasOne("splat.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }
