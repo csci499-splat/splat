@@ -17,8 +17,23 @@ export type Pickup = {
 };
 
 export enum PickupStatus {
-    PENDING = "PENDING",
-    WAITING = "WAITING",
-    DISBURSED = "DISBURSED",
-    CANCLED = "CANCELED"
+    PENDING = 0,
+    WAITING = 1,
+    DISBURSED = 2,
+    CANCELED = 3,
+};
+
+export const getStatusString = (status: PickupStatus): string => {
+    switch(status) {
+        case PickupStatus.PENDING:
+            return "Pending";
+        case PickupStatus.WAITING:
+            return "Waiting";
+        case PickupStatus.DISBURSED:
+            return "Disbursed";
+        case PickupStatus.CANCELED:
+            return "Canceled";
+        default:
+            return "None";
+    }
 };
