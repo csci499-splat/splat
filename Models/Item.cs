@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,16 +8,21 @@ using System.Threading.Tasks;
 
 namespace splat.Models
 {
+    [Index(nameof(Name), nameof(Description))]
     public class Item
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
+        [Required]
         public string Name { get; set; }
         public Category Category { get; set; }
+        [Required]
         public string Description { get; set; }
-        public bool Visible { get; set; }
+        [Required]
+
+        public bool? Visible { get; set; }
+
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime CreatedAt { get; set; }
     }
 }
