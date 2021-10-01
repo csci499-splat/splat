@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { TextField, Autocomplete, CircularProgress }
+import { TextField, Autocomplete, CircularProgress, AutocompleteProps }
     from '@mui/material';
 import { matchSorter } from 'match-sorter';
 
@@ -20,6 +20,10 @@ type ItemAutocompleteProps = {
     value: Item | null;
     category: Category | null;
     onValueChange: (option: Item | null) => void;
+    InputProps?: {
+        error: boolean,
+        helperText: string,
+    };
 };
 
 const sleep = (delay: number) => {
@@ -91,6 +95,8 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
                     </>
                 )
             }}
+            error={props.InputProps?.error}
+            helperText={props.InputProps?.helperText}
             />
         )}
         filterOptions={filterOptions}

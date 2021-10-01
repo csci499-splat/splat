@@ -12,6 +12,10 @@ type Category = {
 type CategoryAutocompleteProps = {
     value: Category | null;
     onValueChange: (option: Category | null) => void;
+    InputProps?: {
+        error: boolean,
+        helperText: string,
+    };
 };
 
 const sleep = (delay: number) => {
@@ -78,6 +82,8 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
                     </>
                 )
             }}
+            error={props.InputProps?.error}
+            helperText={props.InputProps?.helperText}
             />
         )}
         filterOptions={filterOptions}

@@ -7,6 +7,7 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogContent,
 import { Add, Delete } from '@mui/icons-material';
 import CategoryAutocomplete from './CategoryAutocomplete';
 import ItemAutocomplete from './ItemAutocomplete';
+import { boolean } from 'yup/lib/locale';
 
 type RequestFormProps = {
     onClose: () => void,
@@ -82,7 +83,7 @@ const validationSchema = yup.object({
             .required(),
             description: yup.string()
             .required(),
-        }),
+        }).nullable().required('Category is required'),
         item: yup.object().shape({
             category: yup.object().shape({
                 id: yup.string()
@@ -98,7 +99,7 @@ const validationSchema = yup.object({
             .required(),
             description: yup.string()
             .required(),
-        }),
+        }).nullable().required('Item is required'),
         quantity: yup.number()
         .integer()
         .positive()
@@ -116,6 +117,11 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             props.onClose();
         },
     });
+
+    React.useEffect(() => {
+        console.log(formik.touched);
+        console.log(formik.errors);
+    }, [formik.errors]);
 
     return (
         <>
@@ -147,6 +153,12 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                     formik.setFieldValue(`selections[${index}].category`, newValue);
                                     formik.setFieldValue(`selections[${index}].item`, null);
                                 }}
+                                InputProps={{
+                                    // @ts-ignore
+                                    error: (formik.errors.selections && formik.touched.selections) ? (formik.touched.selections[index].category && Boolean(formik.errors.selections[index].category)) as boolean : false,
+                                    // @ts-ignore
+                                    helperText: (formik.errors.selections && formik.touched.selections) ? formik.touched.selections[index].category && formik.errors.selections[index].category : '',
+                                }}
                                 /> 
                             </Grid>
                             <Grid item xs={7}>
@@ -154,6 +166,12 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                 value={formik.values.selections[index].item}
                                 category={formik.values.selections[index].category}
                                 onValueChange={(newValue) => formik.setFieldValue(`selections[${index}].item`, newValue)}
+                                InputProps={{
+                                    // @ts-ignore
+                                    error: (formik.errors.selections && formik.touched.selections) ? (formik.touched.selections[index].item && Boolean(formik.errors.selections[index].item)) as boolean : false,
+                                    // @ts-ignore
+                                    helperText: (formik.errors.selections && formik.touched.selections) ? formik.touched.selections[index].item && formik.errors.selections[index].item : '',
+                                }}
                                 />
                             </Grid>
                             <Grid item xs={1}>
@@ -206,7 +224,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         </DialogContent>
         <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
-                <Button variant="contained" onClick={() => formik.submitForm()}>Submit</Button>
+                <Button variant="contained" onClick={() => {console.log(formik.errors, formik.touched); formik.submitForm();}}>Submit</Button>
         </DialogActions>
         </Dialog>
         </>
