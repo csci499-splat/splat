@@ -46,13 +46,13 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, isPersistent: true, lockoutOnFailure: true);
             if(result.Succeeded)
             {
                 // return success and token
                 var claims = new[]
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
+                    new Claim(JwtRegisteredClaimNames.Sub, login.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
@@ -79,8 +79,6 @@ namespace splat.Controllers
                 // return generic login failure
                 return BadRequest(new { message = "Username or password is incorrect" });
             }
-
-            return BadRequest("Unable to process request");
         }
 
         [HttpPost("logout")]
