@@ -7,3 +7,5 @@ type Pickup = {
     canceledTime: string;
 
 };
+
+export default Pickup;

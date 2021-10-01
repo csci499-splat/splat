@@ -4,3 +4,5 @@ type Student = {
     onMealPlan: boolean;
 
 };
+
+export default Student;

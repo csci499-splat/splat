@@ -5,3 +5,5 @@ type ItemRequest = {
     quantity: number;
 
 };
+
+export default ItemRequest;

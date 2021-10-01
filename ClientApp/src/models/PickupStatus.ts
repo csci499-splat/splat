@@ -5,3 +5,5 @@ enum PickupStatus {
     CANCLED = "CANCELED"
 
 };
+
+export default PickupStatus;
