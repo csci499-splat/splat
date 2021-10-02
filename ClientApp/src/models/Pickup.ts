@@ -1,6 +1,6 @@
-import ItemRequest from './ItemRequest';
-import StudentInto from './Student';
-import HouseholdInfo from './HouseholdInfo';
+import type { ItemRequest } from './ItemRequest';
+import type { StudentInfo } from './StudentInfo';
+import type { HouseholdInfo } from './HouseholdInfo';
 
 export type Pickup = {
     id: string | null;
@@ -9,10 +9,10 @@ export type Pickup = {
     pickupTime?: string;
     canceledTime?: string;
     submittedAt: string | null;
-    studentInfo: StudentInto;
+    studentInfo: StudentInfo;
     householdInfo?: HouseholdInfo;
     itemRequests: ItemRequest[];
-    requestedPickupTime: string;
+    requestedPickupTime: Date;
     otherNotes: string;
 };
 
