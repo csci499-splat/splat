@@ -1,4 +1,4 @@
-import Category from './Category';
+import type { Category } from './Category';
 
 type Item = {
     id: string | null;
@@ -9,4 +9,4 @@ type Item = {
     createdAt: string | null;
 };
 
-export default Item;
+export type { Item };

@@ -2,23 +2,11 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { TextField, Autocomplete, CircularProgress, AutocompleteProps }
     from '@mui/material';
 import { matchSorter } from 'match-sorter';
-
-type Category = {
-    id: string;
-    name: string;
-    description: string;
-};
-
-type Item = {
-    category: Category;
-    id: string;
-    name: string;
-    description: string;
-};
+import { Category, Item } from '../../models/BackendTypes';
 
 type ItemAutocompleteProps = {
     value: Item | null;
-    category: Category | null;
+    category: Category | null | undefined;
     onValueChange: (option: Item | null) => void;
     InputProps?: {
         error: boolean,
@@ -51,7 +39,7 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
             await sleep(1000);
 
             if(active) {
-                setOptions([...itemTests]);
+                setOptions([]);
             }
         })();
 
@@ -67,7 +55,6 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
     }, [open]);
 
     useEffect(() => {
-        console.log("category changed");
         setOptions([]);
     }, [props.category]);
 
@@ -106,38 +93,5 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
         </>
     )
 };
-
-const itemTests: Item[] = [
-    {
-        category: { 
-            id: '1',
-            name: 'test 1',
-            description: 'test category 1',
-        },
-        id: '1',
-        name: 'Item 1',
-        description: 'Item 1 does x',
-    },
-    {
-        category: { 
-            id: '1',
-            name: 'test 1',
-            description: 'test category 1',
-        },
-        id: '2',
-        name: 'Item 2',
-        description: 'Item 2 does y',
-    },
-    {
-        category: { 
-            id: '1',
-            name: 'test 1',
-            description: 'test category 1',
-        },
-        id: '3',
-        name: 'Item 3',
-        description: 'Item 3 does z',
-    },
-];
 
 export default ItemAutocomplete;

@@ -8,4 +8,4 @@ type Category = {
     createdAt: string | null;
 };
 
-export default Category;
+export type { Category };

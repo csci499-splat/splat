@@ -2,17 +2,13 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { TextField, Autocomplete, CircularProgress }
     from '@mui/material';
 import { matchSorter } from 'match-sorter';
-
-type Category = {
-    id: string;
-    name: string;
-    description: string;
-};
+import { Category } from '../../models/BackendTypes';
 
 type CategoryAutocompleteProps = {
-    value: Category | null;
+    value: Category | null | undefined;
     onValueChange: (option: Category | null) => void;
     InputProps?: {
+        name?: string,
         error: boolean,
         helperText: string,
     };
@@ -43,7 +39,7 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
             await sleep(1000);
 
             if(active) {
-                setOptions([...categoryTests]);
+                setOptions([]);
             }
         })();
 
@@ -93,23 +89,5 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
         </>
     )
 };
-
-const categoryTests: Category[] = [
-    {
-        id: '1',
-        name: 'test 1',
-        description: 'test category 1',
-    },
-    {
-        id: '2',
-        name: 'test 2',
-        description: 'test category 2',
-    },
-    {
-        id: '3',
-        name: 'test 3',
-        description: 'test category 3',
-    },
-];
 
 export default CategoryAutocomplete;

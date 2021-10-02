@@ -1,84 +1,104 @@
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Formik, Field, Form, FieldArray, FormikProvider, useFormik } from 'formik';
+import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } from 'formik';
 import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
-    DialogTitle, 
-    Grid, IconButton, TextField } from '@mui/material';
+    DialogTitle, Stack,
+    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
 import CategoryAutocomplete from './CategoryAutocomplete';
 import ItemAutocomplete from './ItemAutocomplete';
-import { boolean } from 'yup/lib/locale';
+import type { Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo } 
+    from '../../models/BackendTypes';
+import { PickupStatus } from '../../models/Pickup';
+import { DateTimePicker } from '@mui/lab';
 
 type RequestFormProps = {
     onClose: () => void,
 }
 
-const initialValues = {
-    student: {
+const initialValues: Pickup = {
+    id: null,
+    studentInfo: {
         studentId: '',
-        age: null,
+        age: undefined,
         onMealPlan: false,
     },
-    householdInfo: null,
-    desiredPickupTime: new Date(),
-    selections: [
+    householdInfo: undefined,
+    requestedPickupTime: new Date(),
+    submittedAt: null,
+    itemRequests: [
         {
             category: {
-                id: '',
-                description: '',
+                id: null,
                 name: '',
+                description: '',
+                limit: 0,
+                icon: '',
+                visible: false,
+                createdAt: null,
             },
             item: {
-                category: {
-                    id: '',
-                    description: '',
-                    name: '',
-                },
-                id: '',
+                id: null,
                 name: '',
+                category: {
+                    id: null,
+                    name: '',
+                    description: '',
+                    limit: 0,
+                    icon: '',
+                    visible: false,
+                    createdAt: null,
+                },
                 description: '',
+                visible: false,
+                createdAt: null,
             },
-            quantity: 0,
+            quantity: 1,
         }
     ],
+    pickupStatus: PickupStatus.PENDING,
+    otherNotes: '',
 };
 
 const validationSchema = yup.object({
-    student: yup.object().shape({
+    studentInfo: yup.object().shape({
         studentId: yup.string()
+        .matches(/[0-9]{7}/g, "Student ID must be exactly 7 digits long")
         .required('Student ID is required'),
         age: yup.number()
         .positive()
         .integer()
-        .max(80, 'Maximum age of 80 years old')
+        .max(120, 'Maximum age of 120 years old')
         .required('Age is required'),
-        onMealPlan: yup.boolean().required(),
-    }),
-    householdInfo: yup.object({
+        onMealPlan: yup.boolean().required("Required"),
+    }).required(),
+    householdInfo: yup.object().shape({
         numMinors: yup.number()
         .integer()
-        .min(0)
-        .max(10)
-        .required(),
+        .min(0, "Must be positive")
+        .max(10, "Maximum of 10")
+        .required("Required"),
         numAdults: yup.number()
         .integer()
-        .min(0)
-        .max(10)
-        .required(),
+        .min(0, "Must be positive")
+        .max(10, "Maximum of 10")
+        .required("Required"),
         numSeniors: yup.number()
         .integer()
-        .min(0)
-        .max(10)
-        .required(),
-    }).nullable().notRequired(),
-    desiredPickupTime: yup.date()
-    .min(new Date())
-    .required(),
-    selections: yup.array()
+        .min(0, "Must be positive")
+        .max(10, "Maximum of 10")
+        .required("Required"),
+    }).optional().notRequired(),
+    requestedPickupTime: yup.date()
+    .min(new Date(), "Cannot be before right now")
+    .max(new Date(Date.now() + (6.048e+8 * 2)), "Cannot be more than two weeks away")
+    .nullable()
+    .required("Required"),
+    itemRequests: yup.array()
     .of(yup.object().shape({
         category: yup.object().shape({
-            id: yup.string()
-            .required(),
+            id: yup.string().nullable()
+            .required("Category is required"),
             name: yup.string()
             .required(),
             description: yup.string()
@@ -86,15 +106,15 @@ const validationSchema = yup.object({
         }).nullable().required('Category is required'),
         item: yup.object().shape({
             category: yup.object().shape({
-                id: yup.string()
+                id: yup.string().nullable()
                 .required(),
                 name: yup.string()
                 .required(),
                 description: yup.string()
                 .required(),
             }),
-            id: yup.string()
-            .required(),
+            id: yup.string().nullable()
+            .required("Item is required"),
             name: yup.string()
             .required(),
             description: yup.string()
@@ -102,8 +122,8 @@ const validationSchema = yup.object({
         }).nullable().required('Item is required'),
         quantity: yup.number()
         .integer()
-        .positive()
-        .required(),
+        .positive("Quantity must be 1 or more")
+        .required("Quantity is required"),
     }))
 });
 
@@ -118,17 +138,24 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         },
     });
 
-    React.useEffect(() => {
-        console.log(formik.touched);
-        console.log(formik.errors);
-    }, [formik.errors]);
+    const handleHouseholdAdd = () => {
+        formik.setFieldValue('householdInfo', {
+            numSeniors: 0,
+            numAdults: 0,
+            numMinors: 0,
+        });
+    };
+
+    const handleHouseholdRemove = () => {
+        formik.setFieldValue('householdInfo', undefined);
+    };
 
     return (
         <>
         <Dialog 
         open={true} 
         onClose={props.onClose}
-        maxWidth="xl" 
+        maxWidth="lg" 
         fullWidth
         >
         <DialogTitle>New Request</DialogTitle>
@@ -137,40 +164,151 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         value={formik}
         >
         <Form
-        style={{height: '500px'}}>
+        style={{maxHeight: '600px'}}>
+            { /* TODO: Add StudentInfo fields here */}
+            <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 2}} alignItems="flex-start">
+                <TextField
+                label="Student ID"
+                variant="outlined"
+                name="studentInfo.studentId"
+                value={formik.values.studentInfo.studentId}
+                onChange={formik.handleChange}
+                // @ts-ignore
+                error={formik.touched.studentInfo?.studentId && Boolean(formik.errors.studentInfo?.studentId)}
+                // @ts-ignore
+                helperText={formik.touched.studentInfo?.studentId && formik.errors.studentInfo?.studentId}
+                />
+                <TextField
+                label="Student Age"
+                variant="outlined"
+                type="number"
+                name="studentInfo.age"
+                value={formik.values.studentInfo.age}
+                onChange={formik.handleChange}
+                // @ts-ignore
+                error={formik.touched.studentInfo?.age && Boolean(formik.errors.studentInfo?.age)}
+                // @ts-ignore
+                helperText={formik.touched.studentInfo?.age && formik.errors.studentInfo?.age}
+                />
+                <FormGroup>
+                    <FormControlLabel 
+                    control={
+                        <Switch 
+                        size="medium"
+                        checked={formik.values.studentInfo.onMealPlan}
+                        name="studentInfo.onMealPlan"
+                        onChange={formik.handleChange}
+                        />
+                    }
+                    label="On a meal plan?"
+                    labelPlacement="top"
+                    />
+                </FormGroup>
+            </Stack>
+            <Divider />
+            { /* TODO: Add Household fields here with buttons to add/remove it. Set min/max */}
+            <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
+            {formik.values.householdInfo === undefined ? (
+                <Tooltip 
+                title="Add additional information if these items will be shared with people other than yourself" 
+                TransitionComponent={Zoom}
+                arrow
+                >
+                <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<Add />}
+                onClick={() => handleHouseholdAdd()}
+                >
+                    Add Household Information (optional)
+                </Button>
+                </Tooltip>
+            ) : (
+                <>
+                <TextField
+                label="Number of minors"
+                type="number"
+                variant="outlined"
+                name="householdInfo.numMinors"
+                value={formik.values.householdInfo.numMinors}
+                onChange={formik.handleChange}
+                // @ts-ignore
+                error={formik.touched.householdInfo?.numMinors && Boolean(formik.errors.householdInfo?.numMinors)}
+                // @ts-ignore
+                helperText={formik.touched.householdInfo?.numMinors && formik.errors.householdInfo?.numMinors}
+                />
+                <TextField
+                label="Number of adults"
+                type="number"
+                variant="outlined"
+                name="householdInfo.numAdults"
+                value={formik.values.householdInfo.numAdults}
+                onChange={formik.handleChange}
+                // @ts-ignore
+                error={formik.touched.householdInfo?.numAdults && Boolean(formik.errors.householdInfo?.numAdults)}
+                // @ts-ignore
+                helperText={formik.touched.householdInfo?.numAdults && formik.errors.householdInfo?.numAdults}
+                />
+                <TextField
+                label="Number of seniors"
+                type="number"
+                variant="outlined"
+                name="householdInfo.numSeniors"
+                value={formik.values.householdInfo.numSeniors}
+                onChange={formik.handleChange}
+                // @ts-ignore
+                error={formik.touched.householdInfo?.numSeniors && Boolean(formik.errors.householdInfo?.numSeniors)}
+                // @ts-ignore
+                helperText={formik.touched.householdInfo?.numSeniors && formik.errors.householdInfo?.numSeniors}
+                />
+                <Button
+                variant="outlined"
+                startIcon={<Delete />}
+                color="error"
+                onClick={() => handleHouseholdRemove()}
+                >
+                    Remove household information
+                </Button>
+                </>
+            )}
+            </Stack>
+            <Divider />
             <FieldArray 
-            name="selections">
+            name="itemRequests">
                 {({ insert, remove, push}) => (
                     <>
-                    <Grid container spacing={2} style={{marginTop: '10px'}} alignItems="center">
-                        {formik.values.selections.length > 0 && 
-                        formik.values.selections.map((selection, index: number) => (
+                    <Grid container spacing={2} style={{marginTop: '10px'}} alignItems="flex-start">
+                        {formik.values.itemRequests.length > 0 && 
+                        formik.values.itemRequests.map((selection, index: number) => {
+                            return (
                             <>
                             <Grid item xs={3}>
                                 <CategoryAutocomplete
-                                value={formik.values.selections[index].category}
+                                value={formik.values.itemRequests[index].category}
                                 onValueChange={(newValue) => { 
-                                    formik.setFieldValue(`selections[${index}].category`, newValue);
-                                    formik.setFieldValue(`selections[${index}].item`, null);
+                                    formik.setFieldValue(`itemRequests[${index}].category`, newValue);
+                                    formik.setFieldValue(`itemRequests[${index}].item`, null);
                                 }}
                                 InputProps={{
+                                    name: `itemRequests[${index}].category`,
                                     // @ts-ignore
-                                    error: (formik.errors.selections && formik.touched.selections) ? (formik.touched.selections[index].category && Boolean(formik.errors.selections[index].category)) as boolean : false,
+                                    error: (formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.category && Boolean((formik.errors.itemRequests[index])?.category),
                                     // @ts-ignore
-                                    helperText: (formik.errors.selections && formik.touched.selections) ? formik.touched.selections[index].category && formik.errors.selections[index].category : '',
+                                    helperText: (formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.category && (formik.errors.itemRequests[index])?.category?.id,
                                 }}
                                 /> 
                             </Grid>
                             <Grid item xs={7}>
                                 <ItemAutocomplete
-                                value={formik.values.selections[index].item}
-                                category={formik.values.selections[index].category}
-                                onValueChange={(newValue) => formik.setFieldValue(`selections[${index}].item`, newValue)}
+                                value={formik.values.itemRequests[index].item}
+                                category={formik.values.itemRequests[index].category}
+                                onValueChange={(newValue) => formik.setFieldValue(`itemRequests[${index}].item`, newValue)}
                                 InputProps={{
+                                    name: `itemRequests[${index}].item`,
                                     // @ts-ignore
-                                    error: (formik.errors.selections && formik.touched.selections) ? (formik.touched.selections[index].item && Boolean(formik.errors.selections[index].item)) as boolean : false,
+                                    error: (formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.item && Boolean((formik.errors.itemRequests[index])?.item),
                                     // @ts-ignore
-                                    helperText: (formik.errors.selections && formik.touched.selections) ? formik.touched.selections[index].item && formik.errors.selections[index].item : '',
+                                    helperText: (formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.item && (formik.errors.itemRequests[index])?.item?.id,
                                 }}
                                 />
                             </Grid>
@@ -179,52 +317,102 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                 label="Count"
                                 type="number"
                                 variant="outlined"
-                                value={formik.values.selections[index].quantity}
-                                onChange={(event) => formik.setFieldValue(`selections[${index}].quantity`, event.target.value)}
+                                name={`itemRequests[${index}].quantity`}
+                                value={formik.values.itemRequests[index].quantity}
+                                onChange={(event) => formik.setFieldValue(`itemRequests[${index}].quantity`, event.target.value)}
+                                // @ts-ignore
+                                error={(formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.quantity && Boolean((formik.errors.itemRequests[index])?.quantity)}
+                                // @ts-ignore
+                                helperText={(formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.quantity && (formik.errors.itemRequests[index])?.quantity}
                                 />
                             </Grid>
                             <Grid item xs={1}>
-                                <IconButton onClick={() => remove(index)}>
-                                    <Delete />
-                                </IconButton>
+                                { formik.values.itemRequests.length > 1 && (
+                                    <IconButton onClick={() => remove(index)}>
+                                        <Delete />
+                                    </IconButton>
+                                )}
                             </Grid>
                             </>
-                        ))}
+                        )})}
                     </Grid>
                     <Button 
                     variant="contained"
                     endIcon={<Add />}
                     onClick={() => push({
                         category: {
-                            id: '',
-                            description: '',
+                            id: null,
                             name: '',
+                            description: '',
+                            limit: 0,
+                            icon: '',
+                            visible: false,
+                            createdAt: null,
                         },
                         item: {
-                            category: {
-                                id: '',
-                                description: '',
-                                name: '',
-                            },
-                            id: '',
+                            id: null,
                             name: '',
+                            category: {
+                                id: null,
+                                name: '',
+                                description: '',
+                                limit: 0,
+                                icon: '',
+                                visible: false,
+                                createdAt: null,
+                            },
                             description: '',
+                            visible: false,
+                            createdAt: null,
                         },
-                        quantity: 0,
+                        quantity: 1,
                     })}
-                    sx={{marginTop: 2}}
+                    sx={{marginTop: 2, marginBottom: 2}}
                     >
                         Add Item
                     </Button>
                     </>
                 )}
             </FieldArray>
+            <Divider />
+            <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
+                <TextField
+                label="Notes for the staff"
+                multiline
+                maxRows={4}
+                name="otherNotes"
+                value={formik.values.otherNotes}
+                onChange={formik.handleChange}
+                sx={{width: '30%'}}
+                />
+                <DateTimePicker
+                renderInput={(props) => 
+                    <TextField 
+                    {...props} 
+                    error={formik.touched.requestedPickupTime && Boolean(formik.errors.requestedPickupTime)}
+                    helperText={formik.touched.requestedPickupTime && formik.errors.requestedPickupTime}
+                    />
+                }
+                label="Desired pickup time"
+                value={formik.values.requestedPickupTime}
+                minDateTime={new Date()}
+                maxDateTime={new Date(Date.now() + (6.048e+8 * 2))}
+                onChange={(newValue) => {
+                    formik.setFieldValue("requestedPickupTime", newValue);
+                    formik.setFieldTouched("requestedPickupTime", true);
+                }}
+                showTodayButton
+                clearable
+                ampm
+                ampmInClock
+                />
+            </Stack>
         </Form>
         </FormikProvider>
         </DialogContent>
         <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
-                <Button variant="contained" onClick={() => {console.log(formik.errors, formik.touched); formik.submitForm();}}>Submit</Button>
+                <Button variant="contained" onClick={() => formik.submitForm()}>Submit</Button>
         </DialogActions>
         </Dialog>
         </>

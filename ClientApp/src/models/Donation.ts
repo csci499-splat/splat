@@ -6,4 +6,4 @@ type Donation = {
     donatedAt: string;
 };
 
-export default Donation;
+export type { Donation };

@@ -4,4 +4,4 @@ type HouseholdInfo = {
     numMinors: number;
 };
 
-export default HouseholdInfo;
+export type { HouseholdInfo };
