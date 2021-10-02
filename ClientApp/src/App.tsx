@@ -1,5 +1,5 @@
 import React, { Component, FC, ReactElement } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom';
 import Landing from './scenes/landing/Landing';
 import Student from './scenes/student/Student';
 import Staff from './scenes/staff/Staff';
@@ -28,6 +28,7 @@ const App: FC<{}> = (): ReactElement => {
 
     return (
         <>
+        <BrowserRouter>
         <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <CssBaseline />
@@ -49,6 +50,7 @@ const App: FC<{}> = (): ReactElement => {
             </Switch>
         </LocalizationProvider>
         </ThemeProvider>
+        </BrowserRouter>
         </>
     );
 }
