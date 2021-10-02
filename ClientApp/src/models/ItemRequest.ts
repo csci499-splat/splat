@@ -1,9 +1,9 @@
-import { Item } from './Item';
+import Item from './Item';
 
 type ItemRequest = {
-    Item: Item;
+    item: Item;
     quantity: number;
-
 };
 
 export default ItemRequest;
+
