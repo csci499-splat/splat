@@ -23,14 +23,14 @@ export enum PickupStatus {
     CANCELED = 3,
 };
 
-export const getStatusString = (status: PickupStatus): string => {
+export const getStatusString = (status: PickupStatus | undefined): string => {
     switch(status) {
         case PickupStatus.PENDING:
-            return "Pending";
+            return "Pending fulfillment";
         case PickupStatus.WAITING:
-            return "Waiting";
+            return "Waiting for pickup";
         case PickupStatus.DISBURSED:
-            return "Disbursed";
+            return "Disbursed to student";
         case PickupStatus.CANCELED:
             return "Canceled";
         default:
