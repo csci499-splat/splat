@@ -8,7 +8,7 @@ import { Edit, Delete, Add, CancelOutlined, Visibility, Done, Outbound }
     from '@mui/icons-material';
 import { IStaffChild } from '../Staff';
 import { Pickup } from '../../../models/BackendTypes';
-import { PickupStatus, getStatusString } from '../../../models/Pickup';
+import { PickupStatus } from '../../../models/Pickup';
 
 interface PickupProps extends IStaffChild {
     
@@ -16,35 +16,61 @@ interface PickupProps extends IStaffChild {
 
 const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
+    const getStatusString = (status: PickupStatus): string => {
+        switch(status) {
+            case PickupStatus.PENDING:
+                return "Pending fulfillment";
+            case PickupStatus.WAITING:
+                return "Waiting for pickup";
+            case PickupStatus.DISBURSED:
+                return "Disbursed to student";
+            case PickupStatus.CANCELED:
+                return "Canceled";
+            default:
+                return "None";
+        }
+    };
+
     const columns: GridColDef[] = React.useMemo(
         () => [
             {
                 field: 'id',
                 flex: 0.6,
-                headerName: 'Pickup ID'
+                headerName: 'Pickup ID',
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'numberOfItems',
                 flex: 0.2,
-                headerName: '# Items'
+                headerName: '# Items',
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'requestedPickupTime',
                 flex: .9,
                 headerName: 'Requested Pickup Time',
-                type: 'dateTime'
+                type: 'dateTime',
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'studentID',
                 flex: 0.6,
-                headerName: 'Student ID'
+                headerName: 'Student ID',
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'status',
                 flex: .4,
                 headerName: 'Status',
-                valueFormatter: (params: GridValueFormatterParams) =>
-                    getStatusString(params.value as PickupStatus)
+                valueGetter: (params: GridValueFormatterParams) => {
+                    return getStatusString(params.value as PickupStatus);
+                },
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'viewMore',
@@ -56,29 +82,35 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                     >
                         <Visibility />
                     </IconButton>
-                )
+                ),
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'pickupStatus',
                 flex: 0.2,
                 headerName: 'Action',
-                renderCell: (params: GridRenderCellParams) => (
+                renderCell: (params: GridRenderCellParams) => {
+                    console.log(params);
+                    return (
                     <Tooltip
-                    title={params.value == PickupStatus.PENDING ? 
+                    title={params.row.status == "PENDING" ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton
                     onClick={() => {}}
                     >
-                        {params.value == PickupStatus.PENDING &&
+                        {params.row.status == PickupStatus.PENDING &&
                             <Done />
                         }
-                        {params.value == PickupStatus.WAITING &&
+                        {params.row.status == PickupStatus.WAITING &&
                             <Outbound />
                         }
                     </IconButton>
                     </Tooltip>
-                )
+                )},
+                headerAlign: 'center',
+                align: 'center',
             },
             {
                 field: 'cancel',
@@ -90,17 +122,24 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                     >
                         <CancelOutlined />
                     </IconButton>
-                )
+                ),
+                headerAlign: 'center',
+                align: 'center',
             },
         ], []);
 
     return (
         <>
-        <h1>{props.pageName}</h1>
         <div style={{height: 600, width: '100%'}}>
             <DataGrid
             columns={columns}
-            rows={[]}
+            rows={[{
+                id: 'hhdf-dsjfd-ffd23-fd54',
+                numberOfItems: 10,
+                requestedPickupTime: new Date(),
+                studentID: '1234567',
+                status: PickupStatus.WAITING,
+            }]}
             components={{
                 Toolbar: GridToolbar
             }}
