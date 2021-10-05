@@ -1,20 +1,51 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import { Box, Grid, Divider, Button, Dialog, DialogContent, 
         DialogActions, DialogTitle, IconButton, Tooltip }
     from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar, GridValueFormatterParams }
+import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar, GridValueFormatterParams,
+        GridRowData }
     from '@mui/x-data-grid';
-import { Edit, Delete, Add, CancelOutlined, Visibility, Done, Outbound } 
+import { CancelOutlined, Visibility, Done, Outbound } 
     from '@mui/icons-material';
 import { IStaffChild } from '../Staff';
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
+import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
+import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
+import PickupViewDetailsDialog from '../subcomponents/PickupViewDetailsDialog';
 
 interface PickupProps extends IStaffChild {
     
 }
 
+export interface IPickupRow extends GridRowData {
+    id: string;
+    numberOfItems: number;
+    requestedPickupTime: Date;
+    studentID: string,
+    status: PickupStatus,
+};
+
+export interface IPickupDialogProps {
+    selectedPickup?: IPickupRow;
+    open: boolean;
+    onClose: () => void;
+};
+
 const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
+
+    const [dialogOpen, setDialogOpen] = useState({viewDetails: false, fulfill: false, cancelConfirmation: false});
+    const [selectedPickup, setSelectedPickup] = useState<IPickupRow>();
+
+    const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: GridRowData) => {
+        setDialogOpen((prevState) => ({...prevState, [dialog]: true}));
+        setSelectedPickup(currentRow as IPickupRow);
+    }
+
+    const handleDialogClose = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation') => {
+        setDialogOpen((prevState) => ({...prevState, [dialog]: false}));
+        setSelectedPickup(undefined);
+    }
 
     const getStatusString = (status: PickupStatus): string => {
         switch(status) {
@@ -78,7 +109,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 headerName: 'View Details',
                 renderCell: (params: GridRenderCellParams) => (
                     <IconButton
-                    onClick={() => {}}
+                    onClick={() => handleDialogOpen('viewDetails', params.row)}
                     >
                         <Visibility />
                     </IconButton>
@@ -91,14 +122,13 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 flex: 0.2,
                 headerName: 'Action',
                 renderCell: (params: GridRenderCellParams) => {
-                    console.log(params);
                     return (
                     <Tooltip
                     title={params.row.status == "PENDING" ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton
-                    onClick={() => {}}
+                    onClick={() => handleDialogOpen('fulfill', params.row)}
                     >
                         {params.row.status == PickupStatus.PENDING &&
                             <Done />
@@ -118,7 +148,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 headerName: 'Cancel',
                 renderCell: (params: GridRenderCellParams) => (
                     <IconButton
-                    onClick={() => {}}
+                    onClick={() => handleDialogOpen('cancelConfirmation', params.row)}
                     >
                         <CancelOutlined />
                     </IconButton>
@@ -145,6 +175,21 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
             }}
             />
         </div>
+        <PickupViewDetailsDialog 
+        selectedPickup={selectedPickup} 
+        open={dialogOpen.viewDetails}
+        onClose={() => handleDialogClose('viewDetails')}
+        />
+        <PickupFulfillDialog
+        selectedPickup={selectedPickup}
+        open={dialogOpen.fulfill}
+        onClose={() => handleDialogClose('fulfill')}
+        />
+        <PickupCancelConfirmDialog
+        selectedPickup={selectedPickup}
+        open={dialogOpen.cancelConfirmation}
+        onClose={() => handleDialogClose('cancelConfirmation')}
+        />
         </>
     )
 };
