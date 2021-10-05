@@ -144,7 +144,7 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                     >
                         Privacy
                     </Link>
-                    <Link to="/staff"
+                    <Link to="/staff/home"
                     color="inherit"
                     underline="always"
                     component={RouterLink}

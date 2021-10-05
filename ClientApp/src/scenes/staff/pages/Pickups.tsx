@@ -3,7 +3,7 @@ import { Box, Grid, Divider, Button, Dialog, DialogContent,
         DialogActions, DialogTitle, IconButton, Tooltip }
     from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar, GridValueFormatterParams,
-        GridRowData }
+        GridRowData, GridSortModel }
     from '@mui/x-data-grid';
 import { CancelOutlined, Visibility, Done, Outbound } 
     from '@mui/icons-material';
@@ -26,6 +26,23 @@ export interface IPickupRow extends GridRowData {
     status: PickupStatus,
 };
 
+const initialRows: IPickupRow[] = [
+    {
+        id: '2362353e-570b-477c-9c65-522c1487c848',
+        numberOfItems: 10,
+        requestedPickupTime: new Date(),
+        studentID: '1234567',
+        status: PickupStatus.WAITING,
+    },
+    {
+        id: '7b9094c7-8092-444e-9140-2d69a3e935b6',
+        numberOfItems: 2,
+        requestedPickupTime: new Date(Date.now() - (6.048e+8 * 2)),
+        studentID: '4573859',
+        status: PickupStatus.PENDING,
+    },
+];
+
 export interface IPickupDialogProps {
     selectedPickup?: IPickupRow;
     open: boolean;
@@ -36,6 +53,13 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     const [dialogOpen, setDialogOpen] = useState({viewDetails: false, fulfill: false, cancelConfirmation: false});
     const [selectedPickup, setSelectedPickup] = useState<IPickupRow>();
+
+    const [sortModel, setSortModel] = React.useState<GridSortModel>([
+        {
+          field: 'requestedPickupTime',
+          sort: 'asc',
+        },
+    ]);
 
     const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: GridRowData) => {
         setDialogOpen((prevState) => ({...prevState, [dialog]: true}));
@@ -116,6 +140,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 ),
                 headerAlign: 'center',
                 align: 'center',
+                disableExport: true,
             },
             {
                 field: 'pickupStatus',
@@ -141,6 +166,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 )},
                 headerAlign: 'center',
                 align: 'center',
+                disableExport: true,
             },
             {
                 field: 'cancel',
@@ -155,24 +181,21 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 ),
                 headerAlign: 'center',
                 align: 'center',
+                disableExport: true,
             },
         ], []);
 
     return (
         <>
-        <div style={{height: 600, width: '100%'}}>
+        <div style={{height: 800, width: '100%'}}>
             <DataGrid
             columns={columns}
-            rows={[{
-                id: 'hhdf-dsjfd-ffd23-fd54',
-                numberOfItems: 10,
-                requestedPickupTime: new Date(),
-                studentID: '1234567',
-                status: PickupStatus.WAITING,
-            }]}
+            rows={initialRows}
             components={{
                 Toolbar: GridToolbar
             }}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
             />
         </div>
         <PickupViewDetailsDialog 

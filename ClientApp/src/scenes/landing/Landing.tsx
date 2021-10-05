@@ -40,7 +40,7 @@ const Landing: FC<LandingProps> = (props: LandingProps): ReactElement => {
                         onClick={() => setLoginOpen(true)}
                         variant="contained"
                         color="secondary" 
-                        sx={{width: '25%', alignSelf: 'center'}}
+                        sx={{width: '50%', alignSelf: 'center'}}
                         >
                             Click here to log in
                         </Button>
@@ -48,7 +48,7 @@ const Landing: FC<LandingProps> = (props: LandingProps): ReactElement => {
                         <Button 
                         variant="contained"
                         color="secondary"
-                        sx={{width: '25%', alignSelf: 'center'}}
+                        sx={{width: '50%', alignSelf: 'center'}}
                         component={RouterLink} 
                         to="/student"
                         >

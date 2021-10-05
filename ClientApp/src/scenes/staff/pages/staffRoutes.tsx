@@ -19,6 +19,15 @@ export type StaffRoute = {
 
 const staffRoutes: StaffRoute[] = [
     {
+        url: '/staff/home',
+        name: {
+            abbv: 'Home',
+            full: 'Staff Home'
+        },
+        icon: <HomeIcon />,
+        page: <Home />
+    },
+    {
         url: '/staff/pickups',
         name: {
             abbv: 'Pickups',
@@ -62,15 +71,6 @@ const staffRoutes: StaffRoute[] = [
         },
         icon: <Assessment />,
         page: <Reports />
-    },
-    {
-        url: '/staff',
-        name: {
-            abbv: 'Home',
-            full: 'Staff Home'
-        },
-        icon: <HomeIcon />,
-        page: <Home />
     },
 ];
 
