@@ -19,18 +19,26 @@ namespace splat.Controllers
 
         public CategoryController(SplatContext context) { _context = context; }
 
-        public async Task<IActionResult> GetCategories() { }
+        // GET: api/Categories
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Example>>> GetCategories() { }
 
+        // GET: api/Categories
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategory(int id) { }
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCategory(Guid id) { }
 
+        // POST: api/Categories
         [HttpPost]     
-        public async Task<IActionResult> CreateCategory(Guid id, Category category) { }
+        public async Task<IActionResult> CreateCategory(Category category) { }
 
-        [HttpPut("{id}")]
+        // PUT: api/Categories/id
+        [HttpPut("{id}"]
         public async Task<IActionResult> UpdateCategory(Guid id, Category category) { }
 
+        // DELETE: api/Categories/id
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id) { }
+        public async Task<IActionResult> DeleteCategory(Guid id) { }
     }
 }
