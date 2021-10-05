@@ -49,7 +49,7 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                 <Toolbar>
                     <div style={{flexGrow: 1, justifyContent: 'center', alignItems: 'center', 
                                 display: 'flex'}}>
-                    <Button href='/' sx={{textAlign: 'center'}}>
+                    <Button component={RouterLink} sx={{textAlign: 'center'}} to="/">
                         <Typography variant='h5' component='div' sx={{color: 'text.primary'}}>
                             SPLAT
                         </Typography>

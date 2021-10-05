@@ -1,5 +1,5 @@
 import React, { Component, FC, ReactElement } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom';
 import Landing from './scenes/landing/Landing';
 import Student from './scenes/student/Student';
 import Staff from './scenes/staff/Staff';
@@ -9,6 +9,8 @@ import { useDarkmode, DarkmodeStates } from './services/util/useDarkmode';
 import primaryTheme from './services/util/primaryTheme';
 import darkTheme from './services/util/darkTheme';
 import NavBar from './components/common/NavBar';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { LocalizationProvider } from '@mui/lab';
 
 const App: FC<{}> = (): ReactElement => {
     // TODO: Create hooks for updating logged-in state and dark mode use
@@ -26,7 +28,9 @@ const App: FC<{}> = (): ReactElement => {
 
     return (
         <>
+        <BrowserRouter>
         <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
             <CssBaseline />
             <NavBar 
             loggedIn={loggedIn} 
@@ -44,7 +48,9 @@ const App: FC<{}> = (): ReactElement => {
                     <h1>404: You have reached a page that doesn't exist!</h1>
                 </Route>
             </Switch>
+        </LocalizationProvider>
         </ThemeProvider>
+        </BrowserRouter>
         </>
     );
 }

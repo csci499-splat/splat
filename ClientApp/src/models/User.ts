@@ -1,9 +1,10 @@
-﻿import IAuthHeader from "./AuthHeader";
+import IAuthHeader from "./AuthHeader";
 
-export default interface IUser {
-    name?: string;
+type User = {
+    name?: string | null;
     email: string;
-    userName: string;
-    authHeader: IAuthHeader;
-    role?: string;
+    authHeader?: IAuthHeader;
+    roles?: string[];
 };
+
+export default User;
