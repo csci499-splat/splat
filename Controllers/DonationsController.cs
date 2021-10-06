@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "ElevatedRights")]
     public class DonationsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -41,36 +43,7 @@ namespace splat.Controllers
             return donation;
         }
 
-        // PUT: api/Donations/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDonation(Guid id, Donation donation)
-        {
-            if (id != donation.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(donation).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DonationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+        
 
         // POST: api/Donations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
