@@ -34,16 +34,21 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const handleAddDialogClose = () => {
         setAddDialogOpen(false);
+        getDonations();
     };
 
-    const getDonations = () => {
-        
+    const handleDonationDelete = async (id: string) => {
+        let res = await baseRequest.delete(`/donations/${id}`);
+        getDonations();
+    };
+
+    const getDonations = async () => {
+        let res = await baseRequest.get<Donation[]>('/donations');
+        setRows(res.data);
     };
 
     React.useEffect(() => {
-        baseRequest.get<Donation[]>('/donations')
-        .then((res) => console.log(res.data))
-        .catch((err) => console.log(err));
+        getDonations();
     }, []);
     
     const columns: GridColDef[] = React.useMemo(
@@ -93,6 +98,21 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
                     return new Date(params.value as string).toDateString();
                 },
             },
+            {
+                field: 'remove',
+                flex: 0.1,
+                headerName: 'Remove',
+                headerAlign: 'center',
+                align: 'center',
+                renderCell: (params: GridRenderCellParams) => (
+                    <IconButton
+                    onClick={() => handleDonationDelete(params.row.id)}
+                    >
+                        <Delete />
+                    </IconButton>
+                ),
+                disableExport: true,
+            }
         ], []);
 
     return (

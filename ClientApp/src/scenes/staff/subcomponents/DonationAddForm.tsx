@@ -6,7 +6,7 @@ import { TextField, Stack, Dialog, DialogContent,
     DialogActions, DialogTitle, InputAdornment, Button, } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { Donation } from '../../../models/Donation';
-import { requestNoAuth } from '../../../services/api/genericRequest';
+import { baseRequest } from '../../../services/api/genericRequest';
 
 type DonationAddFormProps = {
     open: boolean;
@@ -14,7 +14,6 @@ type DonationAddFormProps = {
 };
 
 const initialValues: Donation = {
-    id: null,
     monetaryValue: undefined,
     weight: undefined,
     donor: '',
@@ -59,11 +58,8 @@ const DonationAddForm: FC<DonationAddFormProps> = (props: DonationAddFormProps):
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             // TODO: change to Auth
-            /* requestNoAuth('/donations', 'POST', {data: values})
-                .then((res) => {
-                    console.log(res);
-                    props.onClose();
-            }); */
+            await baseRequest.post<Donation>('/donations', values);
+            props.onClose();
         },
     });
 

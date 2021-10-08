@@ -12,7 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "ElevatedRights")]
+    //[Authorize(Policy = "ElevatedRights")]
     public class ItemsController : ControllerBase
     {
         private readonly SplatContext _context;

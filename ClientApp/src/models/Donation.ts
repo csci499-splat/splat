@@ -1,5 +1,5 @@
 type Donation = {
-    id: string | null;
+    id?: string | null;
     monetaryValue?: number;
     weight?: number;
     donor: string;
