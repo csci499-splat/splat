@@ -8,27 +8,16 @@ import { Add, Delete } from '@mui/icons-material';
 import CategoryAutocomplete from '../../../student/CategoryAutocomplete';
 import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../../models/BackendTypes'
 import { DateTimePicker } from '@mui/lab';
+import { GridRowData } from '@mui/x-data-grid';
+import { propsToClassKey } from '@mui/styles';
 
 type EditItemProps = {
     onClose: () => void,
+    item?: GridRowData;
+    open: boolean;
 }
 
-const initialValues: Item ={
-    id: null,
-    name: '',
-    category: {
-        id: null,
-        name: '',
-        description: '',
-        limit: 0,
-        icon: '',
-        visible: false,
-        createdAt: null,
-    },
-    description: '',
-    visible: false,
-    createdAt: null,
-};
+
 
 const validationSchema = yup.object({   
     name: yup.string()
@@ -49,6 +38,25 @@ const validationSchema = yup.object({
 });
 
 const EditItem: FC<EditItemProps> = (props: EditItemProps): ReactElement =>{
+
+    console.log(props.item)
+    const initialValues = {
+        id: props.item?.id,
+        name: props.item?.name,
+        category: {
+            id: props.item?.category.id,
+            name: props.item?.category.name,
+            description: props.item?.category.description,
+            limit: props.item?.category.limit,
+            icon: props.item?.category.icon,
+            visible: props.item?.category.visible,
+            createdAt: props.item?.category.createAt,
+        },
+        description: props.item?.description,
+        visible: props.item?.visible,
+        createdAt: new Date(props.item?.createdAt),
+    };
+
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
@@ -56,16 +64,19 @@ const EditItem: FC<EditItemProps> = (props: EditItemProps): ReactElement =>{
             console.log(values);
             props.onClose();
         },
+        
     });
+    
+    
     return(
         <>
         <Dialog 
-        open={true} 
+        open={props.open} 
         onClose={props.onClose}
         maxWidth="lg" 
         fullWidth
         >
-        <DialogTitle>New Item</DialogTitle>
+        <DialogTitle>Edit Item</DialogTitle>
         <DialogContent>
         <FormikProvider value={formik}
         >
@@ -117,8 +128,8 @@ const EditItem: FC<EditItemProps> = (props: EditItemProps): ReactElement =>{
                 }}
                 InputProps={{
                     name:`category`,
-                    error: (formik.touched.category && Boolean(formik.errors.category)),
-                    helperText: (formik.touched.category && formik.errors.category),
+                    error: (formik.errors.category && formik.touched.category)  && Boolean((formik.errors?.category)) ? true : false,
+                    helperText: (formik.errors.category && formik.touched.category) && String(formik.errors?.category) ? '':'',
                 }}
                 />
             </Grid>

@@ -8,27 +8,15 @@ import { Add, Delete } from '@mui/icons-material';
 import CategoryAutocomplete from '../../../student/CategoryAutocomplete';
 import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../../models/BackendTypes'
 import { DateTimePicker } from '@mui/lab';
+import { GridRowData } from '@mui/x-data-grid';
 
 type AddItemProps = {
     onClose: () => void,
+    open: boolean;
+    item?: GridRowData;
 }
 
-const initialValues: Item ={
-    id: null,
-    name: '',
-    category: {
-        id: null,
-        name: '',
-        description: '',
-        limit: 0,
-        icon: '',
-        visible: false,
-        createdAt: null,
-    },
-    description: '',
-    visible: false,
-    createdAt: null,
-};
+
 
 const validationSchema = yup.object({   
     name: yup.string()
@@ -49,6 +37,24 @@ const validationSchema = yup.object({
 });
 
 const AddItem: FC<AddItemProps> = (props: AddItemProps): ReactElement =>{
+
+    const initialValues: Item ={
+        id: props.item?.id,
+        name: props.item?.name,
+        category: {
+            id: props.item?.category.id,
+            name: props.item?.category.name,
+            description: props.item?.category.description,
+            limit: props.item?.category.limit,
+            icon: props.item?.category.icon,
+            visible: props.item?.category.visible,
+            createdAt: props.item?.category.createAt,
+        },
+        description: props.item?.description,
+        visible: props.item?.visible,
+        createdAt: props.item?.createAt,
+    };
+
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
@@ -60,7 +66,7 @@ const AddItem: FC<AddItemProps> = (props: AddItemProps): ReactElement =>{
     return(
         <>
         <Dialog 
-        open={true} 
+        open={props.open} 
         onClose={props.onClose}
         maxWidth="lg" 
         fullWidth
@@ -77,6 +83,7 @@ const AddItem: FC<AddItemProps> = (props: AddItemProps): ReactElement =>{
                 variant="outlined"
                 name="id"
                 type="string"
+                disabled
                 value={formik.values.id}
                 onChange={formik.handleChange}
                 error={formik.touched.id && Boolean(formik.errors.id)}
@@ -116,8 +123,8 @@ const AddItem: FC<AddItemProps> = (props: AddItemProps): ReactElement =>{
                 }}
                 InputProps={{
                     name:`category`,
-                    error: (formik.errors.category && formik.touched.category) && (formik.touched?.category) && Boolean((formik.errors?.category)),
-                    helperText: (formik.touched.category && formik.errors.category),
+                    error: (formik.errors.category && formik.touched.category)  && Boolean((formik.errors?.category)) ? true : false,
+                    helperText: (formik.errors.category && formik.touched.category) && String(formik.errors?.category) ? '':'',
                 }}
                 />
             </Grid>
