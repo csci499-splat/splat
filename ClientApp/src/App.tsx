@@ -4,7 +4,7 @@ import Landing from './scenes/landing/Landing';
 import Student from './scenes/student/Student';
 import Staff from './scenes/staff/Staff';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, useMediaQuery } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import { useDarkmode, DarkmodeStates } from './services/util/useDarkmode';
 import primaryTheme from './services/util/primaryTheme';
 import darkTheme from './services/util/darkTheme';

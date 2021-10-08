@@ -1,9 +1,11 @@
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } from 'formik';
+import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } 
+    from 'formik';
 import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
     DialogTitle, Stack,
-    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } from '@mui/material';
+    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } 
+    from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
 import CategoryAutocomplete from './CategoryAutocomplete';
 import ItemAutocomplete from './ItemAutocomplete';
@@ -206,7 +208,6 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 </FormGroup>
             </Stack>
             <Divider />
-            { /* TODO: Add Household fields here with buttons to add/remove it. Set min/max */}
             <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
             {formik.values.householdInfo === undefined ? (
                 <Tooltip 
