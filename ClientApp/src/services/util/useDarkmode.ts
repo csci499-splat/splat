@@ -20,7 +20,7 @@ export const useDarkmode = (): [DarkmodeStates, (mode: DarkmodeStates) => void, 
         const storedTheme = localStorage.getItem('theme') === DarkmodeStates.LIGHT ? 
             DarkmodeStates.LIGHT : DarkmodeStates.DARK;
 
-        matchMedia('(prefers-color-scheme: dark)').matches && !storedTheme ?
+        window.matchMedia('(prefers-color-scheme: dark)').matches && !storedTheme ?
             setMode(DarkmodeStates.DARK) : 
             storedTheme ?
                 setTheme(storedTheme) : setMode(DarkmodeStates.LIGHT);

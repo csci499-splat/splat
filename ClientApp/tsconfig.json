@@ -20,7 +20,7 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "noEmit": true,
     "noFallthroughCasesInSwitch": true
   },

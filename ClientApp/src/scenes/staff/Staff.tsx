@@ -31,13 +31,13 @@ const Staff: FC<StaffProps> = (props: StaffProps): ReactElement => {
         centered
         >
             { staffRoutes.map((value: StaffRoute, index) => (
-            <Tab label={value.name.abbv} value={value.url} to={value.url} component={Link} icon={value.icon} />
+            <Tab key={index} label={value.name.abbv} value={value.url} to={value.url} component={Link} icon={value.icon} />
             ))}
         </Tabs>
         </Box>
         <Switch>
         { staffRoutes.map((value: StaffRoute, index) => (
-            <Route exact path={value.url} render={(props) => React.cloneElement(value.page, {...props, pageName: value.name.full})} />
+            <Route key={index} exact path={value.url} render={(props) => React.cloneElement(value.page, {...props, pageName: value.name.full})} />
         ))}
         <Route path='/'>
             <h1>404: Staff page not found</h1>
