@@ -4,6 +4,7 @@ import { IPickupRow, IPickupDialogProps } from '../pages/Pickups';
 import * as yup from 'yup';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography,
     } from '@mui/material';
+import { requestAuth } from '../../../services/api/genericRequest';
 
 interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
     
@@ -11,7 +12,11 @@ interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
 
 const PickupCancelConfirmationDialog: FC<PickupCancelConfirmationDialogProps> = (props: PickupCancelConfirmationDialogProps): ReactElement => {
 
-
+    const handleCancel = async () => {
+        alert(`Canceling ${props.selectedPickup?.id}`);
+        await requestAuth(`/pickups/${props.selectedPickup?.id}`, 'DELETE');
+        props.onClose();
+    };
 
     return (
         <>
@@ -28,7 +33,7 @@ const PickupCancelConfirmationDialog: FC<PickupCancelConfirmationDialogProps> = 
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="primary">Close</Button>
-                <Button variant="contained" onClick={() => {alert(`Canceling ${props.selectedPickup?.id}`); props.onClose();}} color="error">
+                <Button variant="contained" onClick={() => handleCancel()} color="error">
                     Cancel It
                 </Button>
             </DialogActions>

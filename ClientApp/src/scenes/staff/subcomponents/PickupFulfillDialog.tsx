@@ -5,6 +5,7 @@ import { IPickupRow, IPickupDialogProps } from '../pages/Pickups';
 import * as yup from 'yup';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button,
     Typography, } from '@mui/material';
+import PickupViewTable from '../../../components/common/PickupViewTable';
 
 interface PickupFulfillDialogProps extends IPickupDialogProps {
 
@@ -18,6 +19,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
         <Dialog 
         open={props.open} 
         onClose={props.onClose}
+        maxWidth="lg"
         fullWidth
         >
         {props.selectedPickup?.status === PickupStatus.PENDING ? (
@@ -26,9 +28,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                 Fulfill Request
             </DialogTitle>
             <DialogContent>
-                <Typography variant="h5">
-                    Fulfill the order here (form)
-                </Typography>
+                <PickupViewTable id={props.selectedPickup.id} showCheckboxes={true} />
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="primary">Cancel</Button>
