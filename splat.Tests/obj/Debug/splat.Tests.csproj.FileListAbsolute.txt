@@ -1,0 +1,14 @@
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\splat.Tests.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\splat.Tests.pdb
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\obj\Debug\splat.Tests.csproj.AssemblyReference.cache
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\obj\Debug\splat.Tests.csproj.CoreCompileInputs.cache
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\obj\Debug\splat.Tests.csproj.CopyComplete
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\obj\Debug\splat.Tests.dll
+C:\Users\Evan\source\repos\csci499-splat\splat.Tests\obj\Debug\splat.Tests.pdb

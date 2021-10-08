@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splat", "splat.csproj", "{5FC33640-761F-437A-BFC8-F001956163FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splat.Tests", "..\splat.Tests\splat.Tests.csproj", "{85813B22-A812-4A59-AAF3-ECDE98A90DCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splat.Tests", "..\splat.Tests\splat.Tests.csproj", "{570F2A3F-EC5B-4D2D-B02E-90123C981182}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{5FC33640-761F-437A-BFC8-F001956163FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FC33640-761F-437A-BFC8-F001956163FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FC33640-761F-437A-BFC8-F001956163FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{85813B22-A812-4A59-AAF3-ECDE98A90DCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{85813B22-A812-4A59-AAF3-ECDE98A90DCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{85813B22-A812-4A59-AAF3-ECDE98A90DCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{85813B22-A812-4A59-AAF3-ECDE98A90DCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{570F2A3F-EC5B-4D2D-B02E-90123C981182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{570F2A3F-EC5B-4D2D-B02E-90123C981182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{570F2A3F-EC5B-4D2D-B02E-90123C981182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{570F2A3F-EC5B-4D2D-B02E-90123C981182}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
