@@ -208,7 +208,6 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 </FormGroup>
             </Stack>
             <Divider />
-            { /* TODO: Add Household fields here with buttons to add/remove it. Set min/max */}
             <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
             {formik.values.householdInfo === undefined ? (
                 <Tooltip 

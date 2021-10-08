@@ -1,14 +1,14 @@
 ﻿import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import { getAuthToken } from '../util/authHeader';
 
-const baseRequest = axios.create({
+export const baseRequest = axios.create({
     baseURL: '/api',
     headers: {
         'Content-type': 'application/json',
     },
 });
 
-const authRequest = axios.create({
+export const authRequest = axios.create({
     baseURL: '/api',
     headers: {
         'Authorization': '',

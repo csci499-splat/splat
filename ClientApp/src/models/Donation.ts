@@ -1,9 +1,9 @@
 type Donation = {
-    id: string;
+    id: string | null;
     monetaryValue?: number;
     weight?: number;
     donor: string;
-    donatedAt: string;
+    donatedAt: string | Date;
 };
 
 export type { Donation };
