@@ -9,6 +9,7 @@ namespace splat.Tests
         [TestMethod]
         public void TestMethod1()
         {
+            throw new Exception("Error!");
         }
     }
 }
