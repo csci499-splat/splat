@@ -8,6 +8,7 @@ import { DataGrid, GridColDef, GridRenderCellParams, GridRowData, GridToolbar, G
 import EditItem from './EditItems';
 import { Edit, PanoramaSharp } from '@mui/icons-material';
 import Items from '../Items';
+import { Category } from '../../../../models/Category';
 import EditItems from './EditItems';
 
 
@@ -21,7 +22,15 @@ const initialRows = [
     {
         id: '123456',
         name: 'Milk',
-        category: 1,
+        category: {
+            id: '123456',
+            name: 'milk',
+            limit:'3',
+            icon:'4',
+            description: 'milk',
+            visible: true,
+            createdAt: Date()
+        },
         description: 'white milk',
         visible: true,
         createdAt: Date()
@@ -29,7 +38,15 @@ const initialRows = [
     {
         id: '123321',
         name: 'Water',
-        category: 2,
+        category: {
+            id: '123321',
+            name: 'water',
+            limit:'5',
+            icon:'5',
+            description: 'water',
+            visible: false,
+            createdAt: Date()
+        },
         description: 'Aquafina',
         visible: false,
         createdAt: Date()
