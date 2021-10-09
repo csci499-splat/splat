@@ -9,6 +9,7 @@ import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../models/BackendTypes'
 import { DateTimePicker } from '@mui/lab';
 import { GridRowData } from '@mui/x-data-grid';
+import { baseRequest } from '../../../services/api/genericRequest';
 
 type ItemsEditDialogProps = {
     onClose: () => void,
@@ -34,7 +35,7 @@ const validationSchema = yup.object({
         visible: yup.boolean().required("Required"),
 });
 
-const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps): ReactElement =>{
+const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps): ReactElement => {
 
     let initialValues = (props.item) ? {
         id: props.item?.id,
@@ -46,7 +47,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
             limit: props.item?.category.limit,
             icon: props.item?.category.icon,
             visible: props.item?.category.visible,
-            createdAt: props.item?.category.createdAt,
+            createdAt: new Date(props.item?.category.createdAt),
         },
         description: props.item?.description,
         visible: props.item?.visible,
@@ -61,6 +62,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
         enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
+            await baseRequest.put('/items', values);
             props.onClose();
         },
     });
@@ -74,24 +76,18 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
         <DialogTitle>Edit Item</DialogTitle>
         <DialogContent>
         <FormikProvider value={formik}>
-        <Form
-        style = {{maxHeight: '600px'}}>
+        <Form style={{maxHeight: '600px'}}>
             <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 2}} alignItems="flex-start">
                 <TextField
-                label="Item ID"
+                label="ID"
                 variant="outlined"
                 name="id"
-                type="string"
                 disabled
-                value={formik.values.id}
-                onChange={formik.handleChange}
-                error={formik.touched.id && Boolean(formik.errors.id)}
-                helperText={formik.touched.id && formik.errors.id}
+                value={props.item?.id}
                 />
                 <TextField
                 label="Name"
                 variant="outlined"
-                type="string"
                 name="name"
                 value={formik.values.name}
                 onChange={formik.handleChange}
@@ -114,7 +110,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
                 </FormGroup>
             </Stack>
             <Divider />
-            <Grid item xs={3}>
+            <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 2}} alignItems="flex-start">
                 <CategoryAutocomplete
                 value={formik.values.category}
                 onValueChange={(newValue) => {
@@ -126,33 +122,31 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
                     helperText: (formik.errors.category && formik.touched.category) && String(formik.errors?.category) ? '':'',
                 }}
                 />
-            </Grid>
             <TextField
                 label="Description"
                 variant="outlined"
-                type="string"
                 name="description"
                 value={formik.values.description}
                 onChange={formik.handleChange}
                 error={formik.touched.description && Boolean(formik.errors.description)}
                 helperText={formik.touched.description && formik.errors.description}
+                multiline
             />
             <DateTimePicker
             renderInput={(props) =>
             <TextField
             {...props}
-            error={formik.touched.createdAt && Boolean(formik.errors.createdAt)}
-            helperText={formik.touched.createdAt && formik.errors.createdAt}
             />          
             }
             label="Created At"
-            value={formik.values.createdAt}
+            value={props.item?.createdAt}
             onChange={(newValue) => {
             }}
             disabled
             ampm
             ampmInClock
             />
+            </Stack>
         </Form>
         </FormikProvider>
         </DialogContent>
