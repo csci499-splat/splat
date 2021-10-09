@@ -87,7 +87,6 @@ namespace splat.Controllers
 
         // DELETE: api/Items/id
         [HttpDelete("{id}")]
-        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
             var item = await _context.Items.FindAsync(id);
