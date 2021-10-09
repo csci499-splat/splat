@@ -11,61 +11,38 @@ import { Edit, PanoramaSharp } from '@mui/icons-material';
 import { Category } from '../../../models/Category';
 import ItemsEditDialog from './ItemsEditDialog';
 import { Item } from '../../../models/Item';
+import { baseRequest } from '../../../services/api/genericRequest';
 
 
 type ItemsTableProps = {
     
 }
 
-const initialRows: GridRowsProp = [
-    {
-        id: '123456',
-        name: 'Milk',
-        category: {
-            id: '123456',
-            name: 'milk',
-            limit:'3',
-            icon:'4',
-            description: 'milk',
-            visible: true,
-            createdAt: Date()
-        },
-        description: 'white milk',
-        visible: true,
-        createdAt: Date()
-    },
-    {
-        id: '123321',
-        name: 'Water',
-        category: {
-            id: '123321',
-            name: 'water',
-            limit:'5',
-            icon:'5',
-            description: 'water',
-            visible: false,
-            createdAt: Date()
-        },
-        description: 'Aquafina',
-        visible: false,
-        createdAt: Date()
-    },
-]
-
 const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement => {
 
     const [editItemOpen, setEditItemOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<GridRowData>();
+    const [items, setItems] = useState<Item[]>([]);
 
     const handleShowEditItem = (row: GridRowData) => {
         setEditItemOpen(true);
         setSelectedRow(row);
-        console.log(row);
-    }
+    };
+
     const handleCloseEditItem = () => {
         setEditItemOpen(false);
         setSelectedRow(undefined);
-    }
+        getItems();
+    };
+
+    const getItems = async () => {
+        let res = await baseRequest.get<Item[]>('/items');
+        setItems(res.data);
+    };
+
+    React.useEffect(() => {
+        getItems();
+    }, [])
 
     const columns: GridColDef[] = React.useMemo(
         () => [
@@ -123,16 +100,13 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
             }
 
         ],[]);
-
-        const [rows,setRows] = React.useState(initialRows)
         
-
-    return(
+    return (
         <>
         <div style={{height: 300, width: '100%'}}>
             <DataGrid
             columns={columns}
-            rows={rows}
+            rows={items}
             components={{
                 Toolbar: GridToolbar,
             }}

@@ -20,21 +20,21 @@ const Items: FC<ItemProps> = (props: ItemProps): ReactElement => {
         setAddItemsOpen(true);
     }
 
+    // TODO: refresh data in the table when a new item is added
 
     return (
         <>
-        <h1>{props.pageName}</h1>       
         <Button
         variant="contained"
         onClick={handleShowAddItems}
         >
             Add Items
         </Button>
+        <ItemsTable />
         <ItemsAddDialog
         onClose={() => setAddItemsOpen(false)}
         open={addItemsOpen}
         />
-        <ItemsTable />
         </>
     )
 };
