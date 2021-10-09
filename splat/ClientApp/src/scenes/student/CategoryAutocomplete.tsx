@@ -4,6 +4,7 @@ import { TextField, Autocomplete, CircularProgress, Box, Stack, Grid }
 import { matchSorter } from 'match-sorter';
 import { Category } from '../../models/BackendTypes';
 import { CategoryIcons } from '../../models/CategoryIcons';
+import { baseRequest } from '../../services/api/genericRequest';
 
 type CategoryAutocompleteProps = {
     value: Category | null | undefined;
@@ -36,11 +37,10 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
 
         (async () => {
 
-            // simulate getting data
-            await sleep(1000);
+            let res = await baseRequest.get<Category[]>('/categories');
 
-            if(active) {
-                setOptions([]);
+            if (active) {
+                setOptions(res.data);
             }
         })();
 
@@ -64,11 +64,12 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
         sx={{width: '100%'}}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         renderOption={(props, option) => {
+            console.log(option);
             return (
                 <li {...props}>
                     <Grid container alignItems="center">
                         <Grid item>
-                            <Box component={CategoryIcons[option.icon]} sx={{mr: 2}} />
+                            {CategoryIcons[option.icon]}
                         </Grid>
                         <Grid item xs>
                             {option.name}

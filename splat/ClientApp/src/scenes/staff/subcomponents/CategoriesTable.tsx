@@ -12,6 +12,7 @@ import { Category } from '../../../models/Category';
 import { Item } from '../../../models/Item';
 import { baseRequest } from '../../../services/api/genericRequest';
 import CategoriesEditDialog from './CategoriesEditDialog';
+import { CategoryIcons } from '../../../models/CategoryIcons';
 
 type CategoriesTableProps = {
     
@@ -34,14 +35,16 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
         getCategories();
     };
 
-    const handleDeleteCategory = async (row: GridRowData)  => {
-        await baseRequest.delete(`/categories/${row.value.id}`);
+    const handleDeleteCategory = async (row: GridRowData) => {
+        console.log(row);
+        await baseRequest.delete(`/categories/${row.id}`);
         getCategories();
     };
 
     const getCategories = async () => {
         let res = await baseRequest.get<Category[]>('/categories');
         setCategories(res.data);
+        console.log(res.data);
     };
 
     React.useEffect(() => {
@@ -70,13 +73,15 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
                 headerName: 'Limit',
                 align: 'center',
                 headerAlign: 'center',
-                renderCell: (params: GridRenderCellParams) => (
-                    <Tooltip
-                    title="The maximum number of items that can be requested for each item in this category"
-                    >
-                        {params.row.limit}
-                    </Tooltip>
-                ),
+                renderCell: (params: GridRenderCellParams) => {
+                    return (
+                        <Tooltip
+                            title="The maximum number of items that can be requested for each item in this category"
+                        >
+                            <div>{params.row.limit}</div>
+                        </Tooltip>
+                    )
+                },
             },
             {
                 field: 'description',
@@ -110,8 +115,9 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
                 align: 'center',
                 headerAlign: 'center',
                 renderCell: (params: GridRenderCellParams) => {
-                    return <h5></h5>
-                    //return CategoryIcons[params.row.icon];
+                    console.log(params.row.icon);
+                    console.log(CategoryIcons[params.row.icon]);
+                    return CategoryIcons[params.row.icon];
                 },
             },
             {
