@@ -18,21 +18,33 @@ type ItemsEditDialogProps = {
 }
 
 const validationSchema = yup.object({   
-    name: yup.string()
+    name: yup
+    .string()
     .max(25, ({ max }) => `Name can't be more than ${max} characters long`)
     .required("Name is required"),
-    description: yup.string()
+    description: yup
+    .string()
     .max(250, ({ max }) => `Description can't be more than ${max} characters long`)
     .required("Description is required"),
-    category: yup.object().shape({
-        id: yup.string().nullable()
+    category: yup
+    .object().
+    shape({
+        id: yup
+        .string()
+        .nullable()
         .required(),
-        name: yup.string()
+        name: yup
+        .string()
         .required(),
-        description: yup.string()
+        description: yup
+        .string()
         .required(),
-        }).nullable().required('Category is required'),
-        visible: yup.boolean().required("Required"),
+    })
+    .nullable()
+    .required('Category is required'),
+    visible: yup
+    .boolean()
+    .required("Required"),
 });
 
 const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps): ReactElement => {
@@ -62,12 +74,12 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
         enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
-            await baseRequest.put('/items', values);
+            await baseRequest.put(`/items/${values.id}`, values);
             props.onClose();
         },
     });
     
-    return(
+    return (
         <>
         <Dialog 
         open={props.open} 
@@ -122,7 +134,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
                     helperText: (formik.errors.category && formik.touched.category) && String(formik.errors?.category) ? '':'',
                 }}
                 />
-            <TextField
+                <TextField
                 label="Description"
                 variant="outlined"
                 name="description"
@@ -131,28 +143,28 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
                 error={formik.touched.description && Boolean(formik.errors.description)}
                 helperText={formik.touched.description && formik.errors.description}
                 multiline
-            />
-            <DateTimePicker
-            renderInput={(props) =>
-            <TextField
-            {...props}
-            />          
-            }
-            label="Created At"
-            value={props.item?.createdAt}
-            onChange={(newValue) => {
-            }}
-            disabled
-            ampm
-            ampmInClock
-            />
+                />
+                <DateTimePicker
+                renderInput={(props) =>
+                <TextField
+                {...props}
+                />          
+                }
+                label="Created At"
+                value={props.item?.createdAt}
+                onChange={(newValue) => {
+                }}
+                disabled
+                ampm
+                ampmInClock
+                />
             </Stack>
         </Form>
         </FormikProvider>
         </DialogContent>
         <DialogActions sx={{margin:1}}>
             <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
-            <Button variant="contained" onClick={() => formik.submitForm()}>Save</Button>
+            <Button variant="contained" onClick={() => formik.submitForm()}>Edit</Button>
         </DialogActions>
         </Dialog>
         </>

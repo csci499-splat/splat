@@ -27,6 +27,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const [addDialogOpen, setAddDialogOpen] = React.useState(false);
     const [rows, setRows] = React.useState<Donation[]>([]);
+    const [currentWidth, setCurrentWidth] = React.useState(0);
 
     const handleAddDialogOpen = () => {
         setAddDialogOpen(true);
@@ -45,6 +46,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
     const getDonations = async () => {
         let res = await baseRequest.get<Donation[]>('/donations');
         setRows(res.data);
+        setCurrentWidth(1 - currentWidth);
     };
 
     React.useEffect(() => {
@@ -118,7 +120,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
     return (
         <>
         <Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Donation</Button>
-        <div style={{height: 800, width: '100%'}}>
+        <div style={{height: 800, width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={rows}

@@ -13,6 +13,7 @@ import { PickupStatus } from '../../../models/Pickup';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
 import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
 import PickupViewDetailsDialog from '../subcomponents/PickupViewDetailsDialog';
+import { baseRequest } from '../../../services/api/genericRequest';
 
 interface PickupProps extends IStaffChild {
     
@@ -53,6 +54,8 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     const [dialogOpen, setDialogOpen] = useState({viewDetails: false, fulfill: false, cancelConfirmation: false});
     const [selectedPickup, setSelectedPickup] = useState<IPickupRow>();
+    const [pickups, setPickups] = useState<Pickup[]>([]);
+    const [currentWidth, setCurrentWidth] = useState(0);
 
     const [sortModel, setSortModel] = React.useState<GridSortModel>([
         {
@@ -62,13 +65,19 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     ]);
 
     const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: GridRowData) => {
-        setDialogOpen((prevState) => ({...prevState, [dialog]: true}));
+        setDialogOpen((prevState) => ({ ...prevState, [dialog]: true }));
         setSelectedPickup(currentRow as IPickupRow);
-    }
+    };
 
     const handleDialogClose = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation') => {
-        setDialogOpen((prevState) => ({...prevState, [dialog]: false}));
+        setDialogOpen((prevState) => ({ ...prevState, [dialog]: false }));
         setSelectedPickup(undefined);
+    };
+
+    const getPickups = async () => {
+        let res = await baseRequest.get<Pickup[]>('/pickups');
+        setPickups(res.data);
+        setCurrentWidth(1 - currentWidth);
     }
 
     const getStatusString = (status: PickupStatus): string => {
@@ -187,7 +196,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     return (
         <>
-        <div style={{height: 800, width: '100%'}}>
+        <div style={{ height: 800, width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={initialRows}

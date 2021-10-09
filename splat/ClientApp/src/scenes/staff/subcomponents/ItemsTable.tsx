@@ -23,6 +23,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
     const [editItemOpen, setEditItemOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<GridRowData>();
     const [items, setItems] = useState<Item[]>([]);
+    const [currentWidth, setCurrentWidth] = useState(0);
 
     const handleShowEditItem = (row: GridRowData) => {
         setEditItemOpen(true);
@@ -38,11 +39,13 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
     const handleDeleteItem = async (row: GridRowData)  => {
         await baseRequest.delete(`/items/${row.value.id}`);
         getItems();
+        setCurrentWidth(1 - currentWidth);
     };
 
     const getItems = async () => {
         let res = await baseRequest.get<Item[]>('/items');
         setItems(res.data);
+        setCurrentWidth(1 - currentWidth);
     };
 
     React.useEffect(() => {
@@ -138,7 +141,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         
     return (
         <>
-        <div style={{height: 750, width: '100%'}}>
+        <div style={{ height: 750, width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={items}

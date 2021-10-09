@@ -42,6 +42,7 @@ const PickupViewDetailsDialog: FC<PickupViewDetailsDialogProps> = (props: Pickup
                                 visible: true,
                                 createdAt: null,
                             },
+                            categoryId: '123-fddd-3433fdf',
                             description: 'this is a test item',
                             visible: true,
                             createdAt: null
@@ -172,7 +173,7 @@ const PickupViewDetailsDialog: FC<PickupViewDetailsDialogProps> = (props: Pickup
                         {pickupData.itemRequests.map((item, index: number) => (
                         <TableRow key={index}>
                             <TableCell>
-                                {item.item.category.name}
+                                {item.item.category?.name}
                             </TableCell>
                             <TableCell>
                                 {item.item.name}

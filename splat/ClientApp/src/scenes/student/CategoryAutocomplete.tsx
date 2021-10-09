@@ -67,7 +67,7 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
             console.log(option);
             return (
                 <li {...props}>
-                    <Grid container alignItems="center">
+                    <Grid container alignItems="center" spacing={1}>
                         <Grid item>
                             {CategoryIcons[option.icon]}
                         </Grid>

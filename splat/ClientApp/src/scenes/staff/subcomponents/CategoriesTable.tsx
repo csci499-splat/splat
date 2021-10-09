@@ -5,7 +5,7 @@ import { Box, Paper, Grid, Button, TextField, Typography,
         styled, Stack, Divider, useTheme, Link, AppBar, BottomNavigation, IconButton, Tooltip,
      } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowData, 
-    GridRowsProp, GridToolbar, GridValueFormatterParams, GridValueGetterParams, GridToolbarContainer} 
+    GridRowsProp, GridToolbar, GridValueFormatterParams, GridValueGetterParams, GridToolbarContainer, useGridApiRef, } 
     from '@mui/x-data-grid';
 import { Delete, Edit, PanoramaSharp } from '@mui/icons-material';
 import { Category } from '../../../models/Category';
@@ -23,6 +23,7 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
     const [editCategoryOpen, setEditCategoryOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<GridRowData>();
     const [categories, setCategories] = useState<Category[]>([]);
+    const [currentWidth, setCurrentWidth] = useState(0);
 
     const handleOpenEditCategory = (row: GridRowData) => {
         setEditCategoryOpen(true);
@@ -36,7 +37,6 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
     };
 
     const handleDeleteCategory = async (row: GridRowData) => {
-        console.log(row);
         await baseRequest.delete(`/categories/${row.id}`);
         getCategories();
     };
@@ -44,7 +44,7 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
     const getCategories = async () => {
         let res = await baseRequest.get<Category[]>('/categories');
         setCategories(res.data);
-        console.log(res.data);
+        setCurrentWidth(1 - currentWidth);
     };
 
     React.useEffect(() => {
@@ -115,8 +115,6 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
                 align: 'center',
                 headerAlign: 'center',
                 renderCell: (params: GridRenderCellParams) => {
-                    console.log(params.row.icon);
-                    console.log(CategoryIcons[params.row.icon]);
                     return CategoryIcons[params.row.icon];
                 },
             },
@@ -159,7 +157,7 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
         
     return (
         <>
-        <div style={{height: 750, width: '100%'}}>
+        <div style={{height: 750, width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={categories}
