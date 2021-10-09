@@ -41,7 +41,7 @@ const validationSchema = yup.object({
 
 const CategoriesEditDialog: FC<CategoriesEditDialogProps> = (props: CategoriesEditDialogProps): ReactElement =>{
 
-    const initialValues = {
+    const initialValues = (props.category) ? {
         id: props.category?.id,
         name: props.category?.name,
         description: props.category?.description,
@@ -49,27 +49,28 @@ const CategoriesEditDialog: FC<CategoriesEditDialogProps> = (props: CategoriesEd
         visible: props.category?.visible,
         icon: props.category?.icon,
         createdAt: new Date(props.category?.createdAt),
+    } : {
+
     };
 
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
+        enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
-            await baseRequest.post('/categories', values);
+            await baseRequest.put(`/categories/${values.id}`, values);
             props.onClose();
         },
     });
 
-    return(
+    return (
         <>
         <Dialog 
         open={props.open} 
         onClose={props.onClose}
-        maxWidth="lg" 
-        fullWidth
         >
-        <DialogTitle>New Item</DialogTitle>
+        <DialogTitle>Edit Category</DialogTitle>
         <DialogContent>
         <FormikProvider value={formik}
         >
@@ -119,58 +120,58 @@ const CategoriesEditDialog: FC<CategoriesEditDialogProps> = (props: CategoriesEd
             </Stack>
             <Divider />
             <Stack direction="row" spacing={2} sx={{marginTop: 2}} alignItems="flex-start">
-            <TextField
-            label="Description"
-            variant="outlined"
-            name="description"
-            value={formik.values.description}
-            onChange={formik.handleChange}
-            error={formik.touched.description && Boolean(formik.errors.description)}
-            helperText={formik.touched.description && formik.errors.description}
-            sx={{width: '100%'}}
-            multiline
-            />
-            <FormControl sx={{width: 100}}>
-                <InputLabel id="icon-select">Icon</InputLabel>
-                <Select
-                labelId="icon-select"
-                name="icon"
-                value={formik.values.icon}
+                <TextField
+                label="Description"
+                variant="outlined"
+                name="description"
+                value={formik.values.description}
                 onChange={formik.handleChange}
-                error={formik.touched.icon && Boolean(formik.errors.icon)}
-                input={<OutlinedInput label="Icon" />}
-                >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    {Object.entries(CategoryIcons).map((item, index) => (
-                        <MenuItem value={item[0]} key={index}>
-                            {item[1]}
+                error={formik.touched.description && Boolean(formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
+                sx={{width: '100%'}}
+                multiline
+                />
+                <FormControl sx={{width: 100}}>
+                    <InputLabel id="icon-select">Icon</InputLabel>
+                    <Select
+                    labelId="icon-select"
+                    name="icon"
+                    value={formik.values.icon}
+                    onChange={formik.handleChange}
+                    error={formik.touched.icon && Boolean(formik.errors.icon)}
+                    input={<OutlinedInput label="Icon" />}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
                         </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <DateTimePicker
-            renderInput={(props) =>
-            <TextField
-            {...props}
-            />          
-            }
-            label="Created At"
-            value={props.category?.createdAt}
-            onChange={(newValue) => {
-            }}
-            disabled
-            ampm
-            ampmInClock
-            />
+                        {Object.entries(CategoryIcons).map((item, index) => (
+                            <MenuItem value={item[0]} key={index}>
+                                {item[1]}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <DateTimePicker
+                renderInput={(props) =>
+                <TextField
+                {...props}
+                />          
+                }
+                label="Created At"
+                value={props.category?.createdAt}
+                onChange={(newValue) => {
+                }}
+                disabled
+                ampm
+                ampmInClock
+                />
             </Stack>
         </Form>
         </FormikProvider>
         </DialogContent>
         <DialogActions sx={{margin:1}}>
             <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
-            <Button variant="contained" onClick={() => formik.submitForm()}>Create</Button>
+            <Button variant="contained" onClick={() => formik.submitForm()}>Edit</Button>
         </DialogActions>
         </Dialog>
         </>

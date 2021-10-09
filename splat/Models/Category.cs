@@ -26,5 +26,8 @@ namespace splat.Models
         public bool? Visible { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        public List<Item> Items { get; set; }
     }
 }

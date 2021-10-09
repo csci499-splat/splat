@@ -13,6 +13,7 @@ namespace splat.Controllers
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize(Policy = "ElevatedRights")]
+    [AllowAnonymous]
     public class ItemsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -27,7 +28,8 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-            return await _context.Items.ToListAsync();
+            return await _context.Items.Include(b => b.Category).ToListAsync();
+            //return await _context.Items.Include(c => c.Category).ToListAsync();
         }
 
         // GET: api/Items/Id
@@ -35,7 +37,10 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Item>> GetItem(Guid id)
         {
-            var item = await _context.Items.FindAsync(id);
+            // var item = await _context.Items.FindAsync(id);
+
+            var item = await _context.Items.Include(c => c.Category).
+                        FirstOrDefaultAsync(i => i.Id.Equals(id));
 
             if (item == null)
             {

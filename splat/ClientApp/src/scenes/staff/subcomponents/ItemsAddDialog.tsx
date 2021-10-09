@@ -56,8 +56,14 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            console.log(values);
-            await baseRequest.post('/items', values);
+            let newValues = {
+                name: values.name,
+                categoryId: values.category.id,
+                description: values.description,
+                visible: values.visible,
+            }
+            console.log(newValues);
+            await baseRequest.post('/items', newValues);
             props.onClose();
         },
     });

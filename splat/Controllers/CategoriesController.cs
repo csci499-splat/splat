@@ -12,6 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     //[Authorize(Policy = "ElevatedRights")]
     public class CategoriesController : ControllerBase
     {
@@ -89,7 +90,7 @@ namespace splat.Controllers
 
         // DELETE: api/Examples/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        public async Task<IActionResult> DeleteCategory(Guid id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)

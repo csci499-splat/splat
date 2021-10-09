@@ -51,6 +51,7 @@ const initialValues: Pickup = {
                     visible: false,
                     createdAt: null,
                 },
+                categoryId: '',
                 description: '',
                 visible: false,
                 createdAt: null,
