@@ -2,93 +2,96 @@ import React, { FC, ReactElement, useState } from 'react';
 import { Link as RouterLink, LinkProps as RouterLinkProps}
     from 'react-router-dom';
 import { Box, Paper, Grid, Button, TextField, Typography,
-        styled, Stack, Divider, useTheme, Link, AppBar, BottomNavigation, IconButton,
+        styled, Stack, Divider, useTheme, Link, AppBar, BottomNavigation, IconButton, Tooltip,
      } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowData, 
-    GridRowsProp, GridToolbar, GridValueFormatterParams, GridValueGetterParams} 
+    GridRowsProp, GridToolbar, GridValueFormatterParams, GridValueGetterParams, GridToolbarContainer} 
     from '@mui/x-data-grid';
 import { Delete, Edit, PanoramaSharp } from '@mui/icons-material';
 import { Category } from '../../../models/Category';
-import ItemsEditDialog from './ItemsEditDialog';
 import { Item } from '../../../models/Item';
 import { baseRequest } from '../../../services/api/genericRequest';
+import CategoriesEditDialog from './CategoriesEditDialog';
 
-
-type ItemsTableProps = {
+type CategoriesTableProps = {
     
 }
 
-const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement => {
+const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) : ReactElement => {
 
-    const [editItemOpen, setEditItemOpen] = useState(false);
+    const [editCategoryOpen, setEditCategoryOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<GridRowData>();
-    const [items, setItems] = useState<Item[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
 
-    const handleShowEditItem = (row: GridRowData) => {
-        setEditItemOpen(true);
+    const handleOpenEditCategory = (row: GridRowData) => {
+        setEditCategoryOpen(true);
         setSelectedRow(row);
     };
 
-    const handleCloseEditItem = () => {
-        setEditItemOpen(false);
+    const handleCloseEditCategory = () => {
+        setEditCategoryOpen(false);
         setSelectedRow(undefined);
-        getItems();
+        getCategories();
     };
 
-    const handleDeleteItem = async (row: GridRowData)  => {
-        await baseRequest.delete(`/items/${row.value.id}`);
-        getItems();
+    const handleDeleteCategory = async (row: GridRowData)  => {
+        await baseRequest.delete(`/categories/${row.value.id}`);
+        getCategories();
     };
 
-    const getItems = async () => {
-        let res = await baseRequest.get<Item[]>('/items');
-        setItems(res.data);
+    const getCategories = async () => {
+        let res = await baseRequest.get<Category[]>('/categories');
+        setCategories(res.data);
     };
 
     React.useEffect(() => {
-        getItems();
-    }, [])
+        getCategories();
+    }, []);
 
     const columns: GridColDef[] = React.useMemo(
         () => [
             {
                 field: 'id',
-                flex: 0.5,
+                flex: 0.3,
                 headerName: 'Item ID',
                 align: 'left',
                 headerAlign: 'left',
             },
             {
                 field: 'name',
-                flex: 0.5,
+                flex: 0.6,
                 headerName: 'Name',
                 align: 'center',
                 headerAlign: 'center',
             },
             {
-                field: 'category',
-                flex: 0.5,
-                headerName: 'Category',
+                field: 'limit',
+                flex: 0.1,
+                headerName: 'Limit',
                 align: 'center',
                 headerAlign: 'center',
-                valueGetter: (params: GridValueGetterParams) => {
-                    return `${params.row.category.name}`;
-                },
+                renderCell: (params: GridRenderCellParams) => (
+                    <Tooltip
+                    title="The maximum number of items that can be requested for each item in this category"
+                    >
+                        {params.row.limit}
+                    </Tooltip>
+                ),
             },
             {
                 field: 'description',
-                flex: 0.5,
+                flex: 0.7,
                 headerName: 'Description',
                 align: 'center',
                 headerAlign: 'center',
             },
             {
                 field: 'visible',
-                flex: 0.5,
+                flex: 0.2,
                 headerName: 'Visible?',
+                type: 'boolean',
                 align: 'center',
                 headerAlign: 'center',
-                type: 'boolean',
             },
             {
                 field: 'createdAt',
@@ -98,35 +101,47 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
                 headerAlign: 'center',
                 valueFormatter: (params: GridValueFormatterParams) => {
                     return new Date(params.value as string).toLocaleString();
-                }
+                },
+            },
+            {
+                field: 'icon',
+                flex: 0.1,
+                headerName: 'Icon',
+                align: 'center',
+                headerAlign: 'center',
+                renderCell: (params: GridRenderCellParams) => {
+                    return <h5></h5>
+                    //return CategoryIcons[params.row.icon];
+                },
             },
             {
                 field: 'edit',
-                flex: 0.2,
+                flex: 0.1,
                 headerName:'Edit',
                 align: 'center',
                 headerAlign: 'center',
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                         <IconButton
-                        onClick={() => handleShowEditItem(params.row)}                       
+                        onClick={() => handleOpenEditCategory(params.row)}                       
                         >
                             <Edit />
                         </IconButton>
+                        
                     )
                 },
                 disableExport: true,
             },
             {
                 field: 'remove',
-                flex: 0.2,
+                flex: 0.15,
                 headerName:'Remove',
                 align: 'center',
                 headerAlign: 'center',
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                         <IconButton
-                        onClick={() => handleDeleteItem(params.row)}                       
+                        onClick={() => handleDeleteCategory(params.row)}                       
                         >
                             <Delete />
                         </IconButton>
@@ -141,19 +156,19 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         <div style={{height: 750, width: '100%'}}>
             <DataGrid
             columns={columns}
-            rows={items}
+            rows={categories}
             components={{
-                Toolbar: GridToolbar,
+                Toolbar: GridToolbar
             }}
             />
         </div>
-        <ItemsEditDialog
-        onClose={handleCloseEditItem}
-        item={selectedRow}
-        open={editItemOpen}
+        <CategoriesEditDialog
+        onClose={handleCloseEditCategory}
+        category={selectedRow}
+        open={editCategoryOpen}
         />
         </>
     )
 }
 
-export default ItemsTable;
+export default CategoriesTable;

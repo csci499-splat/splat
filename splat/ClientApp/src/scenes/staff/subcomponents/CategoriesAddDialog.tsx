@@ -3,53 +3,49 @@ import * as yup from 'yup';
 import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } from 'formik';
 import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
     DialogTitle, Stack,
-    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } from '@mui/material';
+    Grid, IconButton, TextField, Tooltip, Zoom, Divider, 
+    FormGroup, FormControlLabel, Switch, Select, FormControl, 
+    InputLabel, OutlinedInput, MenuItem } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
-import CategoryAutocomplete from '../../student/CategoryAutocomplete';
-import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../models/BackendTypes'
-import { DateTimePicker } from '@mui/lab';
-import { GridRowData } from '@mui/x-data-grid';
+import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../models/BackendTypes';
+import { CategoryIcons } from '../../../models/CategoryIcons';
 import { baseRequest } from '../../../services/api/genericRequest';
 
-type ItemsAddDialogProps = {
+type CategoriesAddDialogProps = {
     onClose: () => void,
     open: boolean;
 }
 
 const validationSchema = yup.object({   
-    name: yup.string()
+    name: yup
+    .string()
     .max(25, ({ max }) => `Name can't be more than ${max} characters long`)
     .required("Name is required"),
-    description: yup.string()
+    description: yup
+    .string()
     .max(250, ({ max }) => `Description can't be more than ${max} characters long`)
     .required("Description is required"),
-    category: yup.object().shape({
-        id: yup
-        .string()
-        .nullable()
-        .required('Category is required'),
-    })
-    .required('Category is required'),
+    limit: yup
+    .number()
+    .integer()
+    .positive()
+    .required(),
     visible: yup
     .boolean()
     .required("Required"),
+    icon: yup
+    .string()
+    .required('Required'),
 });
 
-const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): ReactElement =>{
+const CategoriesAddDialog: FC<CategoriesAddDialogProps> = (props: CategoriesAddDialogProps): ReactElement =>{
 
     const initialValues = {
         name: '',
-        category: {
-            id: null,
-            name: '',
-            description: '',
-            limit: 0,
-            icon: '',
-            visible: false,
-            createdAt: null,
-        },
         description: '',
+        limit: 10,
         visible: true,
+        icon: '',
     };
 
     const formik = useFormik({
@@ -57,7 +53,7 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             console.log(values);
-            await baseRequest.post('/items', values);
+            await baseRequest.post('/categories', values);
             props.onClose();
         },
     });
@@ -71,18 +67,27 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
         <DialogContent>
         <FormikProvider value={formik}
         >
-        <Form
-        style = {{maxHeight: '600px'}}>
-            <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 1}} alignItems="flex-start">
+        <Form style = {{maxHeight: '600px'}}>
+            <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 2}} alignItems="flex-start">
                 <TextField
                 label="Name"
                 variant="outlined"
-                type="string"
                 name="name"
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 error={formik.touched.name && Boolean(formik.errors.name)}
                 helperText={formik.touched.name && formik.errors.name}
+                />
+                <TextField
+                label="Limit"
+                variant="outlined"
+                type="number"
+                name="limit"
+                value={formik.values.limit}
+                onChange={formik.handleChange}
+                error={formik.touched.limit && Boolean(formik.errors.limit)}
+                helperText={formik.touched.limit && formik.errors.limit}
+                sx={{width: 100}}
                 />
                 <FormGroup>
                     <FormControlLabel
@@ -101,37 +106,42 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
             </Stack>
             <Divider />
             <Stack direction="row" spacing={2} sx={{marginTop: 2}} alignItems="flex-start">
-                <CategoryAutocomplete
-                value={formik.values.category}
-                onValueChange={(newValue) => {
-                    formik.setFieldValue(`category`, newValue);
-                }}
-                InputProps={{
-                    name:`category`,
-                    error: formik.touched?.category && Boolean(formik.errors?.category) ? true : false,
-                    // @ts-ignore
-                    helperText: formik.touched?.category && formik.errors?.category,
-                }}
-                />
-            </Stack>
-            <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 2}} alignItems="flex-start">
             <TextField
-                label="Description"
-                variant="outlined"
-                type="string"
-                name="description"
-                multiline
-                value={formik.values.description}
-                onChange={formik.handleChange}
-                error={formik.touched.description && Boolean(formik.errors.description)}
-                helperText={formik.touched.description && formik.errors.description}
-                sx={{width: '100%'}}
+            label="Description"
+            variant="outlined"
+            name="description"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            error={formik.touched.description && Boolean(formik.errors.description)}
+            helperText={formik.touched.description && formik.errors.description}
+            sx={{width: '100%'}}
+            multiline
             />
+            <FormControl sx={{width: 100}}>
+                <InputLabel id="icon-select">Icon</InputLabel>
+                <Select
+                labelId="icon-select"
+                name="icon"
+                value={formik.values.icon}
+                onChange={formik.handleChange}
+                error={formik.touched.icon && Boolean(formik.errors.icon)}
+                input={<OutlinedInput label="Icon" />}
+                >
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
+                    {Object.entries(CategoryIcons).map((item, index) => (
+                        <MenuItem value={item[0]} key={index}>
+                            {item[1]}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
             </Stack>
         </Form>
         </FormikProvider>
         </DialogContent>
-        <DialogActions sx={{margin: 1}}>
+        <DialogActions sx={{margin:1}}>
             <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
             <Button variant="contained" onClick={() => formik.submitForm()}>Create</Button>
         </DialogActions>
@@ -140,4 +150,4 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
     )
 };
 
-export default ItemsAddDialog;
+export default CategoriesAddDialog;

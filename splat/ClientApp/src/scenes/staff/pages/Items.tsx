@@ -28,7 +28,7 @@ const Items: FC<ItemProps> = (props: ItemProps): ReactElement => {
         variant="contained"
         onClick={handleShowAddItems}
         >
-            Add Items
+            Create Item
         </Button>
         <ItemsTable />
         <ItemsAddDialog

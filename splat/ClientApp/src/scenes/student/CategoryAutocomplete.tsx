@@ -1,8 +1,9 @@
 import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { TextField, Autocomplete, CircularProgress }
+import { TextField, Autocomplete, CircularProgress, Box, Stack, Grid }
     from '@mui/material';
 import { matchSorter } from 'match-sorter';
 import { Category } from '../../models/BackendTypes';
+import { CategoryIcons } from '../../models/CategoryIcons';
 
 type CategoryAutocompleteProps = {
     value: Category | null | undefined;
@@ -62,6 +63,20 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
         onClose={() => setOpen(false)}
         sx={{width: '100%'}}
         isOptionEqualToValue={(option, value) => option.id === value.id}
+        renderOption={(props, option) => {
+            return (
+                <li {...props}>
+                    <Grid container alignItems="center">
+                        <Grid item>
+                            <Box component={CategoryIcons[option.icon]} sx={{mr: 2}} />
+                        </Grid>
+                        <Grid item xs>
+                            {option.name}
+                        </Grid>
+                    </Grid>
+                </li>
+            );
+        }}
         getOptionLabel={(option) => option.name}
         options={options}
         loading={loading}

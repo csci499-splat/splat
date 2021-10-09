@@ -6,7 +6,7 @@ type Item = {
     category: Category;
     description: string;
     visible: boolean;
-    createdAt: string | null;
+    createdAt: string | null | Date;
 };
 
 export type { Item };
