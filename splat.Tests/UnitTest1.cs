@@ -8,7 +8,6 @@ namespace splat.Tests
         [Fact]
         public void Test1()
         {
-
         }
     }
 }
