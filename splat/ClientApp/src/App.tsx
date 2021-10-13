@@ -41,7 +41,7 @@ const App: FC<{}> = (): ReactElement => {
                 <Route exact path='/' 
                 render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} 
                 />
-                {/* TODO: Add AuthorizedRoutes for /student and /staff + components*/}
+                {/* TODO: Add AuthorizedRoutes for /student and /staff */}
                 <Route exact path='/student' component={Student} /> 
                 <Route path='/staff' component={Staff} />
                 <Route path='/'>
