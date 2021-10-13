@@ -99,7 +99,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                 </FormikProvider>
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
-                <Button variant="outlined" onClick={props.onClose} color="primary">Cancel</Button>
+                <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
                 <Button variant="contained" onClick={() => formik.submitForm()} color="primary">
                     Fulfill
                 </Button>
