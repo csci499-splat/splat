@@ -24,6 +24,7 @@ namespace splat.Models
         public bool? Visible { get; set; }
 
         [DataType(DataType.Date)]
+        [Column(TypeName = "timestamptz")]
         public DateTime CreatedAt { get; set; }
 
         public Category Category { get; set; }
