@@ -22,6 +22,8 @@ authRequest.interceptors.request.use(config => {
     if(token !== null) {
         config.headers.Authorization = token;
     }
+
+    return config;
 });
 
 function fetchResourceNoAuth<T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
