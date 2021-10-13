@@ -163,21 +163,22 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
 
         try {
             let res = await baseRequest.get<CurrentHours>('/Hours');
-            setInitialValues(res.data);
+            if(res.data !== "")
+                setInitialValues(res.data);
         } catch(error) {
 
         }
     };
 
     const renderRow = (row: Row): ReactElement => {
-        if(formik.values[row.keyName] !== undefined) {
+        if(formik.values[row.keyName]) {
             return (
                 <TableRow key={row.keyName}>
                     <TableCell>{row.dayName}</TableCell>
                     <TableCell align="center">
                         <TimePicker
-                        label="Start"
-                        value={formik.values[row.keyName].timeStart}
+                            label="Start"
+                            value={(formik.values[row.keyName]) ? formik.values[row.keyName].timeStart : undefined}
                         onChange={(newValue) => {
                             formik.setFieldValue(`${row.keyName}.timeStart`, newValue);
                             formik.setFieldTouched(`${row.keyName}.timeStart`, true);
@@ -194,7 +195,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
                     <TableCell align="center">
                         <TimePicker
                         label="End"
-                        value={formik.values[row.keyName].timeEnd}
+                            value={(formik.values[row.keyName]) ? formik.values[row.keyName].timeEnd : undefined}
                         onChange={(newValue) => {
                             formik.setFieldValue(`${row.keyName}.timeEnd`, newValue);
                             formik.setFieldTouched(`${row.keyName}.timeEnd`, true);

@@ -1,12 +1,12 @@
 type CurrentHours = {
     createdAt?: Date | null;
-    sundayHours?: HourRange;
-    mondayHours?: HourRange;
-    tuesdayHours?: HourRange;
-    wednesdayHours?: HourRange;
-    thursdayHours?: HourRange;
-    fridayHours?: HourRange;
-    saturdayHours?: HourRange;
+    sundayHours?: HourRange | null;
+    mondayHours?: HourRange | null;
+    tuesdayHours?: HourRange | null;
+    wednesdayHours?: HourRange | null;
+    thursdayHours?: HourRange | null;
+    fridayHours?: HourRange | null;
+    saturdayHours?: HourRange | null;
 }
 
 type HourRange = {

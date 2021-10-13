@@ -24,6 +24,7 @@ namespace splat.Models
         public DbSet<Donation> Donations { get; set; }
         public DbSet<CurrentHours> CurrentHours { get; set; }
         public DbSet<DayClosed> DayClosed { get; set; }
+        public DbSet<StaffMessage> StaffMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -52,6 +53,10 @@ namespace splat.Models
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
             builder.Entity<CurrentHours>()
+                .Property(b => b.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+            builder.Entity<StaffMessage>()
                 .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
         }
