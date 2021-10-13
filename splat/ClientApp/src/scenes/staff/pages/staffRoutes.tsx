@@ -1,11 +1,14 @@
 import React from 'react';
-import { Assessment, Category, FormatListBulleted, Home as HomeIcon, ListAlt, MonetizationOn } from '@mui/icons-material';
+import { Assessment, Category, FormatListBulleted, Home as HomeIcon, 
+    ListAlt, MonetizationOn, AccessTime, People } from '@mui/icons-material';
 import Home from './Home';
 import Pickups from './Pickups';
 import Categories from './Categories';
 import Items from './Items';
 import Donations from './Donations';
 import Reports from './Reports';
+import Hours from './Hours';
+import Users from './Users';
 
 export type StaffRoute = {
     url: string;
@@ -15,6 +18,7 @@ export type StaffRoute = {
     };
     icon: React.ReactElement,
     page: React.ReactElement,
+    adminOnly?: boolean,
 };
 
 const staffRoutes: StaffRoute[] = [
@@ -71,6 +75,25 @@ const staffRoutes: StaffRoute[] = [
         },
         icon: <Assessment />,
         page: <Reports />
+    },
+    {
+        url: '/staff/hours',
+        name: {
+            abbv: 'Hours',
+            full: 'Adjust Pantry Hours'
+        },
+        icon: <AccessTime />,
+        page: <Hours />
+    },
+    {
+        url: '/staff/users',
+        name: {
+            abbv: 'Users',
+            full: 'Manage System Users',
+        },
+        icon: <People />,
+        page: <Users />,
+        adminOnly: true,
     },
 ];
 
