@@ -23,7 +23,7 @@ namespace splat.Models
 
         public bool? Visible { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; }
 
         public Category Category { get; set; }
