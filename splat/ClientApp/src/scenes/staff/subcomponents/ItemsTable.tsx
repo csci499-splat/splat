@@ -37,7 +37,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
     };
 
     const handleDeleteItem = async (row: GridRowData)  => {
-        await baseRequest.delete(`/items/${row.value.id}`);
+        await baseRequest.delete(`/items/${row.id}`);
         getItems();
         setCurrentWidth(1 - currentWidth);
     };
@@ -129,7 +129,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                         <IconButton
-                        onClick={() => handleDeleteItem(params.row)}                       
+                        onClick={() => handleDeleteItem(params.row)}              
                         >
                             <Delete />
                         </IconButton>
