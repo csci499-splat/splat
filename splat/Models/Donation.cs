@@ -18,6 +18,7 @@ namespace splat.Models
         [Required]
         public string Donor { get; set; }
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamptz")]
         public DateTime DonatedAt { get; set; }
     }
 }

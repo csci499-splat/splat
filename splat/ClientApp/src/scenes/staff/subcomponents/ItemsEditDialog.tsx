@@ -52,6 +52,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
     let initialValues = (props.item) ? {
         id: props.item?.id,
         name: props.item?.name,
+        categoryId: props.item?.category.id,
         category: {
             id: props.item?.category.id,
             name: props.item?.category.name,
@@ -73,7 +74,6 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
             await baseRequest.put(`/items/${values.id}`, values);
             props.onClose();
         },
@@ -127,6 +127,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
                 value={formik.values.category}
                 onValueChange={(newValue) => {
                     formik.setFieldValue(`category`, newValue);
+                    formik.setFieldValue('categoryId', newValue?.id);
                 }}
                 InputProps={{
                     name:`category`,

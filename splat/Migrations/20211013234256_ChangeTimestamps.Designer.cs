@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using splat.Models;
@@ -9,9 +10,10 @@ using splat.Models;
 namespace splat.Migrations
 {
     [DbContext(typeof(SplatContext))]
-    partial class SplatContextModelSnapshot : ModelSnapshot
+    [Migration("20211013234256_ChangeTimestamps")]
+    partial class ChangeTimestamps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -251,49 +253,6 @@ namespace splat.Migrations
                     b.HasIndex("Name", "Description");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("splat.Models.CurrentHours", b =>
-                {
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
-
-                    b.Property<HourRange>("FridayHours")
-                        .HasColumnType("jsonb");
-
-                    b.Property<HourRange>("MondayHours")
-                        .HasColumnType("jsonb");
-
-                    b.Property<HourRange>("SaturdayHours")
-                        .HasColumnType("jsonb");
-
-                    b.Property<HourRange>("SundayHours")
-                        .HasColumnType("jsonb");
-
-                    b.Property<HourRange>("ThursdayHours")
-                        .HasColumnType("jsonb");
-
-                    b.Property<HourRange>("TuesdayHours")
-                        .HasColumnType("jsonb");
-
-                    b.Property<HourRange>("WednesdayHours")
-                        .HasColumnType("jsonb");
-
-                    b.HasKey("CreatedAt");
-
-                    b.ToTable("CurrentHours");
-                });
-
-            modelBuilder.Entity("splat.Models.DayClosed", b =>
-                {
-                    b.Property<DateTime>("ClosedOn")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("ClosedOn");
-
-                    b.ToTable("DayClosed");
                 });
 
             modelBuilder.Entity("splat.Models.Donation", b =>

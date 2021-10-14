@@ -22,7 +22,7 @@ const PickupViewDetailsDialog: FC<PickupViewDetailsDialogProps> = (props: Pickup
             let testObj: Pickup = {
                 id: '2362353e-570b-477c-9c65-522c1487c848',
                 pickupStatus: PickupStatus.WAITING,
-                submittedAt: new Date().toLocaleString(),
+                submittedAt: new Date(),
                 studentInfo: {
                     studentId: '1234567',
                     age: 25,

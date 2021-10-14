@@ -64,7 +64,6 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
         sx={{width: '100%'}}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         renderOption={(props, option) => {
-            console.log(option);
             return (
                 <li {...props}>
                     <Grid container alignItems="center" spacing={1}>

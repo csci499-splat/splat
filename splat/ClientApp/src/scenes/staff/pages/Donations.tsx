@@ -80,7 +80,8 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
                 headerAlign: 'center',
                 align: 'center',
                 valueFormatter: (params: GridValueFormatterParams) => {
-                    return `${(params.value as number).toFixed(2)} lbs`;
+                    let weightVal = params.value ? (params.value as number).toFixed(2) : '-';
+                    return `${weightVal} lbs`;
                 },
             },
             {
