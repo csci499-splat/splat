@@ -42,14 +42,14 @@ namespace splat.Controllers
         }
 
         // GET: api/Hours/Days
-        [HttpGet("/Days")]
+        [HttpGet("Days")]
         public async Task<ActionResult<IEnumerable<DayClosed>>> GetDaysClosed()
         {
-            return await _context.DayClosed.ToListAsync();
+            return await _context.DayClosed.Where(b => b.ClosedOn >= DateTime.Today).ToListAsync();
         }
 
         // POST: api/Hours/Days
-        [HttpPost("/Days")]
+        [HttpPost("Days")]
         public async Task<ActionResult<DayClosed>> PostDays(DayClosed day)
         {
             _context.DayClosed.Add(day);
@@ -59,7 +59,7 @@ namespace splat.Controllers
         }
 
         // DELETE: api/Hours/Days/{dayTime}
-        [HttpDelete("/Days/{dayTime}")]
+        [HttpDelete("Days/{dayTime}")]
         public async Task<ActionResult> DeleteDays(DateTime dayTime)
         {
             var day = await _context.DayClosed.FindAsync(dayTime);

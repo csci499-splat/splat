@@ -10,6 +10,7 @@ namespace splat.Models
     {
         [Key]
         [DataType(DataType.Date)]
+        [Column(TypeName = "timestamptz")]
         public DateTime ClosedOn { get; set; }
     }
 }

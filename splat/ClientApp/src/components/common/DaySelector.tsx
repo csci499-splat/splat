@@ -3,10 +3,14 @@ import { TextField } from '@mui/material';
 import { PickersDay, DatePicker, CalendarPickerSkeleton, 
      } from '@mui/lab';
 import { baseRequest } from '../../services/api/genericRequest';
+import { ClosedDay } from '../../models/ClosedDay';
+import moment from 'moment';
 
 type DaySelectorProps = {
-    value: Date;
+    value: Date | null;
     onChange: (newValue: Date | null) => void;
+    error?: boolean;
+    helperText?: string;
 }
 
 const DaySelector: FC<DaySelectorProps> = (props: DaySelectorProps): ReactElement => {
@@ -14,41 +18,53 @@ const DaySelector: FC<DaySelectorProps> = (props: DaySelectorProps): ReactElemen
     const [isLoading, setIsLoading] = React.useState(false);
     const [disabledDays, setDisabledDays] = React.useState<Date[]>([]);
 
-    const fetchDisabledDays = async (date: Date) => {
-        console.log(date);
-
-        let res = await baseRequest.get<Date[]>('/hours/days');
-        console.log(res.data);
-        setDisabledDays(res.data);
+    const fetchDisabledDays = async () => {
+        let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+        setDisabledDays(res.data.map((item) => new Date(item.closedOn)));
         setIsLoading(false);
     };
 
     const handleMonthChange = (date: Date) => {
         setIsLoading(true);
         setDisabledDays([]);
-        fetchDisabledDays(date);
-    };
-
-    const isDateDisabled = (date: Date): boolean => {
-        console.log(date, disabledDays.indexOf(date));
-        return disabledDays.includes(date);
+        fetchDisabledDays();
     };
 
     React.useEffect(() => {
-        fetchDisabledDays(new Date());
+        fetchDisabledDays();
     }, []);
 
     return (
         <>
         <DatePicker
         value={props.value}
-        loading={isLoading}
         onChange={props.onChange}
+        loading={isLoading}
         onMonthChange={handleMonthChange}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => 
+            <TextField 
+            {...params}
+            error={props.error}
+            helperText={props.helperText}
+            />
+        }
         renderLoading={() => <CalendarPickerSkeleton />}
-        shouldDisableDate={isDateDisabled}
-        minDate={new Date()}
+        renderDay={(date, _value, DayComponentProps) => {
+            let isDisabled = moment(date).isBefore(new Date(), 'day');
+            
+            disabledDays.forEach(day => {
+                if(moment(day).isSame(date, 'day')) {
+                    isDisabled = true;
+                }
+            });
+            
+            return (
+                <PickersDay 
+                {...DayComponentProps} 
+                disabled={isDisabled}
+                />
+            )
+        }}
         />
         </>
     )

@@ -31,7 +31,6 @@ const Home: FC<HomeProps> = (props: HomeProps): ReactElement => {
     return (
         <>
         <TextField
-        label="Landing page message"
         value={currentMessage}
         onChange={(newValue) => setCurrentMessage(newValue.target.value)}
         />

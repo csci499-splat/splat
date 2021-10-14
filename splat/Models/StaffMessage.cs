@@ -11,6 +11,7 @@ namespace splat.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamptz")]
         public DateTime CreatedAt { get; set; }
         public string Message { get; set; }
     }
