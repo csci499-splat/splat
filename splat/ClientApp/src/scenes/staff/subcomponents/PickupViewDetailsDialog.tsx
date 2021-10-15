@@ -5,7 +5,6 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button,
     Table, TableBody, TableCell, TableContainer, TableRow, TableHead,
     Collapse, IconButton, Typography, Paper, Box, CircularProgress } from '@mui/material';
 import { Check, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { requestNoAuth } from '../../../services/api/genericRequest';
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
 

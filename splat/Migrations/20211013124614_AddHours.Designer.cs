@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using splat.Models;
@@ -9,14 +10,15 @@ using splat.Models;
 namespace splat.Migrations
 {
     [DbContext(typeof(SplatContext))]
-    partial class SplatContextModelSnapshot : ModelSnapshot
+    [Migration("20211013124614_AddHours")]
+    partial class AddHours
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.11")
+                .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -223,7 +225,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<string>("Description")
@@ -289,7 +291,7 @@ namespace splat.Migrations
             modelBuilder.Entity("splat.Models.DayClosed", b =>
                 {
                     b.Property<DateTime>("ClosedOn")
-                        .HasColumnType("timestamptz");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("ClosedOn");
 
@@ -304,7 +306,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("DonatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<string>("Donor")
@@ -352,7 +354,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<string>("Description")
@@ -385,7 +387,7 @@ namespace splat.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CanceledTime")
-                        .HasColumnType("timestamptz");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<HouseholdInfo>("HouseholdInfo")
                         .HasColumnType("jsonb");
@@ -401,10 +403,10 @@ namespace splat.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("PickupTime")
-                        .HasColumnType("timestamptz");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("RequestedPickupTime")
-                        .HasColumnType("timestamptz");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Student>("StudentInfo")
                         .IsRequired()
@@ -412,7 +414,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("SubmittedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
+                        .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<double?>("Weight")
@@ -423,21 +425,6 @@ namespace splat.Migrations
                     b.HasIndex("PickupStatus", "StudentInfo");
 
                     b.ToTable("Pickups");
-                });
-
-            modelBuilder.Entity("splat.Models.StaffMessage", b =>
-                {
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamptz")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("text");
-
-                    b.HasKey("CreatedAt");
-
-                    b.ToTable("StaffMessages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

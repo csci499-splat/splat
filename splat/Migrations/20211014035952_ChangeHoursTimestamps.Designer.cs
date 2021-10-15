@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using splat.Models;
@@ -9,9 +10,10 @@ using splat.Models;
 namespace splat.Migrations
 {
     [DbContext(typeof(SplatContext))]
-    partial class SplatContextModelSnapshot : ModelSnapshot
+    [Migration("20211014035952_ChangeHoursTimestamps")]
+    partial class ChangeHoursTimestamps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
