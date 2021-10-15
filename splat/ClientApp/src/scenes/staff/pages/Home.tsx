@@ -33,6 +33,8 @@ const Home: FC<HomeProps> = (props: HomeProps): ReactElement => {
         <TextField
         value={currentMessage}
         onChange={(newValue) => setCurrentMessage(newValue.target.value)}
+        label=""
+        variant="standard"
         />
         <Button
         onClick={() => handleUpdateMessage()}
