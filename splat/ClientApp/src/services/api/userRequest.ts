@@ -1,6 +1,6 @@
-import IUser from "../../models/User";
-import ILogin from "../../models/Login";
-import { baseRequest, authRequest } from './genericRequest';
+import ILogin from '../../models/Login';
+import IUser from '../../models/User';
+import { authRequest, baseRequest } from './genericRequest';
 
 function login(loginInfo: ILogin) {
     return baseRequest.post<IUser>('/login', loginInfo);

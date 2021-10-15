@@ -1,13 +1,11 @@
-﻿import React, { FC, ReactElement, useState } from 'react';
-import { Link as RouterLink, LinkProps as RouterLinkProps}
-    from 'react-router-dom';
-import { Box, Paper, Grid, Button, TextField, Typography,
-        styled, Stack, Divider, useTheme, Link, AppBar, 
-        IconButton, Alert, Collapse } from '@mui/material';
+﻿import { Close } from '@mui/icons-material';
+import { Alert, Button, Collapse, Divider, Grid, IconButton, Stack, Typography } from '@mui/material';
+import React, { FC, ReactElement, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+
 import Login from '../../components/common/Login';
-import { baseRequest } from '../../services/api/genericRequest';
 import { StaffMessage } from '../../models/StaffMessage';
-import { Close } from '@mui/icons-material';
+import { baseRequest } from '../../services/api/genericRequest';
 
 type LandingProps = {
     loggedIn: boolean,

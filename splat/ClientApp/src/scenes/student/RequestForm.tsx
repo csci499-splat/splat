@@ -1,21 +1,33 @@
+import { Add, Delete } from '@mui/icons-material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControlLabel,
+    FormGroup,
+    Grid,
+    IconButton,
+    Stack,
+    Switch,
+    TextField,
+    Tooltip,
+    Zoom,
+} from '@mui/material';
+import { FieldArray, Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } 
-    from 'formik';
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
-    DialogTitle, Stack,
-    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } 
-    from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
-import CategoryAutocomplete from './CategoryAutocomplete';
-import ItemAutocomplete from './ItemAutocomplete';
-import type { Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo } 
-    from '../../models/BackendTypes';
-import { PickupStatus } from '../../models/Pickup';
-import { DateTimePicker } from '@mui/lab';
+
 import DaySelector from '../../components/common/DaySelector';
 import TimeSelector from '../../components/common/TimeSelector';
+import { PickupStatus } from '../../models/Pickup';
+import CategoryAutocomplete from './CategoryAutocomplete';
+import ItemAutocomplete from './ItemAutocomplete';
 
+import type { Pickup, } 
+    from '../../models/BackendTypes';
 type RequestFormProps = {
     onClose: () => void,
 }
@@ -417,27 +429,6 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 onChange={(newValue) => handleTimeChange(newValue)}
                 selectedDate={pickupTimes.date}
                 />
-                {/*<DateTimePicker
-                renderInput={(props) => 
-                    <TextField 
-                    {...props} 
-                    error={formik.touched.requestedPickupTime && Boolean(formik.errors.requestedPickupTime)}
-                    helperText={formik.touched.requestedPickupTime && formik.errors.requestedPickupTime}
-                    />
-                }
-                label="Desired pickup time"
-                value={formik.values.requestedPickupTime}
-                minDateTime={new Date()}
-                maxDateTime={new Date(Date.now() + (6.048e+8 * 2))}
-                onChange={(newValue) => {
-                    formik.setFieldValue("requestedPickupTime", newValue);
-                    formik.setFieldTouched("requestedPickupTime", true);
-                }}
-                showTodayButton
-                clearable
-                ampm
-                ampmInClock
-            />*/}
             </Stack>
         </Form>
         </FormikProvider>

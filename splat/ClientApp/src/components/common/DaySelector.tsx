@@ -1,10 +1,10 @@
-import React, { FC, ReactElement } from 'react';
+import { CalendarPickerSkeleton, DatePicker, PickersDay } from '@mui/lab';
 import { TextField } from '@mui/material';
-import { PickersDay, DatePicker, CalendarPickerSkeleton, 
-     } from '@mui/lab';
-import { baseRequest } from '../../services/api/genericRequest';
-import { ClosedDay } from '../../models/ClosedDay';
 import moment from 'moment';
+import React, { FC, ReactElement } from 'react';
+
+import { ClosedDay } from '../../models/ClosedDay';
+import { baseRequest } from '../../services/api/genericRequest';
 
 type DaySelectorProps = {
     value: Date | null;

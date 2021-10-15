@@ -1,9 +1,8 @@
+import { Box, Tab, Tabs } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
-import { Link, LinkProps as RouterLinkProps, Route, Switch, MemoryRouter,
-    useRouteMatch } from 'react-router-dom';
-import { Box, Paper, Grid, Button, TextField, Typography,
-        styled, Stack, Divider, useTheme, AppBar, Tabs, Tab } from '@mui/material';
-import { staffRoutes, StaffRoute } from './pages/staffRoutes';
+import { Link, Route, Switch, useRouteMatch } from 'react-router-dom';
+
+import { StaffRoute, staffRoutes } from './pages/staffRoutes';
 
 type StaffProps = {
 
