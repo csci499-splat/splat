@@ -1,11 +1,9 @@
-import React, { FC, ReactElement } from 'react';
+import { TimePicker } from '@mui/lab';
 import { TextField } from '@mui/material';
-import { TimePicker, 
-     } from '@mui/lab';
-import { baseRequest } from '../../services/api/genericRequest';
-import { ClosedDay } from '../../models/ClosedDay';
-import moment from 'moment';
+import React, { FC, ReactElement } from 'react';
+
 import { CurrentHours, HourRange } from '../../models/CurrentHours';
+import { baseRequest } from '../../services/api/genericRequest';
 
 type TimeSelectorProps = {
     value: Date | null;

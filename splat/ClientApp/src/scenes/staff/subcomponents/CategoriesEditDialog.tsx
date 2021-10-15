@@ -1,15 +1,29 @@
+import { DateTimePicker } from '@mui/lab';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControl,
+    FormControlLabel,
+    FormGroup,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    Stack,
+    Switch,
+    TextField,
+} from '@mui/material';
+import { GridRowData } from '@mui/x-data-grid';
+import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } from 'formik';
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
-    DialogTitle, Stack,
-    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch, Select, FormControl, InputLabel, OutlinedInput, MenuItem } from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
-import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../models/BackendTypes'
-import { DateTimePicker } from '@mui/lab';
-import { GridRowData } from '@mui/x-data-grid';
-import { baseRequest } from '../../../services/api/genericRequest';
+
 import { CategoryIcons } from '../../../models/CategoryIcons';
+import { baseRequest } from '../../../services/api/genericRequest';
 
 type CategoriesEditDialogProps = {
     onClose: () => void;

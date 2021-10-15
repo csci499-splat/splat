@@ -1,18 +1,19 @@
+import { Delete, Edit } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import {
+    DataGrid,
+    GridColDef,
+    GridRenderCellParams,
+    GridRowData,
+    GridToolbar,
+    GridValueFormatterParams,
+} from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
-import { Link as RouterLink, LinkProps as RouterLinkProps}
-    from 'react-router-dom';
-import { Box, Paper, Grid, Button, TextField, Typography,
-        styled, Stack, Divider, useTheme, Link, AppBar, BottomNavigation, IconButton, Tooltip,
-     } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams, GridRowData, 
-    GridRowsProp, GridToolbar, GridValueFormatterParams, GridValueGetterParams, GridToolbarContainer, useGridApiRef, } 
-    from '@mui/x-data-grid';
-import { Delete, Edit, PanoramaSharp } from '@mui/icons-material';
+
 import { Category } from '../../../models/Category';
-import { Item } from '../../../models/Item';
+import { CategoryIcons } from '../../../models/CategoryIcons';
 import { baseRequest } from '../../../services/api/genericRequest';
 import CategoriesEditDialog from './CategoriesEditDialog';
-import { CategoryIcons } from '../../../models/CategoryIcons';
 
 type CategoriesTableProps = {
     

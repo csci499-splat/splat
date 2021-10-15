@@ -1,8 +1,8 @@
-import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { TextField, Autocomplete, CircularProgress, Box, Stack, Grid }
-    from '@mui/material';
+import { Autocomplete, CircularProgress, Grid, TextField } from '@mui/material';
 import { matchSorter } from 'match-sorter';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { Category } from '../../models/BackendTypes';
+
 import { CategoryIcons } from '../../models/CategoryIcons';
 import { baseRequest } from '../../services/api/genericRequest';
 
@@ -14,12 +14,6 @@ type CategoryAutocompleteProps = {
         error: boolean,
         helperText: string,
     };
-};
-
-const sleep = (delay: number) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
 };
 
 const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAutocompleteProps): ReactElement => {

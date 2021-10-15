@@ -1,4 +1,4 @@
-﻿import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+﻿import axios from 'axios';
 
 const baseRequest = axios.create({
     baseURL: '/api',

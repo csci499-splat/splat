@@ -1,6 +1,7 @@
-import { TextField, Button } from '@mui/material';
 import { Add } from '@mui/icons-material';
+import { Button, TextField } from '@mui/material';
 import React, { FC, ReactElement } from 'react';
+
 import { StaffMessage } from '../../../models/StaffMessage';
 import { baseRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';

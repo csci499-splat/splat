@@ -1,7 +1,7 @@
-import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { TextField, Autocomplete, CircularProgress, AutocompleteProps }
-    from '@mui/material';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { matchSorter } from 'match-sorter';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
+
 import { Category, Item } from '../../models/BackendTypes';
 
 type ItemAutocompleteProps = {

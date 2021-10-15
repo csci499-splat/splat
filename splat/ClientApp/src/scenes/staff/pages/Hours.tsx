@@ -1,8 +1,9 @@
-import React, { FC, ReactElement } from 'react';
-import { IStaffChild } from '../Staff';
-import HoursTable from '../subcomponents/hours/HoursTable';
-import HoursDaySelector from '../subcomponents/hours/HoursDaySelector';
 import { Grid, Stack } from '@mui/material';
+import React, { FC, ReactElement } from 'react';
+
+import { IStaffChild } from '../Staff';
+import HoursDaySelector from '../subcomponents/hours/HoursDaySelector';
+import HoursTable from '../subcomponents/hours/HoursTable';
 
 interface HoursProps extends IStaffChild {
     

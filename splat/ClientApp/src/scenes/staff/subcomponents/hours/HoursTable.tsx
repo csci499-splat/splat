@@ -1,10 +1,21 @@
-import React, { FC, ReactElement } from 'react';
-import { TableContainer, Table, TableRow, TableHead, TableBody, TableCell,
-    Button, IconButton, TextField, Stack } from '@mui/material';
-import { Delete, Add } from '@mui/icons-material';
+import { Add, Delete } from '@mui/icons-material';
 import { TimePicker } from '@mui/lab';
+import {
+    Button,
+    IconButton,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+} from '@mui/material';
+import { Form, FormikProvider, useFormik } from 'formik';
+import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Form, FormikContext, FormikProvider, useFormik } from 'formik';
+
 import { CurrentHours } from '../../../../models/BackendTypes';
 import { baseRequest } from '../../../../services/api/genericRequest';
 

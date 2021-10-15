@@ -1,13 +1,18 @@
-import React, { FC, ReactElement, useState } from 'react';
-import { Link as RouterLink, LinkProps as RouterLinkProps}
-    from 'react-router-dom';
-import { Formik, Field, Form, FormikHelpers, useFormik } from 'formik';
-import * as yup from 'yup';
-import { Button, TextField, Dialog, DialogActions, DialogContent,
-        DialogContentText, DialogTitle, InputAdornment, IconButton, Divider } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import ILogin from '../../models/Login';
-import { login } from '../../services/api/userRequest'; 
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    IconButton,
+    InputAdornment,
+    TextField
+} from '@mui/material';
+import { useFormik } from 'formik';
+import React, { FC, ReactElement, useState } from 'react';
+import * as yup from 'yup';
 
 type LoginProps = {
     loginHandler: (email: string | null, password: string | null) => void,

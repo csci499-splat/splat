@@ -1,8 +1,9 @@
 import { Button } from '@mui/material';
 import React, { FC, ReactElement } from 'react';
+
 import { IStaffChild } from '../Staff';
-import CategoriesTable from '../subcomponents/CategoriesTable';
 import CategoriesAddDialog from '../subcomponents/CategoriesAddDialog';
+import CategoriesTable from '../subcomponents/CategoriesTable';
 
 interface CategoryProps extends IStaffChild {
     

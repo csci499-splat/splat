@@ -1,12 +1,24 @@
-﻿import React, { FC, ReactElement } from 'react';
-import { AppBar, Box, Toolbar, Menu, MenuItem, 
-    Typography, IconButton, ListItemIcon, ListItemText, Divider, Switch,
-    Stack, Link, ListItem, Button, Container } 
-    from '@mui/material';
-import { AccountCircle, Login, Logout, DarkMode, LightMode, ListAlt } 
-    from '@mui/icons-material';
+﻿import { AccountCircle, DarkMode, LightMode, ListAlt, Login, Logout } from '@mui/icons-material';
+import {
+    AppBar,
+    Button,
+    Divider,
+    IconButton,
+    Link,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Stack,
+    Switch,
+    Toolbar,
+    Typography,
+} from '@mui/material';
+import React, { FC, ReactElement } from 'react';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+
 import { DarkmodeStates } from '../../services/util/useDarkmode';
-import { useHistory, Link as RouterLink } from 'react-router-dom';
 
 type NavBarProps = {
     loggedIn: boolean,

@@ -1,19 +1,23 @@
+import { CancelOutlined, Done, Outbound, Visibility } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import {
+    DataGrid,
+    GridColDef,
+    GridRenderCellParams,
+    GridRowData,
+    GridSortModel,
+    GridToolbar,
+    GridValueGetterParams,
+} from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
-import { Box, Grid, Divider, Button, Dialog, DialogContent, 
-        DialogActions, DialogTitle, IconButton, Tooltip }
-    from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar, GridValueFormatterParams,
-        GridRowData, GridSortModel, GridValueGetterParams }
-    from '@mui/x-data-grid';
-import { CancelOutlined, Visibility, Done, Outbound } 
-    from '@mui/icons-material';
-import { IStaffChild } from '../Staff';
+
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
+import { baseRequest } from '../../../services/api/genericRequest';
+import { IStaffChild } from '../Staff';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
 import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
 import PickupViewDetailsDialog from '../subcomponents/PickupViewDetailsDialog';
-import { baseRequest } from '../../../services/api/genericRequest';
 
 interface PickupProps extends IStaffChild {
     
@@ -62,7 +66,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     React.useEffect(() => {
         getPickups();
-    }, []);
+    });
 
     const getStatusString = (status: PickupStatus): string => {
         switch(status) {
@@ -148,16 +152,16 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                     <Tooltip
-                    title={params.row.pickupStatus == "PENDING" ? 
+                    title={params.row.pickupStatus === "PENDING" ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton
                     onClick={() => handleDialogOpen('fulfill', params.row as IPickupRow)}
                     >
-                        {params.row.pickupStatus == PickupStatus.PENDING &&
+                        {params.row.pickupStatus === PickupStatus.PENDING &&
                             <Done />
                         }
-                        {params.row.pickupStatus == PickupStatus.WAITING &&
+                        {params.row.pickupStatus === PickupStatus.WAITING &&
                             <Outbound />
                         }
                     </IconButton>
