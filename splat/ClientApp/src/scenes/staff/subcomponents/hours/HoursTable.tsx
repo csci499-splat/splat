@@ -1,6 +1,6 @@
 import React, { FC, ReactElement } from 'react';
 import { TableContainer, Table, TableRow, TableHead, TableBody, TableCell,
-    Button, IconButton, TextField } from '@mui/material';
+    Button, IconButton, TextField, Stack } from '@mui/material';
 import { Delete, Add } from '@mui/icons-material';
 import { TimePicker } from '@mui/lab';
 import * as yup from 'yup';
@@ -177,8 +177,8 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
                     <TableCell>{row.dayName}</TableCell>
                     <TableCell align="center">
                         <TimePicker
-                            label="Start"
-                            value={(formik.values[row.keyName]) ? formik.values[row.keyName].timeStart : undefined}
+                        label="Start"
+                        value={(formik.values[row.keyName]) ? formik.values[row.keyName].timeStart : undefined}
                         onChange={(newValue) => {
                             formik.setFieldValue(`${row.keyName}.timeStart`, newValue);
                             formik.setFieldTouched(`${row.keyName}.timeStart`, true);
@@ -186,6 +186,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
                         renderInput={(params) => 
                             <TextField 
                             {...params} 
+                            sx={{width: '140px'}}
                             error={formik.touched[row.keyName]?.timeStart && Boolean(formik.errors[row.keyName]?.timeStart)}
                             helperText={formik.touched[row.keyName]?.timeStart && formik.errors[row.keyName]?.timeStart}
                             />
@@ -203,6 +204,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
                         renderInput={(params) => 
                             <TextField 
                             {...params} 
+                            sx={{width: '140px'}}
                             error={formik.touched[row.keyName]?.timeEnd && Boolean(formik.errors[row.keyName]?.timeEnd)}
                             helperText={formik.touched[row.keyName]?.timeEnd && formik.errors[row.keyName]?.timeEnd}
                             />
@@ -252,9 +254,10 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
 
     return (
         <>
+        <Stack direction="column" alignItems="center" spacing={2}>
         <FormikProvider value={formik}>
         <Form>
-        <TableContainer sx={{maxWidth: '700px'}}>
+        <TableContainer sx={{maxWidth: '1000px'}}>
             <Table>
             <TableHead>
                 <TableRow>
@@ -273,6 +276,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         </FormikProvider>
         {Object.keys(formik.touched).length > 0 && (
             <>
+            <Stack direction="row" spacing={2}>
             <Button
             variant="outlined"
             color="secondary"
@@ -287,8 +291,10 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
             >
                 Save
             </Button>
+            </Stack>
             </>
         )}
+        </Stack>
         </>
     )
 };

@@ -46,6 +46,7 @@ const DaySelector: FC<DaySelectorProps> = (props: DaySelectorProps): ReactElemen
             {...params}
             error={props.error}
             helperText={props.helperText}
+            variant="standard"
             />
         }
         renderLoading={() => <CalendarPickerSkeleton />}

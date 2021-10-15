@@ -26,9 +26,12 @@ const Landing: FC<LandingProps> = (props: LandingProps): ReactElement => {
     };
 
     const handleGetMessage = async () => {
-        let res = await baseRequest.get<StaffMessage>('/StaffMessages');
-        if(res.data && res.data.message) 
-            setMessage({open: true, message: res.data.message});
+        try {
+            let res = await baseRequest.get<StaffMessage>('/StaffMessages');
+            if(res.data && res.data.message) 
+                setMessage({open: true, message: res.data.message});
+        } catch (error) { }
+        
     };
 
     React.useEffect(() => {

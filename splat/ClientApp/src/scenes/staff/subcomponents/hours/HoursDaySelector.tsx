@@ -5,6 +5,7 @@ import { Delete, Add } from '@mui/icons-material';
 import { baseRequest } from '../../../../services/api/genericRequest';
 import DaySelector from '../../../../components/common/DaySelector';
 import type { ClosedDay } from '../../../../models/ClosedDay';
+import { toast } from 'react-toastify';
 
 type HoursDaySelectorProps = {
     
@@ -17,8 +18,10 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
     const [selectedDate, setSelectedDate] = React.useState<Date | null>(new Date());
 
     const retrieveDisabledDays = async () => {
-        let res = await baseRequest.get<ClosedDay[]>('/hours/days');
-        setDisabledDays(res.data.map((item) => item.closedOn));
+        try {
+            let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+            setDisabledDays(res.data.map((item) => item.closedOn));
+        } catch(error) { }
     };
 
     const handleRemoveDay = async (day: Date) => {
@@ -27,8 +30,25 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
     };
 
     const handleAddDay = async () => {
-        await baseRequest.post('/hours/days', { closedOn: selectedDate });
-        handleDayClose();
+        if(selectedDate) {
+            try {
+                await baseRequest.post('/hours/days', { closedOn: selectedDate });
+                handleDayClose();
+            } catch (error) {
+                
+            }
+        } else {
+            toast.error(`Date must be present`, {
+                position: 'top-center',
+                autoClose: 6000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: 0,
+            });
+        }
+        
     };
 
     const handleDayClose = () => {
@@ -42,8 +62,8 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
 
     return (
         <>
-        <Stack direction="row">
-        <TableContainer sx={{width: '200px', height: '400px'}}>
+        <Stack direction="column-reverse">
+        <TableContainer sx={{width: '200px', height: '300px'}}>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -69,7 +89,7 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
                 </TableBody>
             </Table>
         </TableContainer>
-        <div style={{height: 200}}>
+        <div>
         { !addDayOpen ? (
             <Button
             onClick={() => setAddDayOpen(true)}
@@ -81,21 +101,32 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
             </Button>
         ) : (
             <>
-            <DaySelector
-            // @ts-ignore
-            value={selectedDate}
-            onChange={(newValue: Date | null) => setSelectedDate(newValue)}
-            />
-            <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => handleDayClose()}
-            />
-            <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleAddDay()}
-            />
+            <Stack direction="column" spacing={2}>
+                <DaySelector
+                // @ts-ignore
+                value={selectedDate}
+                onChange={(newValue: Date | null) => setSelectedDate(newValue)}
+                error={Boolean(selectedDate)}
+                />
+                <Stack direction="row" spacing={2}>
+                    <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleDayClose()}
+                    sx={{height: '40px', mb: 1, width: '50%'}}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleAddDay()}
+                    sx={{height: '40px', mb: 1, width: '50%'}}
+                    >
+                        Add
+                    </Button>
+                </Stack>
+            </Stack>
             </>
         )}
         </div>
