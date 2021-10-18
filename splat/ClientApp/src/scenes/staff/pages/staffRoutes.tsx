@@ -7,6 +7,7 @@ import {
     ListAlt,
     MonetizationOn,
     People,
+    DeleteForever,
 } from '@mui/icons-material';
 import React from 'react';
 
@@ -18,6 +19,7 @@ import Items from './Items';
 import Pickups from './Pickups';
 import Reports from './Reports';
 import Users from './Users';
+import Discards from './Discards';
 
 export type StaffRoute = {
     url: string;
@@ -104,6 +106,15 @@ const staffRoutes: StaffRoute[] = [
         page: <Users />,
         adminOnly: true,
     },
+    {
+        url: '/staff/discards',
+        name: {
+            abbv: 'Discards',
+            full: 'Discard unused items by weight',
+        },
+        icon: <DeleteForever />,
+        page: <Discards />,
+    }
 ];
 
 export { staffRoutes };
