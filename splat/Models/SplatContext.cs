@@ -25,6 +25,7 @@ namespace splat.Models
         public DbSet<CurrentHours> CurrentHours { get; set; }
         public DbSet<DayClosed> DayClosed { get; set; }
         public DbSet<StaffMessage> StaffMessages { get; set; }
+        public DbSet<Discard> Discards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
