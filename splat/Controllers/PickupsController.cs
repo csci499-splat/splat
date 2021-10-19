@@ -44,12 +44,12 @@ namespace splat.Controllers
             }
 
             return pickup;
-        }
+        }+
 
         // GET: api/Pickups/active
         [HttpGet("active")]
         [AllowAnonymous]
-        public async Task<ActionResult<Pickup>> GetActivePickups()
+        public async Task<ActionResult<IEnumerable<Pickup>>> GetActivePickups()
         {
             return await _context.Pickups
                 .Where(p => p.PickupStatus == PickupStatus.WAITING || p.PickupStatus == PickupStatus.PENDING).ToListAsync();
