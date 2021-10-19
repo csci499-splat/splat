@@ -28,7 +28,7 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetPickups()
         {
-            return await _context.Picks.ToListAsync();
+            return await _context.Pickups.ToListAsync();
         }
 
         // GET: api/Pickups/id
@@ -51,7 +51,7 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Pickup>> GetActivePickups()
         {
-            var activePickups = await _context.Pickups
+            return await _context.Pickups
                 .Where(p => p.PickupStatus == PickupStatus.WAITING || p.PickupStatus == PickupStatus.PENDING).ToListAsync();
         }
 
