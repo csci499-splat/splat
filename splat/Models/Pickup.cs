@@ -22,13 +22,16 @@ namespace splat.Models
         [Required]
         public PickupStatus PickupStatus { get; set; }
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamptz")]
         public DateTime? PickupTime { get; set; }
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamptz")]
         public DateTime? CanceledTime { get; set; }
         [Required]
         [Column(TypeName = "jsonb")]
         public Student StudentInfo { get; set; }
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamptz")]
         public DateTime SubmittedAt { get; set; }
         [Column(TypeName = "jsonb")]
         public HouseholdInfo? HouseholdInfo { get; set; }
@@ -36,6 +39,7 @@ namespace splat.Models
         [Column(TypeName = "jsonb")]
         public ItemRequest[] ItemRequests { get; set; }
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamptz")]
         public DateTime RequestedPickupTime { get; set; }
         public string OtherNotes { get; set; }
     }

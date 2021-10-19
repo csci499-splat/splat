@@ -1,20 +1,21 @@
-import React, { Component, FC, ReactElement } from 'react';
-import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom';
-import Landing from './scenes/landing/Landing';
-import Student from './scenes/student/Student';
-import Staff from './scenes/staff/Staff';
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
-import { useDarkmode, DarkmodeStates } from './services/util/useDarkmode';
-import primaryTheme from './services/util/primaryTheme';
-import darkTheme from './services/util/darkTheme';
-import NavBar from './components/common/NavBar';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import React, { FC, ReactElement } from 'react';
+import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom';
+
+import NavBar from './components/common/NavBar';
+import Landing from './scenes/landing/Landing';
+import Staff from './scenes/staff/Staff';
+import Student from './scenes/student/Student';
+import darkTheme from './services/util/darkTheme';
+import primaryTheme from './services/util/primaryTheme';
+import { DarkmodeStates, useDarkmode } from './services/util/useDarkmode';
 
 const App: FC<{}> = (): ReactElement => {
     // TODO: Create hooks for updating logged-in state and dark mode use
-    const [currentTheme, setCurrentTheme, componentMounted] = useDarkmode();
+    const [currentTheme, setCurrentTheme] = useDarkmode();
     const history = useHistory();
 
     const [loggedIn, setLoggedIn] = React.useState(false);
@@ -41,7 +42,7 @@ const App: FC<{}> = (): ReactElement => {
                 <Route exact path='/' 
                 render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} 
                 />
-                {/* TODO: Add AuthorizedRoutes for /student and /staff + components*/}
+                {/* TODO: Add AuthorizedRoutes for /student and /staff */}
                 <Route exact path='/student' component={Student} /> 
                 <Route path='/staff' component={Staff} />
                 <Route path='/'>

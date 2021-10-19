@@ -1,13 +1,24 @@
+import { Check } from '@mui/icons-material';
+import {
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from '@mui/material';
 import React, { FC, ReactElement } from 'react';
-import { IPickupRow, IPickupDialogProps } from '../pages/Pickups';
-import * as yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button,
-    Table, TableBody, TableCell, TableContainer, TableRow, TableHead,
-    Collapse, IconButton, Typography, Paper, Box, CircularProgress } from '@mui/material';
-import { Check, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { requestNoAuth } from '../../../services/api/genericRequest';
+
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
+import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupViewDetailsDialogProps extends IPickupDialogProps {
     
@@ -22,7 +33,7 @@ const PickupViewDetailsDialog: FC<PickupViewDetailsDialogProps> = (props: Pickup
             let testObj: Pickup = {
                 id: '2362353e-570b-477c-9c65-522c1487c848',
                 pickupStatus: PickupStatus.WAITING,
-                submittedAt: new Date().toLocaleString(),
+                submittedAt: new Date(),
                 studentInfo: {
                     studentId: '1234567',
                     age: 25,

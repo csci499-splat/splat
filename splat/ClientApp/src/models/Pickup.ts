@@ -6,9 +6,9 @@ export type Pickup = {
     id: string | null;
     weight?: number;
     pickupStatus: PickupStatus;
-    pickupTime?: string;
-    canceledTime?: string;
-    submittedAt: string | null;
+    pickupTime?: Date;
+    canceledTime?: Date;
+    submittedAt: Date | null;
     studentInfo: StudentInfo;
     householdInfo?: HouseholdInfo;
     itemRequests: ItemRequest[];

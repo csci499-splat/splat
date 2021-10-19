@@ -1,11 +1,25 @@
+import {
+    AccessTime,
+    Assessment,
+    Category,
+    FormatListBulleted,
+    Home as HomeIcon,
+    ListAlt,
+    MonetizationOn,
+    People,
+    DeleteForever,
+} from '@mui/icons-material';
 import React from 'react';
-import { Assessment, Category, FormatListBulleted, Home as HomeIcon, ListAlt, MonetizationOn } from '@mui/icons-material';
-import Home from './Home';
-import Pickups from './Pickups';
+
 import Categories from './Categories';
-import Items from './Items';
 import Donations from './Donations';
+import Home from './Home';
+import Hours from './Hours';
+import Items from './Items';
+import Pickups from './Pickups';
 import Reports from './Reports';
+import Users from './Users';
+import Discards from './Discards';
 
 export type StaffRoute = {
     url: string;
@@ -15,6 +29,7 @@ export type StaffRoute = {
     };
     icon: React.ReactElement,
     page: React.ReactElement,
+    adminOnly?: boolean,
 };
 
 const staffRoutes: StaffRoute[] = [
@@ -72,6 +87,34 @@ const staffRoutes: StaffRoute[] = [
         icon: <Assessment />,
         page: <Reports />
     },
+    {
+        url: '/staff/hours',
+        name: {
+            abbv: 'Hours',
+            full: 'Adjust Pantry Hours'
+        },
+        icon: <AccessTime />,
+        page: <Hours />
+    },
+    {
+        url: '/staff/users',
+        name: {
+            abbv: 'Users',
+            full: 'Manage System Users',
+        },
+        icon: <People />,
+        page: <Users />,
+        adminOnly: true,
+    },
+    {
+        url: '/staff/discards',
+        name: {
+            abbv: 'Discards',
+            full: 'Discard unused items by weight',
+        },
+        icon: <DeleteForever />,
+        page: <Discards />,
+    }
 ];
 
 export { staffRoutes };

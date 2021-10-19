@@ -1,48 +1,31 @@
+import { CancelOutlined, Done, Outbound, Visibility } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import {
+    DataGrid,
+    GridColDef,
+    GridRenderCellParams,
+    GridRowData,
+    GridSortModel,
+    GridToolbar,
+    GridValueGetterParams,
+} from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
-import { Box, Grid, Divider, Button, Dialog, DialogContent, 
-        DialogActions, DialogTitle, IconButton, Tooltip }
-    from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar, GridValueFormatterParams,
-        GridRowData, GridSortModel }
-    from '@mui/x-data-grid';
-import { CancelOutlined, Visibility, Done, Outbound } 
-    from '@mui/icons-material';
-import { IStaffChild } from '../Staff';
+
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
+import { baseRequest } from '../../../services/api/genericRequest';
+import { IStaffChild } from '../Staff';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
 import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
 import PickupViewDetailsDialog from '../subcomponents/PickupViewDetailsDialog';
-import { baseRequest } from '../../../services/api/genericRequest';
 
 interface PickupProps extends IStaffChild {
     
 }
 
-export interface IPickupRow extends GridRowData {
-    id: string;
-    numberOfItems: number;
-    requestedPickupTime: Date;
-    studentID: string,
-    status: PickupStatus,
+export interface IPickupRow extends GridRowData, Pickup {
+    
 };
-
-const initialRows: IPickupRow[] = [
-    {
-        id: '2362353e-570b-477c-9c65-522c1487c848',
-        numberOfItems: 10,
-        requestedPickupTime: new Date(),
-        studentID: '1234567',
-        status: PickupStatus.WAITING,
-    },
-    {
-        id: '7b9094c7-8092-444e-9140-2d69a3e935b6',
-        numberOfItems: 2,
-        requestedPickupTime: new Date(Date.now() - (6.048e+8 * 2)),
-        studentID: '4573859',
-        status: PickupStatus.PENDING,
-    },
-];
 
 export interface IPickupDialogProps {
     selectedPickup?: IPickupRow;
@@ -64,14 +47,15 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
         },
     ]);
 
-    const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: GridRowData) => {
+    const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: IPickupRow) => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: true }));
-        setSelectedPickup(currentRow as IPickupRow);
+        setSelectedPickup(currentRow);
     };
 
     const handleDialogClose = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation') => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: false }));
         setSelectedPickup(undefined);
+        getPickups();
     };
 
     const getPickups = async () => {
@@ -79,6 +63,10 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
         setPickups(res.data);
         setCurrentWidth(1 - currentWidth);
     }
+
+    React.useEffect(() => {
+        getPickups();
+    });
 
     const getStatusString = (status: PickupStatus): string => {
         switch(status) {
@@ -110,6 +98,9 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 headerName: '# Items',
                 headerAlign: 'center',
                 align: 'center',
+                valueGetter: (params: GridValueGetterParams) => {
+                    return params.row.itemRequests.length;
+                }
             },
             {
                 field: 'requestedPickupTime',
@@ -125,13 +116,16 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 headerName: 'Student ID',
                 headerAlign: 'center',
                 align: 'center',
+                valueGetter: (params: GridValueGetterParams) => {
+                    return params.row.studentInfo.studentId;
+                }
             },
             {
                 field: 'status',
                 flex: .4,
                 headerName: 'Status',
-                valueGetter: (params: GridValueFormatterParams) => {
-                    return getStatusString(params.value as PickupStatus);
+                valueGetter: (params: GridValueGetterParams) => {
+                    return getStatusString(params.row.pickupStatus as PickupStatus);
                 },
                 headerAlign: 'center',
                 align: 'center',
@@ -142,7 +136,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 headerName: 'View Details',
                 renderCell: (params: GridRenderCellParams) => (
                     <IconButton
-                    onClick={() => handleDialogOpen('viewDetails', params.row)}
+                    onClick={() => handleDialogOpen('viewDetails', params.row as IPickupRow)}
                     >
                         <Visibility />
                     </IconButton>
@@ -158,16 +152,16 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                     <Tooltip
-                    title={params.row.status == "PENDING" ? 
+                    title={params.row.pickupStatus === "PENDING" ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton
-                    onClick={() => handleDialogOpen('fulfill', params.row)}
+                    onClick={() => handleDialogOpen('fulfill', params.row as IPickupRow)}
                     >
-                        {params.row.status == PickupStatus.PENDING &&
+                        {params.row.pickupStatus === PickupStatus.PENDING &&
                             <Done />
                         }
-                        {params.row.status == PickupStatus.WAITING &&
+                        {params.row.pickupStatus === PickupStatus.WAITING &&
                             <Outbound />
                         }
                     </IconButton>
@@ -183,7 +177,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 headerName: 'Cancel',
                 renderCell: (params: GridRenderCellParams) => (
                     <IconButton
-                    onClick={() => handleDialogOpen('cancelConfirmation', params.row)}
+                    onClick={() => handleDialogOpen('cancelConfirmation', params.row as IPickupRow)}
                     >
                         <CancelOutlined />
                     </IconButton>
@@ -199,7 +193,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
         <div style={{ height: 800, width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
-            rows={initialRows}
+            rows={pickups}
             components={{
                 Toolbar: GridToolbar
             }}
