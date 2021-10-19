@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +14,10 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
+        [Required]
+        //[ForeignKey("")]
+        [DataType(DataType.EmailAddress)]
+        public string ApplicationUserEmail { get; set; }
         public double? Weight { get; set; }
         [Required]
         public PickupStatus PickupStatus { get; set; }
