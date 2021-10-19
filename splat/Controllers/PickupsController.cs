@@ -44,7 +44,7 @@ namespace splat.Controllers
             }
 
             return pickup;
-        }+
+        }
 
         // GET: api/Pickups/active
         [HttpGet("active")]
