@@ -36,70 +36,31 @@ namespace splat.Controllers
             return totalReport;
         }
 
-        public double TotalWeight()
+        public async Task<double> GetTotalWeight(IQueryable<Pickup> pickups)
         {
-            var weight = 0.0;
-            foreach (Pickup p in _context.Pickups.ToArray()){
-                if (p.Weight == null) continue;
-                else
-                {
-                    weight += (double)p.Weight;
-                }
-            }
-            return weight;
+            return (double)await pickups.SumAsync(p => p.Weight);
         }
 
-        public int TotalDisbursements()
+        public async Task<int> TotalDisbursements(IQueryable<Pickup> pickups)
         {
-            return _context.Pickups.ToArray().Length;
+            return await pickups.Where(p => p.PickupStatus == p.PickupStatus.DISBURSED).Count();
         }
 
-        public int TotalPeopleImpacted()
+        public async Task<int> TotalPeopleImpacted(IQueryable<Pickup> pickups)
         {
-            var total = 0;
-            foreach(Pickup p in _context.Pickups.ToArray())
-            {
-                var currentPickup = p.HouseholdInfo.NumAdults + p.HouseholdInfo.NumMinors + p.HouseholdInfo.NumSeniors;
-                total += currentPickup;
-            }
-            return total;
+            var students = await pickups.GroupBy(p => p.StudentInfo.StudentId).Where(p => p.PickupStatus == p.PickupStatus.DISBURSED && ).Count();
+            var numHousehold = await pickups.GroupBy(p => p.StudentInfo.StudentId).Where(p => p.PickupStatus == p.PickupStatus.DISBURSED).SumAsync(p => p.HouseholdInfo.NumAdults || p.HouseholdInfo.NumMinors || p.HouseholdInfo.NumSeniors);
+            return students + numHousehold;
         }
 
-        public int TotalRecurringVisits()
+        public Task<int> TotalRecurringVisits(IQueryable<Pickup> pickups)
         {
-            Pickup[] arr = _context.Pickups.ToArray();
-            List<Pickup> total = new List<Pickup>();
-            for(int i = 0; i < arr.Length -1; i++)
-            {
-                for (int j = i + 1; j < arr.Length; j++)
-                {
-                    if(arr[i] == arr[j])
-                    {
-                        if(total.Contains(arr[i]))
-                        {
-                            break;
-                        }
-                        else total.Add(arr[i]);
-                    }
-                }
-            }
-
-            return total.Count;
+            return pickups.Where(p => p.PickupStatus == p.PickupStatus.DISBURSED).Count().Having()
         }
 
-        public int TotalIndividualVisits()
+        public Task<int> TotalIndividualVisits(IQueryable<Pickup> pickups)
         {
-            Pickup[] arr = _context.Pickups.ToArray();
-            List<Pickup> total = new List<Pickup>();
-            for (int i = 0; i < arr.Length; i++)
-            {
-                if (total.Contains(arr[i]))
-                {
-                    break;
-                }
-                else total.Add(arr[i]);
-            }
-            return total.Count;
+            return pickups.Distinct(p => p.StudentInfo.StudentId).Where(p => p.PickupStatus == p.PickupStatus.DISBURSED).Count(p => p.StudentInfo.Id).Where(p => p.StudentInfo.Id > 1).SumAsync();
         }
     }
 }
