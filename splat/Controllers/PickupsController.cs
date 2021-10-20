@@ -52,7 +52,7 @@ namespace splat.Controllers
         public async Task<ActionResult<IEnumerable<Pickup>>> GetActivePickups()
         {
             return await _context.Pickups
-                .Where(p => p.PickupStatus == PickupStatus.WAITING || p.PickupStatus == PickupStatus.PENDING).ToListAsync();
+                .Where(pickup => pickup.PickupStatus == PickupStatus.WAITING || pickup.PickupStatus == PickupStatus.PENDING).ToListAsync();
         }
 
         // POST: api/Pickups
