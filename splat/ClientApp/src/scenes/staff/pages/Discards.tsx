@@ -53,7 +53,6 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
     };
 
     React.useEffect(() => {
-        console.log(1);
         getDiscards();
     }, []);
     

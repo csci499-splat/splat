@@ -188,20 +188,31 @@ namespace splat
             var adminUser = new ApplicationUser
             {
                 Name = "admin",
-                UserName = "admin"
+                UserName = "admin",
+                Email = "admin@gmail.com"
             };
 
             string userPass = "testPass123%";
 
             var user = await _userManager.FindByNameAsync(adminUser.UserName);
+            if(user != null)
+            {
+                await _userManager.DeleteAsync(user);
+                user = null;
+            }
+
             if(user == null)
             {
-                Console.WriteLine("Creating user" + adminUser);
+                Console.WriteLine("Creating user " + adminUser);
 
                 var createUser = await _userManager.CreateAsync(adminUser, userPass);
                 if(createUser.Succeeded)
                 {
+                    Console.WriteLine("success");
                     await _userManager.AddToRoleAsync(adminUser, "Administrator");
+                } else
+                {
+                    Console.WriteLine(createUser.Errors);
                 }
             }
         }

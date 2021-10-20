@@ -14,8 +14,6 @@ namespace splat.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        [Required]
-        //[ForeignKey("")]
         [DataType(DataType.EmailAddress)]
         public string ApplicationUserEmail { get; set; }
         public double? Weight { get; set; }
