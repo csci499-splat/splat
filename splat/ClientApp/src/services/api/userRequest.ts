@@ -1,14 +1,13 @@
-import IUser from "../../models/User";
-import ILogin from "../../models/Login";
-import { requestNoAuth, requestAuth } from './genericRequest';
-import { AxiosResponse } from "axios";
+import ILogin from '../../models/Login';
+import IUser from '../../models/User';
+import { authRequest, baseRequest } from './genericRequest';
 
 function login(loginInfo: ILogin) {
-    return requestNoAuth<IUser>('/login', 'POST', {data: loginInfo} );
+    return baseRequest.post<IUser>('/login', loginInfo);
 }
 
 function logout() {
-    return requestAuth<IUser>('/logout', 'POST');
+    return authRequest.post<IUser>('/logout');
 }
 
 export { login, logout};

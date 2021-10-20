@@ -1,13 +1,26 @@
-import React, { FC, ReactElement } from 'react';
-import { Pickup } from '../../../models/BackendTypes';
-import { PickupStatus } from '../../../models/Pickup';
-import { IPickupRow, IPickupDialogProps } from '../pages/Pickups';
-import * as yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button,
-    Typography, TableContainer, TableRow, Table, TableCell, TableHead,
-    TableBody, Checkbox, TextField, } from '@mui/material';
-import { baseRequest } from '../../../services/api/genericRequest';
+import {
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
+} from '@mui/material';
 import { Form, FormikProvider, useFormik } from 'formik';
+import React, { FC, ReactElement } from 'react';
+import * as yup from 'yup';
+
+import { PickupStatus } from '../../../models/Pickup';
+import { baseRequest } from '../../../services/api/genericRequest';
+import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupFulfillDialogProps extends IPickupDialogProps {
 
@@ -99,7 +112,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                 </FormikProvider>
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
-                <Button variant="outlined" onClick={props.onClose} color="primary">Cancel</Button>
+                <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
                 <Button variant="contained" onClick={() => formik.submitForm()} color="primary">
                     Fulfill
                 </Button>

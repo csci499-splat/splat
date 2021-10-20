@@ -1,26 +1,21 @@
+import { Delete } from '@mui/icons-material';
+import { Button, IconButton } from '@mui/material';
+import {
+    DataGrid,
+    GridColDef,
+    GridRenderCellParams,
+    GridToolbar,
+    GridValueFormatterParams,
+} from '@mui/x-data-grid';
 import React, { FC, ReactElement } from 'react';
-import { IStaffChild } from '../Staff';
-import { Box, Grid, Divider, Button, IconButton, Tooltip }
-    from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbar, GridValueFormatterParams,
-    GridRowData, GridSortModel }
-    from '@mui/x-data-grid';
-import { Delete, Add } 
-    from '@mui/icons-material';
+
 import { Donation } from '../../../models/Donation';
 import { baseRequest } from '../../../services/api/genericRequest';
+import { IStaffChild } from '../Staff';
 import DonationAddForm from '../subcomponents/DonationAddForm';
 
 interface DonationProps extends IStaffChild {
     
-};
-
-interface IDonationRow extends GridRowData {
-    id: string;
-    monetaryValue?: number;
-    weight?: number;
-    donor: string;
-    donatedAt: string;
 };
 
 const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
@@ -39,14 +34,22 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
     };
 
     const handleDonationDelete = async (id: string) => {
-        let res = await baseRequest.delete(`/donations/${id}`);
-        getDonations();
+        try {
+            await baseRequest.delete(`/donations/${id}`);
+            getDonations();
+        } catch (error) {
+            
+        }
     };
 
     const getDonations = async () => {
-        let res = await baseRequest.get<Donation[]>('/donations');
-        setRows(res.data);
-        setCurrentWidth(1 - currentWidth);
+        try {
+            let res = await baseRequest.get<Donation[]>('/donations');
+            setRows(res.data);
+            setCurrentWidth(1 - currentWidth);
+        } catch (error) {
+            
+        }
     };
 
     React.useEffect(() => {
@@ -80,7 +83,8 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
                 headerAlign: 'center',
                 align: 'center',
                 valueFormatter: (params: GridValueFormatterParams) => {
-                    return `${(params.value as number).toFixed(2)} lbs`;
+                    let weightVal = params.value ? (params.value as number).toFixed(2) : '-';
+                    return `${weightVal} lbs`;
                 },
             },
             {

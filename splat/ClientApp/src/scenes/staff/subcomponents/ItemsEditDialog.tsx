@@ -1,15 +1,24 @@
+import { DateTimePicker } from '@mui/lab';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControlLabel,
+    FormGroup,
+    Stack,
+    Switch,
+    TextField,
+} from '@mui/material';
+import { GridRowData } from '@mui/x-data-grid';
+import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } from 'formik';
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
-    DialogTitle, Stack,
-    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
-import CategoryAutocomplete from '../../student/CategoryAutocomplete';
-import type {Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo} from '../../../models/BackendTypes'
-import { DateTimePicker } from '@mui/lab';
-import { GridRowData } from '@mui/x-data-grid';
+
 import { baseRequest } from '../../../services/api/genericRequest';
+import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 
 type ItemsEditDialogProps = {
     onClose: () => void,
@@ -27,8 +36,8 @@ const validationSchema = yup.object({
     .max(250, ({ max }) => `Description can't be more than ${max} characters long`)
     .required("Description is required"),
     category: yup
-    .object().
-    shape({
+    .object()
+    .shape({
         id: yup
         .string()
         .nullable()
@@ -52,6 +61,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
     let initialValues = (props.item) ? {
         id: props.item?.id,
         name: props.item?.name,
+        categoryId: props.item?.category.id,
         category: {
             id: props.item?.category.id,
             name: props.item?.category.name,
@@ -73,7 +83,6 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
             await baseRequest.put(`/items/${values.id}`, values);
             props.onClose();
         },
@@ -127,6 +136,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
                 value={formik.values.category}
                 onValueChange={(newValue) => {
                     formik.setFieldValue(`category`, newValue);
+                    formik.setFieldValue('categoryId', newValue?.id);
                 }}
                 InputProps={{
                     name:`category`,

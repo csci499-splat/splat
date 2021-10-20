@@ -1,11 +1,9 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import React, { FC, ReactElement } from 'react';
-import { Pickup } from '../../../models/BackendTypes';
-import { IPickupRow, IPickupDialogProps } from '../pages/Pickups';
-import * as yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography,
-    } from '@mui/material';
-import { baseRequest } from '../../../services/api/genericRequest';
+
 import { PickupStatus } from '../../../models/Pickup';
+import { baseRequest } from '../../../services/api/genericRequest';
+import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
     

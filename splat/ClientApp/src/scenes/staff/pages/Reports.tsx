@@ -1,4 +1,5 @@
 import React, { FC, ReactElement } from 'react';
+
 import { IStaffChild } from '../Staff';
 
 interface ReportProps extends IStaffChild {

@@ -8,7 +8,7 @@ export type Pickup = {
     pickupStatus: PickupStatus;
     pickupTime?: Date;
     canceledTime?: Date;
-    submittedAt: string | null;
+    submittedAt: Date | null;
     studentInfo: StudentInfo;
     householdInfo?: HouseholdInfo;
     itemRequests: ItemRequest[];

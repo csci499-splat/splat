@@ -16,7 +16,7 @@ namespace splat.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.10")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -223,7 +223,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamptz")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<string>("Description")
@@ -253,6 +253,66 @@ namespace splat.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("splat.Models.CurrentHours", b =>
+                {
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+                    b.Property<HourRange>("FridayHours")
+                        .HasColumnType("jsonb");
+
+                    b.Property<HourRange>("MondayHours")
+                        .HasColumnType("jsonb");
+
+                    b.Property<HourRange>("SaturdayHours")
+                        .HasColumnType("jsonb");
+
+                    b.Property<HourRange>("SundayHours")
+                        .HasColumnType("jsonb");
+
+                    b.Property<HourRange>("ThursdayHours")
+                        .HasColumnType("jsonb");
+
+                    b.Property<HourRange>("TuesdayHours")
+                        .HasColumnType("jsonb");
+
+                    b.Property<HourRange>("WednesdayHours")
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("CreatedAt");
+
+                    b.ToTable("CurrentHours");
+                });
+
+            modelBuilder.Entity("splat.Models.DayClosed", b =>
+                {
+                    b.Property<DateTime>("ClosedOn")
+                        .HasColumnType("timestamptz");
+
+                    b.HasKey("ClosedOn");
+
+                    b.ToTable("DayClosed");
+                });
+
+            modelBuilder.Entity("splat.Models.Discard", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DiscardedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discards");
+                });
+
             modelBuilder.Entity("splat.Models.Donation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -261,7 +321,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("DonatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamptz")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<string>("Donor")
@@ -309,7 +369,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamptz")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<string>("Description")
@@ -342,7 +402,7 @@ namespace splat.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CanceledTime")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamptz");
 
                     b.Property<HouseholdInfo>("HouseholdInfo")
                         .HasColumnType("jsonb");
@@ -358,10 +418,10 @@ namespace splat.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("PickupTime")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamptz");
 
                     b.Property<DateTime>("RequestedPickupTime")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamptz");
 
                     b.Property<Student>("StudentInfo")
                         .IsRequired()
@@ -369,7 +429,7 @@ namespace splat.Migrations
 
                     b.Property<DateTime>("SubmittedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamptz")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
 
                     b.Property<double?>("Weight")
@@ -380,6 +440,21 @@ namespace splat.Migrations
                     b.HasIndex("PickupStatus", "StudentInfo");
 
                     b.ToTable("Pickups");
+                });
+
+            modelBuilder.Entity("splat.Models.StaffMessage", b =>
+                {
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamptz")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.HasKey("CreatedAt");
+
+                    b.ToTable("StaffMessages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

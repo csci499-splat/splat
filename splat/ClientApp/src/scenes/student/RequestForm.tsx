@@ -1,19 +1,33 @@
+import { Add, Delete } from '@mui/icons-material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControlLabel,
+    FormGroup,
+    Grid,
+    IconButton,
+    Stack,
+    Switch,
+    TextField,
+    Tooltip,
+    Zoom,
+} from '@mui/material';
+import { FieldArray, Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
-import { Formik, Field, Form, FieldArray, FormikProvider, useFormik, useFormikContext } 
-    from 'formik';
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, 
-    DialogTitle, Stack,
-    Grid, IconButton, TextField, Tooltip, Zoom, Divider, FormGroup, FormControlLabel, Switch } 
-    from '@mui/material';
-import { Add, Delete } from '@mui/icons-material';
+
+import DaySelector from '../../components/common/DaySelector';
+import TimeSelector from '../../components/common/TimeSelector';
+import { PickupStatus } from '../../models/Pickup';
 import CategoryAutocomplete from './CategoryAutocomplete';
 import ItemAutocomplete from './ItemAutocomplete';
-import type { Item, Category, ItemRequest, Pickup, StudentInfo, HouseholdInfo } 
-    from '../../models/BackendTypes';
-import { PickupStatus } from '../../models/Pickup';
-import { DateTimePicker } from '@mui/lab';
 
+import type { Pickup, } 
+    from '../../models/BackendTypes';
 type RequestFormProps = {
     onClose: () => void,
 }
@@ -132,6 +146,8 @@ const validationSchema = yup.object({
 
 const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElement => {
 
+    const [pickupTimes, setPickupTimes] = React.useState<{date: Date | null, time: Date | null}>({date: null, time: null});
+
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
@@ -151,6 +167,21 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
 
     const handleHouseholdRemove = () => {
         formik.setFieldValue('householdInfo', undefined);
+    };
+
+    const handleDateChange = (newDate: Date | null) => {
+        setPickupTimes({...pickupTimes, date: newDate});
+        formik.setFieldTouched("requestedPickupTime", true);
+    };
+
+    const handleTimeChange = (newTime: Date | null) => {
+        let newPickupTime = pickupTimes.date;
+        console.log(pickupTimes);
+        if(newPickupTime && newTime) {
+            newPickupTime.setHours(newTime.getHours());
+            newPickupTime.setMinutes(newTime.getMinutes());
+            formik.setFieldValue("requestedPickupTime", newPickupTime);
+        }
     };
 
     return (
@@ -387,26 +418,16 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 onChange={formik.handleChange}
                 sx={{width: '30%'}}
                 />
-                <DateTimePicker
-                renderInput={(props) => 
-                    <TextField 
-                    {...props} 
-                    error={formik.touched.requestedPickupTime && Boolean(formik.errors.requestedPickupTime)}
-                    helperText={formik.touched.requestedPickupTime && formik.errors.requestedPickupTime}
-                    />
-                }
-                label="Desired pickup time"
-                value={formik.values.requestedPickupTime}
-                minDateTime={new Date()}
-                maxDateTime={new Date(Date.now() + (6.048e+8 * 2))}
-                onChange={(newValue) => {
-                    formik.setFieldValue("requestedPickupTime", newValue);
-                    formik.setFieldTouched("requestedPickupTime", true);
-                }}
-                showTodayButton
-                clearable
-                ampm
-                ampmInClock
+                <DaySelector
+                value={pickupTimes.date}
+                onChange={(newValue) => handleDateChange(newValue)}
+                error={formik.touched.requestedPickupTime && Boolean(formik.errors.requestedPickupTime)}
+                helperText={formik.touched.requestedPickupTime && (formik.errors.requestedPickupTime as string)}
+                />
+                <TimeSelector
+                value={pickupTimes.time}
+                onChange={(newValue) => handleTimeChange(newValue)}
+                selectedDate={pickupTimes.date}
                 />
             </Stack>
         </Form>
