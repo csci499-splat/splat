@@ -100,7 +100,7 @@ namespace splat.Controllers
             return _context.Pickups.Any(p => p.Id == id);
         }
 
-        private void UpdateStatus(PickupStatus status, Pickup pickup)
+        private static void UpdateStatus(PickupStatus status, Pickup pickup)
         {
             pickup.PickupStatus = status;
         }
