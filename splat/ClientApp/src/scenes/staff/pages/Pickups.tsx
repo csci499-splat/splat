@@ -190,7 +190,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     return (
         <>
-        <div style={{ height: 800, width: `100% - ${currentWidth}px`}}>
+        <div style={{ height: 'calc(100vh - 210px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={pickups}
