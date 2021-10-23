@@ -143,7 +143,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         
     return (
         <>
-        <div style={{ height: 750, width: `100% - ${currentWidth}px`}}>
+        <div style={{ height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={items}
