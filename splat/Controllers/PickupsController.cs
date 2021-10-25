@@ -100,10 +100,51 @@ namespace splat.Controllers
             return _context.Pickups.Any(p => p.Id == id);
         }
 
-        private static void UpdateStatus(PickupStatus status, Pickup pickup)
+
+
+        public static void UpdateStatus(PickupStatus status, Pickup pickup)
         {
+            
+
+            switch (status)
+            {
+                case PickupStatus.PENDING:
+                    throw new Exception("Can't change to PENDING");
+
+                case PickupStatus.WAITING:
+                    if(pickup.PickupStatus != PickupStatus.PENDING)
+                    {
+                        throw new Exception("Pickup status is not PENDING, cannot change");
+                    }
+                    break;
+
+                case PickupStatus.DISBURSED:
+                    if(pickup.PickupStatus != PickupStatus.WAITING)
+                    {
+                        throw new Exception("Cannot set pickup status to Disbursed");
+                    }
+                    
+                    break;
+
+                case PickupStatus.CANCELED:
+                    if(pickup.PickupStatus != PickupStatus.PENDING && pickup.PickupStatus != PickupStatus.WAITING)
+                    {
+                        throw new Exception("Cannot set pickup status to Cancel");
+                    }
+                    
+                    break;
+
+                default:
+                    throw new Exception("Invalid pickup status.");
+            }
+
             pickup.PickupStatus = status;
+
         }
+
+
+
+
 
     }
 }
