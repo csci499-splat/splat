@@ -20,6 +20,7 @@ import Pickups from './Pickups';
 import Reports from './Reports';
 import Users from './Users';
 import Discards from './Discards';
+import History from './History';
 
 export type StaffRoute = {
     url: string;
@@ -114,6 +115,15 @@ const staffRoutes: StaffRoute[] = [
         },
         icon: <DeleteForever />,
         page: <Discards />,
+    },
+    {
+        url: '/staff/history',
+        name: {
+            abbv: 'History',
+            full: 'View Pickups History',
+        },
+        icon: <FormatListBulleted />,
+        page: <History />,
     }
 ];
 
