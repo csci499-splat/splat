@@ -10,7 +10,7 @@ namespace splat.Tests
         [Fact]
         public void GetTotalWeights_SumOfWeights()
         {
-
+            Assert.True(true);
         }
 
 /*       private IQueryable<Pickup> GetTestPickups()
