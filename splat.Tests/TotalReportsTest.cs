@@ -13,7 +13,7 @@ namespace splat.Tests
 
         }
 
-        private IQueryable<Pickup> GetTestPickups()
+/*       private IQueryable<Pickup> GetTestPickups()
         {
             IQueryable<Pickup> pickups =
             {
@@ -35,6 +35,6 @@ namespace splat.Tests
                 },
                 new Pickup { }
             }
-        }
+        }*/
     }
 }
