@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 
 namespace splat.Models
 {
-    public class TrendsReportcs
+    public class TrendReport
     {
-        public Item[] trendItems { get; set; }
+        public TrendEntry[] entries { get; set; }
+    }
+
+    public class TrendEntry
+    {
+        public Item Item { get; set; }
+        public int RequestCount { get; set; }
     }
 }
