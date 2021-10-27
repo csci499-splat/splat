@@ -10,7 +10,7 @@ namespace splat.Models
 {
     public class TrendReport
     {
-        public TrendEntry[] entries { get; set; }
+        public TrendEntry[] Entries { get; set; }
     }
 
     public class TrendEntry
