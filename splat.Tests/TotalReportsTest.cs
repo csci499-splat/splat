@@ -13,75 +13,8 @@ namespace splat.Tests
         [Fact]
         public void GetTotalWeights_SumOfWeights()
         {
-            var testPickups = GetTestPickups();
-            var controller = new TotalReportsController(testPickups);
-            var result = controller.GetTotalWeight(testPickups) as double;
-        };
-       private IQueryable<Pickup> GetTestPickups()
-        {
-            var pickupsList = new List<Pickup>();
-            pickupsList.Add(new Pickup
-            {
-                Id = Guid.NewGuid(),
-                Weight = 5.5,
-                PickupStatus = PickupStatus.CANCELED,
-                PickupTime = null,
-                CanceledTime = new DateTime(2020, 08, 10, 6, 22, 0),
-                StudentInfo = new Student
-                {
-                    StudentId = "1111131",
-                    Age = 20,
-                    OnMealPlan = true
-                },
-                SubmittedAt = new DateTime()
 
-            });
-            pickupsList.Add(new Pickup
-            {
-                Id = Guid.NewGuid(),
-                Weight = 25.5,
-                PickupStatus = PickupStatus.DISBURSED,
-                PickupTime = new DateTime(2020, 05, 05, 6, 22, 0),
-                CanceledTime = null,
-                StudentInfo = new Student
-                {
-                    StudentId = "1111111",
-                    Age = 22,
-                    OnMealPlan = false
-                },
-                SubmittedAt = new DateTime()
-
-            });
-            pickupsList.Add(new Pickup
-            {
-                Id = Guid.NewGuid(),
-                Weight = 50.5,
-                PickupStatus = PickupStatus.DISBURSED,
-                PickupTime = new DateTime(2020, 11, 05, 6, 22, 0),
-                CanceledTime = null,
-                StudentInfo = new Student
-                {
-                    StudentId = "1113111",
-                    Age = 19,
-                    OnMealPlan = false
-                },
-                SubmittedAt = new DateTime()
-
-            });
-            pickupsList.Add(new Pickup
-            {
-                Id = Guid.NewGuid(),
-                Weight = 0.5,
-                PickupStatus = PickupStatus.DISBURSED,
-                PickupTime = new DateTime(2020, 11, 10, 6, 22, 0),
-                CanceledTime = null,
-                StudentInfo = new Student
-                {
-                    StudentId = "1113111",
-                    Age = 19,
-                    OnMealPlan = false
-                },
-                SubmittedAt = new DateTime()
+        }
 
             });
             pickupsList.Add(new Pickup
