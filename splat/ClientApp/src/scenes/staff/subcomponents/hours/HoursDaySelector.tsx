@@ -80,7 +80,7 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
                             <TableCell align="left" key={index}>{new Date(day).toLocaleDateString()}</TableCell>
                             <TableCell align="center">
                                 <IconButton
-                                onClick={() => handleRemoveDay(day)}
+                                onClick={() => handleRemoveDay(new Date(day))}
                                 >
                                     <Delete />
                                 </IconButton>
