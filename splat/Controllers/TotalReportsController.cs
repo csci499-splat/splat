@@ -25,9 +25,11 @@ namespace splat.Controllers
         // GET: api/TotalReports
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<TotalReport>> GetTotalReport()
+        public async Task<ActionResult<TotalReport>> GetTotalReport(DateTime dateTimeFrom, DateTime dateTimeTo)
         {
-            var pickups = _context.Pickups;
+            var pickups = _context.Pickups
+                .Where(p => p.PickupStatus == PickupStatus.DISBURSED)
+                .Where(p => p.PickupTime > dateTimeFrom && p.PickupTime < dateTimeTo);
 
             return new TotalReport 
             {
@@ -46,26 +48,30 @@ namespace splat.Controllers
 
         public async Task<int> TotalDisbursements(IQueryable<Pickup> pickups)
         {
-            return await pickups.Where(p => p.PickupStatus == PickupStatus.DISBURSED).CountAsync();
+            return await pickups.CountAsync();
         }
 
         public async Task<int> TotalPeopleImpacted(IQueryable<Pickup> pickups)
         {
-            var disbursedPickups = pickups.Where(p => p.PickupStatus == PickupStatus.DISBURSED);
-            var students = await disbursedPickups.GroupBy(p => p.StudentInfo.StudentId).CountAsync();
-            var result = await disbursedPickups.SumAsync(p => p.HouseholdInfo.NumAdults + p.HouseholdInfo.NumMinors + p.HouseholdInfo.NumSeniors);
+            var students = await pickups.GroupBy(p => p.StudentInfo.StudentId).CountAsync();
+            var result = await pickups
+                .SumAsync(p => p.HouseholdInfo.NumAdults + p.HouseholdInfo.NumMinors + p.HouseholdInfo.NumSeniors);
             return result + students;
         }
 
         public Task<int> TotalRecurringVisits(IQueryable<Pickup> pickups)
         {
-            return pickups.Select(p => p.StudentInfo.StudentId).Distinct().CountAsync();
+            return pickups
+                .GroupBy(p => p.StudentInfo.StudentId)
+                .Where(p => p.Count() > 1)
+                .CountAsync();
         }
 
         public Task<int> TotalIndividualVisits(IQueryable<Pickup> pickups)
         {
-            var disbursedPickups = pickups.Where(p => p.PickupStatus == PickupStatus.DISBURSED);
-            return disbursedPickups.GroupBy(p => p.StudentInfo.StudentId).CountAsync();        
+            return pickups
+                .GroupBy(p => p.StudentInfo.StudentId)
+                .CountAsync();        
         }
     }
 }
