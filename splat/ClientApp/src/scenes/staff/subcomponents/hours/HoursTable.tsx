@@ -71,6 +71,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
     mondayHours: yup
     .object().shape({
@@ -83,6 +84,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
     tuesdayHours: yup
     .object().shape({
@@ -95,6 +97,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
     wednesdayHours: yup
     .object().shape({
@@ -107,6 +110,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
     thursdayHours: yup
     .object().shape({
@@ -119,6 +123,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
     fridayHours: yup
     .object().shape({
@@ -131,6 +136,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
     saturdayHours: yup
     .object().shape({
@@ -143,6 +149,7 @@ const validationSchema = yup.object({
         .required("Required"),
     })
     .notRequired()
+    .nullable()
     .default(undefined),
 });
 
@@ -163,7 +170,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            await baseRequest.post<CurrentHours>('/Hours', values);
+            await baseRequest.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
             handleGetCurrentHours();
         },
     });

@@ -20,7 +20,6 @@ import { FieldArray, Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
-import DaySelector from '../../components/common/DaySelector';
 import TimeSelector from '../../components/common/TimeSelector';
 import { PickupStatus } from '../../models/Pickup';
 import CategoryAutocomplete from './CategoryAutocomplete';
@@ -28,6 +27,9 @@ import ItemAutocomplete from './ItemAutocomplete';
 
 import type { Pickup, } 
     from '../../models/BackendTypes';
+import PickupDateTimeSelector from './PickupDateTimeSelector';
+import { HourRange } from '../../models/CurrentHours';
+import moment from 'moment';
 type RequestFormProps = {
     onClose: () => void,
 }
@@ -77,76 +79,99 @@ const initialValues: Pickup = {
     otherNotes: '',
 };
 
-const validationSchema = yup.object({
-    studentInfo: yup.object().shape({
-        studentId: yup.string()
-        .matches(/[0-9]{7}/g, "Student ID must be exactly 7 digits long")
-        .required('Student ID is required'),
-        age: yup.number()
-        .positive()
-        .integer()
-        .max(120, 'Maximum age of 120 years old')
-        .required('Age is required'),
-        onMealPlan: yup.boolean().required("Required"),
-    }).required(),
-    householdInfo: yup.object().shape({
-        numMinors: yup.number()
-        .integer()
-        .min(0, "Must be positive")
-        .max(10, "Maximum of 10")
+type DateTimeObj = {
+    date: Date | null;
+    time: Date | null;
+};
+
+const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElement => {
+
+    const [pickupTimes, setPickupTimes] = React.useState<{date: Date | null, time: Date | null}>({date: new Date(), time: new Date()});
+    const [hourBounds, setHourBounds] = React.useState<HourRange>({timeStart: new Date(0, 0, 0, 0, 0), timeEnd: new Date(0, 0, 0, 23, 59)});
+
+    const validationSchema = yup.object({
+        studentInfo: yup.object().shape({
+            studentId: yup.string()
+            .matches(/[0-9]{7}/g, "Student ID must be exactly 7 digits long")
+            .required('Student ID is required'),
+            age: yup.number()
+            .positive()
+            .integer()
+            .max(120, 'Maximum age of 120 years old')
+            .required('Age is required'),
+            onMealPlan: yup.boolean().required("Required"),
+        }).required(),
+        householdInfo: yup.object().shape({
+            numMinors: yup.number()
+            .integer()
+            .min(0, "Must be positive")
+            .max(10, "Maximum of 10")
+            .required("Required"),
+            numAdults: yup.number()
+            .integer()
+            .min(0, "Must be positive")
+            .max(10, "Maximum of 10")
+            .required("Required"),
+            numSeniors: yup.number()
+            .integer()
+            .min(0, "Must be positive")
+            .max(10, "Maximum of 10")
+            .required("Required"),
+        }).optional().notRequired(),
+        requestedPickupTime: yup.date()
+        .test(
+            'inRange',
+            "Must be within pantry hours",
+            function(item) {
+                let usedHourBounds: HourRange = {
+                    // @ts-ignore
+                    timeStart: new Date(item.getFullYear(), item.getMonth(), item.getDate(),
+                                    hourBounds.timeStart.getHours(), hourBounds.timeStart.getMinutes()),
+                    // @ts-ignore
+                    timeEnd: new Date(item.getFullYear(), item.getMonth(), item.getDate(),
+                                    hourBounds.timeEnd.getHours(), hourBounds.timeEnd.getMinutes()),
+                };
+
+                if(item)
+                    return moment(item).isAfter(usedHourBounds.timeStart, 'minute') &&
+                           moment(item).isBefore(usedHourBounds.timeEnd, 'minute');
+                return true;
+            }
+        )
+        .nullable()
         .required("Required"),
-        numAdults: yup.number()
-        .integer()
-        .min(0, "Must be positive")
-        .max(10, "Maximum of 10")
-        .required("Required"),
-        numSeniors: yup.number()
-        .integer()
-        .min(0, "Must be positive")
-        .max(10, "Maximum of 10")
-        .required("Required"),
-    }).optional().notRequired(),
-    requestedPickupTime: yup.date()
-    .min(new Date(), "Cannot be before right now")
-    .max(new Date(Date.now() + (6.048e+8 * 2)), "Cannot be more than two weeks away")
-    .nullable()
-    .required("Required"),
-    itemRequests: yup.array()
-    .of(yup.object().shape({
-        category: yup.object().shape({
-            id: yup.string().nullable()
-            .required("Category is required"),
-            name: yup.string()
-            .required(),
-            description: yup.string()
-            .required(),
-        }).nullable().required('Category is required'),
-        item: yup.object().shape({
+        itemRequests: yup.array()
+        .of(yup.object().shape({
             category: yup.object().shape({
                 id: yup.string().nullable()
-                .required(),
+                .required("Category is required"),
                 name: yup.string()
                 .required(),
                 description: yup.string()
                 .required(),
-            }),
-            id: yup.string().nullable()
-            .required("Item is required"),
-            name: yup.string()
-            .required(),
-            description: yup.string()
-            .required(),
-        }).nullable().required('Item is required'),
-        quantity: yup.number()
-        .integer()
-        .positive("Quantity must be 1 or more")
-        .required("Quantity is required"),
-    }))
-});
-
-const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElement => {
-
-    const [pickupTimes, setPickupTimes] = React.useState<{date: Date | null, time: Date | null}>({date: null, time: null});
+            }).nullable().required('Category is required'),
+            item: yup.object().shape({
+                category: yup.object().shape({
+                    id: yup.string().nullable()
+                    .required(),
+                    name: yup.string()
+                    .required(),
+                    description: yup.string()
+                    .required(),
+                }),
+                id: yup.string().nullable()
+                .required("Item is required"),
+                name: yup.string()
+                .required(),
+                description: yup.string()
+                .required(),
+            }).nullable().required('Item is required'),
+            quantity: yup.number()
+            .integer()
+            .positive("Quantity must be 1 or more")
+            .required("Quantity is required"),
+        }))
+    });
 
     const formik = useFormik({
         initialValues: initialValues,
@@ -169,19 +194,19 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         formik.setFieldValue('householdInfo', undefined);
     };
 
-    const handleDateChange = (newDate: Date | null) => {
-        setPickupTimes({...pickupTimes, date: newDate});
-        formik.setFieldTouched("requestedPickupTime", true);
-    };
+    const handleDateChange = (newDateTime: DateTimeObj) => {
+        setPickupTimes(newDateTime);
 
-    const handleTimeChange = (newTime: Date | null) => {
-        let newPickupTime = pickupTimes.date;
-        console.log(pickupTimes);
-        if(newPickupTime && newTime) {
-            newPickupTime.setHours(newTime.getHours());
-            newPickupTime.setMinutes(newTime.getMinutes());
-            formik.setFieldValue("requestedPickupTime", newPickupTime);
+        if(newDateTime.date && newDateTime.time) {
+            let newDate = new Date( newDateTime.date.getFullYear(),
+                                    newDateTime.date.getMonth(),
+                                    newDateTime.date.getDate(),
+                                    newDateTime.time.getHours(),
+                                    newDateTime.time.getMinutes());
+            formik.setFieldValue("requestedPickupTime", newDate);
         }
+        
+        formik.setFieldTouched("requestedPickupTime", true);
     };
 
     return (
@@ -314,7 +339,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                         {formik.values.itemRequests.length > 0 && 
                         formik.values.itemRequests.map((selection, index: number) => {
                             return (
-                            <>
+                            <React.Fragment key={index}>
                             <Grid item xs={3}>
                                 <CategoryAutocomplete
                                 value={formik.values.itemRequests[index].category}
@@ -366,7 +391,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                     </IconButton>
                                 )}
                             </Grid>
-                            </>
+                            </React.Fragment>
                         )})}
                     </Grid>
                     <Button 
@@ -418,16 +443,13 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 onChange={formik.handleChange}
                 sx={{width: '30%'}}
                 />
-                <DaySelector
-                value={pickupTimes.date}
+                <PickupDateTimeSelector
+                value={pickupTimes}
                 onChange={(newValue) => handleDateChange(newValue)}
+                onHoursChange={(newHours: HourRange) => setHourBounds(newHours)}
                 error={formik.touched.requestedPickupTime && Boolean(formik.errors.requestedPickupTime)}
-                helperText={formik.touched.requestedPickupTime && (formik.errors.requestedPickupTime as string)}
-                />
-                <TimeSelector
-                value={pickupTimes.time}
-                onChange={(newValue) => handleTimeChange(newValue)}
-                selectedDate={pickupTimes.date}
+                // @ts-ignore
+                helperText={formik.touched.requestedPickupTime && (formik.errors.requestedPickupTime)}
                 />
             </Stack>
         </Form>
