@@ -7,7 +7,7 @@ namespace splat.Tests
 {
     public class PickupControllerTest1
     {
-
+    
     [Fact]
         public void UpdateStatusFromPendingToWaiting_ShouldChangeToWaiting()
         {
@@ -44,6 +44,51 @@ namespace splat.Tests
             Assert.Equal(PickupStatus.CANCELED, testPickup4.PickupStatus);
         }
 
+        [Fact]
+        public void UpdateStatusFromPendingToDispursed_ShouldThrowExceptionError()
+        {
+            var testPickup5 = GeneratePickupWithStatus(PickupStatus.PENDING);
+
+            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.DISBURSED, testPickup5));
+            Assert.Equal("Cannot set pickup status to Disbursed", exception.Message);
+        }
+
+        [Fact]
+        public void UpdateStatusFromCanceledToWaiting_ShouldThrowExceptionError()
+        {
+            var testPickup6 = GeneratePickupWithStatus(PickupStatus.CANCELED);
+
+            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.WAITING, testPickup6));
+            Assert.Equal("Cannot set pickup status to Waiting", exception.Message);
+        }
+
+        [Fact]
+        public void UpdateStatusFromCanceledToCanceled_ShouldThrowExceptionError()
+        {
+            var testPickup7 = GeneratePickupWithStatus(PickupStatus.CANCELED);
+
+            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.CANCELED, testPickup7));
+            Assert.Equal("Cannot set pickup status to Cancel", exception.Message);
+        }
+
+
+        [Fact]
+        public void UpdateStatusFromDisbursedToCanceled_ShouldThrowExceptionError()
+        {
+            var testPickup8 = GeneratePickupWithStatus(PickupStatus.DISBURSED);
+
+            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.CANCELED, testPickup8));
+            Assert.Equal("Cannot set pickup status to Cancel", exception.Message);
+        }
+
+        [Fact]
+        public void UpdateStatusFromPendingToPending_ShouldThrowExceptionError()
+        {
+            var testPickup9 = GeneratePickupWithStatus(PickupStatus.PENDING);
+
+            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.PENDING, testPickup9));
+            Assert.Equal("Can't change to PENDING", exception.Message);
+        }
 
 
         private Pickup GeneratePickupWithStatus(PickupStatus status)

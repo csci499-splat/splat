@@ -114,7 +114,7 @@ namespace splat.Controllers
                 case PickupStatus.WAITING:
                     if(pickup.PickupStatus != PickupStatus.PENDING)
                     {
-                        throw new Exception("Pickup status is not PENDING, cannot change");
+                        throw new Exception("Cannot set pickup status to Waiting");
                     }
                     break;
 
