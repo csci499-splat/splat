@@ -10,6 +10,8 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+splat/ClientApp/package-lock.json
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
