@@ -59,14 +59,14 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     };
 
     const getPickups = async () => {
-        let res = await baseRequest.get<Pickup[]>('/pickups');
+        let res = await baseRequest.get<Pickup[]>('/pickups/active');
         setPickups(res.data);
         setCurrentWidth(1 - currentWidth);
     }
 
     React.useEffect(() => {
         getPickups();
-    });
+    }, []);
 
     const getStatusString = (status: PickupStatus): string => {
         switch(status) {
