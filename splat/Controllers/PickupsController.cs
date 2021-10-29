@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using splat.Models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace splat.Controllers
 {
@@ -95,11 +97,29 @@ namespace splat.Controllers
             
         }
 
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateStatusPatch(Guid id, [FromBody] JsonPatchDocument<Pickup> pickup)
+
+        {
+            var task = await _context.Pickups.FindAsync(id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            pickup.ApplyTo(task, ModelState);
+            await _context.SaveChangesAsync();
+
+            return Ok(task);
+        }
+
+
         private bool PickupExists(Guid id)
         {
             return _context.Pickups.Any(p => p.Id == id);
         }
-
 
 
         public static void UpdateStatus(PickupStatus status, Pickup pickup)
