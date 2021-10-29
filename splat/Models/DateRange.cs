@@ -9,15 +9,13 @@ using System.Threading.Tasks;
 namespace splat.Models
 {
     [Keyless]
-    public class TrendReport
+    public class DateRange
     {
-        public TrendEntry[] Entries { get; set; }
-    }
-
-    [Keyless]
-    public class TrendEntry
-    {
-        public Item Item { get; set; }
-        public int RequestCount { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime DateFrom { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime DateTo { get; set; }
     }
 }
