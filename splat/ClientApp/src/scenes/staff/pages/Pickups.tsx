@@ -59,14 +59,14 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     };
 
     const getPickups = async () => {
-        let res = await baseRequest.get<Pickup[]>('/pickups');
+        let res = await baseRequest.get<Pickup[]>('/pickups/active');
         setPickups(res.data);
         setCurrentWidth(1 - currentWidth);
     }
 
     React.useEffect(() => {
         getPickups();
-    });
+    }, []);
 
     const getStatusString = (status: PickupStatus): string => {
         switch(status) {
@@ -190,7 +190,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     return (
         <>
-        <div style={{ height: 800, width: `100% - ${currentWidth}px`}}>
+        <div style={{ height: 'calc(100vh - 210px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={pickups}

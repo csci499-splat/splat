@@ -46,20 +46,20 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, isPersistent: true, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
             if(result.Succeeded)
             {
+                var user = await _userManager.FindByNameAsync(login.UserName);
                 // return success and token
                 var claims = new[]
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, login.Email),
+                    new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
                 var token = new JwtSecurityToken
                     (
-                        issuer: _configuration["Token:Issuer"],
-                        audience: _configuration["Token:Audience"],
                         claims: claims,
                         expires: DateTime.UtcNow.AddDays(60),
                         notBefore: DateTime.UtcNow,
@@ -67,7 +67,10 @@ namespace splat.Controllers
                             SecurityAlgorithms.HmacSha256)
                     );
 
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+                return Ok(new { 
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        roles = await _userManager.GetRolesAsync(user)
+                        });
             } 
             else if(result.IsLockedOut)
             {
@@ -93,7 +96,12 @@ namespace splat.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel newUser)
         {
-            ApplicationUser user = new ApplicationUser { UserName = newUser.UserName };
+            ApplicationUser user = new ApplicationUser 
+            { 
+                UserName = newUser.UserName,
+                Email = newUser.Email 
+            };
+
             var result = await _userManager.CreateAsync(user, newUser.Password);
 
             result = await _userManager.AddToRoleAsync(user, newUser.Role);
@@ -105,7 +113,5 @@ namespace splat.Controllers
 
             return UnprocessableEntity();
         }
-
-
     }
 }

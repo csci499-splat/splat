@@ -15,7 +15,8 @@ const rootElement = document.getElementById('root');
 // https://stackoverflow.com/questions/55149816/is-it-possible-to-use-toast-in-axios-interceptors
 
 const errorHandler = error => {
-    toast.error(`Error ${error.request.status}: ${error.response.statusText}`, {
+    let errorText = error.response.data?.message ? error.response.data?.message : error.response.statusText;
+    toast.error(`Error ${error.request.status}: ${errorText}`, {
         position: 'top-center',
         autoClose: 6000,
         hideProgressBar: false,

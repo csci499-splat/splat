@@ -124,7 +124,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
     return (
         <>
         <Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Donation</Button>
-        <div style={{height: 800, width: `100% - ${currentWidth}px`}}>
+        <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={rows}
