@@ -45,7 +45,7 @@ namespace splat.Controllers
         [HttpGet("Days")]
         public async Task<ActionResult<IEnumerable<DayClosed>>> GetDaysClosed()
         {
-            return await _context.DayClosed.Where(b => b.ClosedOn >= DateTime.Today).ToListAsync();
+            return await _context.DayClosed.Where(b => b.ClosedOn >= DateTime.Today).OrderBy(p => p.ClosedOn).ToListAsync();
         }
 
         // POST: api/Hours/Days
