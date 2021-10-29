@@ -34,16 +34,10 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     const handleDialogClose = (dialog: 'totalReport' | 'trendReport') => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}))
     };
-
-
     const handleTypeChange = (event: SelectChangeEvent) => {
         setType(event.target.value as string);
     };
-
     
-
-    
-
     return (
         <>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>

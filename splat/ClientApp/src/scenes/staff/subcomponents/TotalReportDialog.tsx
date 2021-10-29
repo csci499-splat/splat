@@ -17,6 +17,14 @@ import { baseRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import {TotalReport} from '../../../models/TotalReport';
 
+const TotalReportTest: TotalReport = {
+    foodWeight:200,
+    disbursements:20,
+    peopleImpacted:22,
+    recurringVisits:300,
+    individualVisits:30,
+}
+
 type TotalReportDialogProps = {
     open: boolean;
     onClose: () => void;
@@ -46,13 +54,11 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
             <DialogTitle>TotalReport</DialogTitle>
             <DialogContent>
             <div>
-            <FormControl>
-                <Typography>FoodWeight: {totalReport?.foodWeight} </Typography>
-                <Typography>Disbursements: {totalReport?.disbursements}</Typography>
-                <Typography>People Impacted: {totalReport?.peopleImpacted} </Typography>
-                <Typography>Recurring Visits: {totalReport?.recurringVisits}</Typography>
-                <Typography>Individual Visits: {totalReport?.individualVisits}</Typography>
-            </FormControl>
+            <Typography>FoodWeight: {TotalReportTest?.foodWeight} </Typography>
+            <Typography>Disbursements: {TotalReportTest?.disbursements}</Typography>
+            <Typography>People Impacted: {TotalReportTest?.peopleImpacted} </Typography>
+            <Typography>Recurring Visits: {TotalReportTest?.recurringVisits}</Typography>
+            <Typography>Individual Visits: {TotalReportTest?.individualVisits}</Typography>
         </div>
             </DialogContent>
         </Dialog>
