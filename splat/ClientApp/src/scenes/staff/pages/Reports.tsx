@@ -11,8 +11,8 @@ import Box from '@mui/material/Box';
 import DesktopDateRangePicker from '@mui/lab/DesktopDateRangePicker';
 import MobileDateRangePicker from '@mui/lab/MobileDateRangePicker';
 import FormControl from '@mui/material/FormControl';
-import ItemsAddDialog from '../subcomponents/ItemsAddDialog';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
+import TrendReportDialog from '../subcomponents/TrendReportDialog';
 
 
 interface ReportProps extends IStaffChild {
@@ -90,7 +90,10 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         open={dialogOpen.totalReport}
         onClose={() => handleDialogClose('totalReport')}
         />
-        
+        <TrendReportDialog
+        open={dialogOpen.trendReport}
+        onClose={() => handleDialogClose('trendReport')}
+        />
         </>
     )
 };

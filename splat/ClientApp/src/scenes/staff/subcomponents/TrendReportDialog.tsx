@@ -1,5 +1,5 @@
 import { CancelOutlined, Done, Outbound, Visibility } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, FormControl, IconButton, Tooltip,Typography } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, FormControl, IconButton, Paper, TableContainer, Tooltip,Typography } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -10,7 +10,7 @@ import {
     GridValueGetterParams,
 } from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
-
+import Table from '@mui/material/Table';
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
 import { baseRequest } from '../../../services/api/genericRequest';
@@ -24,11 +24,13 @@ type TrendReportDialogProps = {
     onClose: () => void;
 }
 const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogProps) : ReactElement => {
-    const [totalReport, setTotalReport] = useState<TrendReport[]>([]);
+    const [trendReport, setTotalReport] = useState<TrendReport[]>([]);
     const getTotalReport = async () => {
         let res = await baseRequest.get<TrendReport[]> ('/trendReport');
         setTotalReport(res.data);
+        setCurrentWidth(1 - currentWidth);
     };
+    const [currentWidth, setCurrentWidth] = useState(0);
 
     React.useEffect(() => {
         getTotalReport();
@@ -36,19 +38,29 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogPr
     }, [])
 
 
+
     return(
         <>
+        <div>
         <Dialog
         open={props.open}
         onClose={props.onClose}
+        maxWidth= 'xl'
+        fullWidth
         >
             <DialogTitle>TrendReport</DialogTitle>
             <DialogContent>
-                <div>
-                    
-                </div>
+                <TableContainer component={Paper}>
+                    <Table sx = {{ maxWidth: 650, maxHeight: 600}} aria-label="trend report">
+
+                    </Table>
+                </TableContainer>
             </DialogContent>
         </Dialog>
+        </div>
+        
         </>
     )
 };
+
+export default TrendReportDialog;

@@ -24,9 +24,9 @@ type TotalReportDialogProps = {
 }
 const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogProps) : ReactElement => {
 
-    const [totalReport, setTotalReport] = useState<TotalReport[]>([]);
+    const [totalReport, setTotalReport] = useState<TotalReport>();
     const getTotalReport = async () => {
-        let res = await baseRequest.get<TotalReport[]> ('/totalReport');
+        let res = await baseRequest.get<TotalReport> ('/totalReport');
         setTotalReport(res.data);
     };
 
@@ -47,11 +47,11 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
             <DialogContent>
             <div>
             <FormControl>
-                <Typography>FoodWeight: {totalReport[0]} </Typography>
-                <Typography>Disbursements: {totalReport[1]}</Typography>
-                <Typography>People Impacted: {totalReport[2]} </Typography>
-                <Typography>Recurring Visits: {totalReport[3]}</Typography>
-                <Typography>Individual Visits: {totalReport[4]}</Typography>
+                <Typography>FoodWeight: {totalReport?.foodWeight} </Typography>
+                <Typography>Disbursements: {totalReport?.disbursements}</Typography>
+                <Typography>People Impacted: {totalReport?.peopleImpacted} </Typography>
+                <Typography>Recurring Visits: {totalReport?.recurringVisits}</Typography>
+                <Typography>Individual Visits: {totalReport?.individualVisits}</Typography>
             </FormControl>
         </div>
             </DialogContent>
