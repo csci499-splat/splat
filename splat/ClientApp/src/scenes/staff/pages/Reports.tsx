@@ -8,8 +8,7 @@ import DateRangePicker, { DateRange } from '@mui/lab/DateRangePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import DesktopDateRangePicker from '@mui/lab/DesktopDateRangePicker';
-import MobileDateRangePicker from '@mui/lab/MobileDateRangePicker';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import FormControl from '@mui/material/FormControl';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
 import TrendReportDialog from '../subcomponents/TrendReportDialog';
@@ -21,7 +20,8 @@ interface ReportProps extends IStaffChild {
 
 const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     
-    const [dateValue, setDateValue] = React.useState<DateRange<Date>>([null, null]);
+    const [startDateValue, setStartDateValue] = React.useState<Date | null>(new Date());
+    const [endDateValue, setEndDateValue] = React.useState<Date | null>(new Date());
     const [type, setType] = React.useState('');
 
     const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false});
@@ -42,24 +42,29 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         <>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
         <h1>{props.pageName}</h1>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Stack spacing={3}>
-            <MobileDateRangePicker
-                startText="Please select date range"
-                value={dateValue}
-                onChange={(newDateValue) => {
-                    setDateValue(newDateValue);
-                }}
-                renderInput={(startProps, endProps) => (
-                    <React.Fragment>
-                        <TextField {...startProps} />
-                        <Box sx = {{ mx:2}}> to </Box>
-                        <TextField { ...endProps}/>
-                    </React.Fragment>
-                )}
-                />
+            <MobileDatePicker
+            label="Select start date"
+            value={startDateValue}
+            maxDate={endDateValue}
+            onChange={(newStartDateValue) => {
+                setStartDateValue(newStartDateValue)
+            }}
+            renderInput={(params) => <TextField {...params} />}
+            />
+            <Box sx = {{ mx:2}}> to </Box>
+            <MobileDatePicker
+            label="Select end date"
+            value={endDateValue}
+            minDate= {startDateValue}
+            maxDate={endDateValue}
+            onChange={(newEndDateValue) => {
+                setEndDateValue(newEndDateValue)
+            }}
+            renderInput={(params) => <TextField {...params} />}
+            />
             </Stack>
-        </LocalizationProvider>
+
 
         <Select
         id="reportType"

@@ -55,8 +55,6 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogPr
         let res = await baseRequest.get<TrendReport> ('/trendReport');
         setTotalReport(res.data);
     };
-    const [currentWidth, setCurrentWidth] = useState(0);
-
     React.useEffect(() => {
         getTotalReport();
 
