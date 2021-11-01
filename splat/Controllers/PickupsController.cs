@@ -98,23 +98,38 @@ namespace splat.Controllers
         }
 
 
-        [HttpPatch("{id}")]
-        public async Task<ActionResult> UpdateStatusPatch(Guid id, [FromBody] JsonPatchDocument<Pickup> pickup)
+        [HttpPatch]
+        public async Task<ActionResult> UpdatePatch(Guid id, [FromBody] JsonPatchDocument<Pickup> patch)
 
         {
-            var task = await _context.Pickups.FindAsync(id);
+            var pickup = await _context.Pickups.FindAsync(id);
 
-            if (task == null)
+            if (pickup == null)
             {
                 return NotFound();
             }
 
-            pickup.ApplyTo(task, ModelState);
+            patch.ApplyTo(pickup, ModelState);
             await _context.SaveChangesAsync();
 
-            return Ok(task);
+            return Ok(pickup);
         }
 
+        [HttpPatch]
+        public async Task<ActionResult> UpdatePickupStatus(Guid id, PickupStatus status)
+
+        {
+            var pickup = await _context.Pickups.FindAsync(id);
+
+            if (pickup == null)
+            {
+                return NotFound();
+            }
+
+            UpdateStatus(status, pickup);
+
+            return Ok(pickup);
+        }
 
         private bool PickupExists(Guid id)
         {
