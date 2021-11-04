@@ -12,11 +12,9 @@ import {
 import { type } from 'os';
 import React, { FC, ReactElement, useState } from 'react';
 
-import { Category } from '../../../models/Category';
-import { CategoryIcons } from '../../../models/CategoryIcons';
 import { baseRequest } from '../../../services/api/genericRequest';
-import CategoriesEditDialog from './CategoriesEditDialog';
 import { History, HistoryStatus } from '../../../models/History';
+import HistoryViewDetailsDialog from '../subcomponents/HistoryViewDetailsDialog';
 
 
 type HistoryTableProps = {
