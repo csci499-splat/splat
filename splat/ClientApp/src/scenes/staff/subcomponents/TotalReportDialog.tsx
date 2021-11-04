@@ -1,16 +1,5 @@
-import { CancelOutlined, Done, Outbound, Visibility } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, FormControl, IconButton, Tooltip,Typography } from '@mui/material';
-import {
-    DataGrid,
-    GridColDef,
-    GridRenderCellParams,
-    GridRowData,
-    GridSortModel,
-    GridToolbar,
-    GridValueGetterParams,
-} from '@mui/x-data-grid';
+import { Dialog, DialogContent, DialogActions, DialogTitle, FormControl, IconButton, Tooltip,Typography, Button } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
-
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
 import { baseRequest } from '../../../services/api/genericRequest';
@@ -61,6 +50,9 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
             <Typography>Individual Visits: {TotalReportTest?.individualVisits}</Typography>
         </div>
             </DialogContent>
+            <DialogActions sx={{margin: 1}}>
+            <Button variant="outlined" onClick={props.onClose} color="secondary">Closed</Button>
+            </DialogActions>
         </Dialog>
         
         </>

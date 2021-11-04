@@ -46,7 +46,6 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             textAlign: 'center',
             position: 'absolute',
             left: '30%',
-
           }}
         >
         <h1>{props.pageName}</h1>
