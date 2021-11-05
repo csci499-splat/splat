@@ -177,3 +177,5 @@ const HistoryTable: FC<HistoryTableProps> = (props: HistoryTableProps) : ReactEl
         </>
     )
 }
+
+export default HistoryTable;
