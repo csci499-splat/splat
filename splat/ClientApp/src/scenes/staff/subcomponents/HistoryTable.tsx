@@ -1,4 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
+import { CancelOutlined, Done, Outbound, Visibility } from '@mui/icons-material';
 import { Dialog, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import {
     DataGrid,
@@ -6,6 +7,7 @@ import {
     GridRenderCellParams,
     GridRowData,
     GridToolbar,
+    GridSortModel,
     GridValueFormatterParams,
     GridValueGetterParams
 } from '@mui/x-data-grid';
@@ -13,7 +15,7 @@ import { type } from 'os';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { baseRequest } from '../../../services/api/genericRequest';
-import { History, HistoryStatus } from '../../../models/History';
+import { History, PickupStatus } from '../../../models/History';
 import HistoryViewDetailsDialog from '../subcomponents/HistoryViewDetailsDialog';
 
 
@@ -22,9 +24,32 @@ type HistoryTableProps = {
     onClose : () => void;
 };
 
+export interface IHistoryRow extends GridRowData, History {
+    
+};
+
+export interface IHistoryDialogProps {
+    selectedPickup?: IHistoryRow;
+    open: boolean;
+    onClose: () => void;
+};
+
+
+
 const HistoryTable: FC<HistoryTableProps> = (props: HistoryTableProps) : ReactElement => {
 
+    const [dialogOpen, setDialogOpen] = useState({viewDetails: false});
+    const [selectedPickup, setSelectedPickup] = useState<IHistoryRow>();
     const [historyTable, setHistoryTable] = useState<History[]>([]);
+    const [currentWidth, setCurrentWidth] = useState(0);
+
+    const [sortModel, setSortModel] = React.useState<GridSortModel>([
+        {
+          field: 'requestedPickupTime',
+          sort: 'asc',
+        },
+    ]);
+
     const getHistoryTable = async () => {
         let res = await baseRequest.get<History[]> ('/history');
         setHistoryTable(res.data);
@@ -34,15 +59,32 @@ const HistoryTable: FC<HistoryTableProps> = (props: HistoryTableProps) : ReactEl
         getHistoryTable();
     },[])
 
-    const getStatusString = (status: HistoryStatus): string => {
+    const handleDialogOpen = (dialog: 'viewDetails', currentRow: IHistoryRow) => {
+        setDialogOpen((prevState) => ({ ...prevState, [dialog]: true }));
+        setSelectedPickup(currentRow);
+    };
+
+    const handleDialogClose = (dialog: 'viewDetails') => {
+        setDialogOpen((prevState) => ({ ...prevState, [dialog]: false }));
+        setSelectedPickup(undefined);
+        getPickups();
+    };
+
+    const getPickups = async () => {
+        let res = await baseRequest.get<History[]>('/history');
+        setHistoryTable(res.data);
+        setCurrentWidth(1 - currentWidth);
+    }
+
+    const getStatusString = (status: PickupStatus): string => {
         switch(status) {
-            case HistoryStatus.PENDING:
+            case PickupStatus.PENDING:
                 return "Pending fulfillment";
-            case HistoryStatus.WAITING:
+            case PickupStatus.WAITING:
                 return "Waiting for pickup";
-            case HistoryStatus.DISBURSED:
+            case PickupStatus.DISBURSED:
                 return "Disbursed to student";
-            case HistoryStatus.CANCELED:
+            case PickupStatus.CANCELED:
                 return "Canceled";
             default:
                 return "None";
@@ -91,7 +133,7 @@ const HistoryTable: FC<HistoryTableProps> = (props: HistoryTableProps) : ReactEl
                 flex: .4,
                 headerName: 'Status',
                 valueGetter: (params: GridValueGetterParams) => {
-                    return getStatusString(params.row.pickupStatus as HistoryStatus);
+                    return getStatusString(params.row.pickupStatus as PickupStatus);
                 },
                 headerAlign: 'center',
                 align: 'center',
@@ -100,13 +142,13 @@ const HistoryTable: FC<HistoryTableProps> = (props: HistoryTableProps) : ReactEl
                 field: 'viewMore',
                 flex: 0.2,
                 headerName: 'View Details',
-                /*renderCell: (params: GridRenderCellParams) => (
+                renderCell: (params: GridRenderCellParams) => (
                     <IconButton
-                    onClick={() => handleDialogOpen('viewDetails', params.row as IPickupRow)}
+                    onClick={() => handleDialogOpen('viewDetails', params.row as IHistoryRow)}
                     >
                         <Visibility />
                     </IconButton>
-                ),*/
+                ),
                 headerAlign: 'center',
                 align: 'center',
                 disableExport: true,
@@ -116,12 +158,22 @@ const HistoryTable: FC<HistoryTableProps> = (props: HistoryTableProps) : ReactEl
         
     return(
         <>
-        <Dialog
-        open={props.open}
-        onClose={props.onClose}
-        >
-            <DialogTitle></DialogTitle>
-        </Dialog>
+        <div style={{ height: 'calc(100vh - 210px)', width: `100% - ${currentWidth}px`}}>
+            <DataGrid
+            columns={columns}
+            rows={historyTable}
+            components={{
+                Toolbar: GridToolbar
+            }}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
+            />
+        </div>
+        <HistoryViewDetailsDialog 
+        selectedPickup={selectedPickup} 
+        open={dialogOpen.viewDetails}
+        onClose={() => handleDialogClose('viewDetails')}
+        />
         </>
     )
 }

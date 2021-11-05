@@ -36,8 +36,6 @@ export interface IHistoryDialogProps {
 
 const History: FC<HistoryProps> = (props: HistoryProps): ReactElement => {
 
-
-
     return (
         <>
         <h1>{props.pageName}</h1>
