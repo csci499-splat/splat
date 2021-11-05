@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogActions, DialogTitle, FormControl, IconButton, Tooltip,Typography, Button } from '@mui/material';
+import { Dialog, DialogContent, DialogActions, DialogTitle, Paper, FormControl, IconButton, Tooltip,Typography, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
@@ -40,14 +40,33 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
         open={props.open}
         onClose={props.onClose}
         >
-            <DialogTitle>TotalReport</DialogTitle>
+            <DialogTitle>Total Report</DialogTitle>
             <DialogContent>
             <div>
-            <Typography>FoodWeight: {TotalReportTest?.foodWeight} </Typography>
-            <Typography>Disbursements: {TotalReportTest?.disbursements}</Typography>
-            <Typography>People Impacted: {TotalReportTest?.peopleImpacted} </Typography>
-            <Typography>Recurring Visits: {TotalReportTest?.recurringVisits}</Typography>
-            <Typography>Individual Visits: {TotalReportTest?.individualVisits}</Typography>
+            <TableContainer component={Paper}>
+                    <Table sx = {{ maxWidth: 400, maxHeight: 600, alignItems: 'left'}} aria-label="trend report">
+                        <TableHead sx={{alignItems: 'center'}}>
+                            <TableRow sx={{alignItems: 'right'}}>
+                                <TableCell> Total Food Weight </TableCell>
+                                <TableCell> Total Food Disbursements </TableCell>
+                                <TableCell> Total People Impacted </TableCell>
+                                <TableCell> Total Recurring Visits </TableCell>
+                                <TableCell> Total Individual Visits </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {TotalReportTest?.map((row) => (
+                                <TableRow
+                                key={row.totalReport.foodWeight}
+                                >
+                                <TableCell align="center">{row.item.name} </TableCell>
+                                <TableCell align="center">{row.item.category?.name} </TableCell>
+                                <TableCell align="center">{row.requestCount} </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
         </div>
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
