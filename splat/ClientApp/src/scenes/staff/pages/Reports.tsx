@@ -80,7 +80,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         value={reportType}
         onChange={handleTypeChange}
         label="Report Type"
-        disabled={Boolean(startDateValue)||Boolean(endDateValue)}
+        disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}
         >
             <MenuItem value="totalReport">Total Report
             </MenuItem>
@@ -96,7 +96,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         />
         <Button
         variant="contained"
-        disabled={Boolean(startDateValue)||Boolean(endDateValue)}
+        disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}
         onClick={()=> handleDialogOpen(reportType)}
         >Open</Button>
         </Stack>
