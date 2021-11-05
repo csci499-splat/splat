@@ -1,4 +1,4 @@
-type TotalReport = {
+export type TotalReport = {
     foodWeight: number;
     disbursements: number;
     peopleImpacted: number;
@@ -6,4 +6,3 @@ type TotalReport = {
     individualVisits: number;
 };
 
-export type { TotalReport };

@@ -44,28 +44,43 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
             <DialogContent>
             <div>
             <TableContainer component={Paper}>
-                    <Table sx = {{ maxWidth: 400, maxHeight: 600, alignItems: 'left'}} aria-label="trend report">
-                        <TableHead sx={{alignItems: 'center'}}>
-                            <TableRow sx={{alignItems: 'right'}}>
-                                <TableCell> Total Food Weight </TableCell>
-                                <TableCell> Total Food Disbursements </TableCell>
-                                <TableCell> Total People Impacted </TableCell>
-                                <TableCell> Total Recurring Visits </TableCell>
-                                <TableCell> Total Individual Visits </TableCell>
+                    <Table sx = {{ maxWidth: 700, maxHeight: 600, alignItems: 'left'}} aria-label="total report">
+                        <TableHead >
+                            <TableRow >
+                                <TableCell align="left">Total</TableCell>
+                                <TableCell align="right">Count</TableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {TotalReportTest?.map((row) => (
-                                <TableRow
-                                key={row.totalReport.foodWeight}
-                                >
-                                <TableCell align="center">{row.item.name} </TableCell>
-                                <TableCell align="center">{row.item.category?.name} </TableCell>
-                                <TableCell align="center">{row.requestCount} </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
+                        
                     </Table>
+                    <TableBody>
+                    <TableRow sx={{alignItems: 'right'}}>
+                                <TableCell> Food Weight:</TableCell>
+                                <TableCell> {TotalReportTest.foodWeight} </TableCell>                       
+                            </TableRow>
+                            
+                            <TableRow>
+                                <TableCell> Food Disbursements: </TableCell>
+                                <TableCell> {TotalReportTest.disbursements} </TableCell>
+                                
+                            </TableRow>
+
+                            <TableRow>
+                            <TableCell> People Impacted: </TableCell>
+                            <TableCell> {TotalReportTest.peopleImpacted} </TableCell>
+                            </TableRow>
+                            
+                            <TableRow>
+                                <TableCell>Recurring Visits: </TableCell>
+                                <TableCell> {TotalReportTest.recurringVisits} </TableCell>
+                            </TableRow>
+                            
+                            <TableRow>
+                                <TableCell> Individual Visits: </TableCell>
+                                <TableCell> {TotalReportTest.individualVisits} </TableCell>
+                            
+                            </TableRow>
+                    </TableBody>
                 </TableContainer>
         </div>
             </DialogContent>
