@@ -1,18 +1,12 @@
 import React, { FC, ReactElement } from 'react';
-import { DatePicker, LocalizationProvider} from '@mui/lab';
-import { Button, Grid, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { Button, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import { IStaffChild } from '../Staff';
-import {TotalReport} from '../../../models/TotalReport';
 import { useState } from 'react';
-import DateRangePicker, { DateRange } from '@mui/lab/DateRangePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
-import FormControl from '@mui/material/FormControl';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
 import TrendReportDialog from '../subcomponents/TrendReportDialog';
-import { TrendReport } from '../../../models/TrendReport';
 
 interface ReportProps extends IStaffChild {
     

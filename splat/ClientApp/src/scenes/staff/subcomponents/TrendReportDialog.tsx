@@ -1,13 +1,10 @@
-import { CancelOutlined, Done, Outbound, RowingSharp, Visibility } from '@mui/icons-material';
-import { Dialog, DialogContent,DialogActions, DialogTitle, FormControl, IconButton, Paper, TableBody, TableContainer, TableHead, TableRow, Tooltip,Typography, Button } from '@mui/material';
+import { Dialog, DialogContent,DialogActions, DialogTitle,
+    Paper, TableBody, TableContainer, TableHead, TableRow, Tooltip,Typography, Button } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import TableCell from '@mui/material/TableCell';
 import Table from '@mui/material/Table';
 import { baseRequest } from '../../../services/api/genericRequest';
-import { IStaffChild } from '../Staff';
 import {TrendReport} from '../../../models/TrendReport'
-import { propsToClassKey } from '@mui/styles';
-import ItemAutocomplete from '../../student/ItemAutocomplete';
 
 const TrendReportTest: TrendReport = {
     entries: [
