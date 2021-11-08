@@ -35,7 +35,7 @@ namespace splat.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
 
-            if(user != null)
+            if (user != null)
             {
                 var pickups = await _context.Pickups.Where(p => p.ApplicationUserEmail == user.Email).ToListAsync();
                 return pickups;
@@ -94,11 +94,11 @@ namespace splat.Controllers
             }
 
             return NotFound(new { message = "Invalid user" });
-            
+
         }
 
 
-        [HttpPatch]
+        [HttpPatch("{id}")]
         public async Task<ActionResult> UpdatePatch(Guid id, [FromBody] JsonPatchDocument<Pickup> patch)
 
         {
@@ -115,7 +115,7 @@ namespace splat.Controllers
             return Ok(pickup);
         }
 
-        [HttpPatch]
+        [HttpPatch("{id}/status")]
         public async Task<ActionResult> UpdatePickupStatus(Guid id, PickupStatus status)
 
         {
@@ -126,8 +126,17 @@ namespace splat.Controllers
                 return NotFound();
             }
 
-            UpdateStatus(status, pickup);
-
+            try
+            {
+                UpdateStatus(status, pickup);
+                _context.Pickups.Update(pickup);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new Exception("Invalid Input");
+            }
+            
             return Ok(pickup);
         }
 
