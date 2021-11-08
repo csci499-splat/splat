@@ -13,7 +13,7 @@ namespace splat.Tests
         [Fact]
         public void GetTotalWeights_SumOfWeights()
         {
-            var totalWeights = TotalReportsController.GetTotalWeight2(GeneratePickups().AsQueryable());
+            var totalWeights = TotalReportsController.GetTotalWeight(GeneratePickups().AsQueryable()).Result;
             var expectedTotalWeights = 48.5;
             Assert.StrictEqual(expectedTotalWeights, totalWeights);
         }
@@ -21,7 +21,7 @@ namespace splat.Tests
         [Fact]
         public void GetTotalDisbursements_CountPickups()
         {
-            var totalDisbursements = TotalReportsController.TotalDisbursements2(GeneratePickups().AsQueryable());
+            var totalDisbursements = TotalReportsController.TotalDisbursements(GeneratePickups().AsQueryable()).Result;
             var expectedCount = 3;
             Assert.StrictEqual(expectedCount, totalDisbursements);
         }
@@ -29,7 +29,7 @@ namespace splat.Tests
         [Fact]
         public void GetTotalPeopleImpacted_SumStudendsWithHouseholdInfo()
         {
-            var totalPeople = TotalReportsController.TotalPeopleImpacted2(GeneratePickups().AsQueryable());
+            var totalPeople = TotalReportsController.TotalPeopleImpacted(GeneratePickups().AsQueryable()).Result;
             var expectedCount = 8;
             Assert.StrictEqual(expectedCount, totalPeople);
         }
@@ -37,7 +37,7 @@ namespace splat.Tests
         [Fact]
         public void GetTotalRecurringVisits_SumOfRepeatedIds()
         {
-            var totalRecurringVisits= TotalReportsController.TotalRecurringVisits2(GeneratePickups().AsQueryable());
+            var totalRecurringVisits= TotalReportsController.TotalRecurringVisits(GeneratePickups().AsQueryable()).Result;
             var expectedCount = 1;
             Assert.StrictEqual(expectedCount, totalRecurringVisits);
         }
@@ -45,7 +45,7 @@ namespace splat.Tests
         [Fact]
         public void GetTotalIndividualVisits_SumOfRepeatedIds()
         {
-            var totalIdividualVisits = TotalReportsController.TotalIndividualVisits2(GeneratePickups().AsQueryable());
+            var totalIdividualVisits = TotalReportsController.TotalIndividualVisits(GeneratePickups().AsQueryable()).Result;
             var expectedCount = 2;
             Assert.StrictEqual(expectedCount, totalIdividualVisits);
         }

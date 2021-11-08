@@ -35,6 +35,7 @@ namespace splat.Controllers
             RoleManager<ApplicationRole> roleManager,
             IConfiguration configuration)
         {
+
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
