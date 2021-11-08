@@ -28,74 +28,93 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange range)
         {
-            var reportPickups = _context.Pickups
-                .Where(p => p.SubmittedAt >= range.DateFrom && p.SubmittedAt <= range.DateTo)
-                .Where(p => p.PickupStatus != PickupStatus.CANCELED);
+            var reportPickups = GetPickupsWithinDateRange(GetPickupsFromContext(_context), range);
 
             return await GenerateReport(reportPickups);
         }
 
         public static async Task<TrendReport> GenerateReport(IQueryable<Pickup> pickups)
         {
-            var itemRequests = GetItemRequests(pickups);
-            IEnumerable<TrendEntry> trendEntries = GenerateTrendEntries(itemRequests.ToList());
-            return new TrendReport { Entries = trendEntries.ToArray<TrendEntry>() };
+            return new TrendReport { };
         }
 
-        public static IEnumerable<ItemRequest[]> GetItemRequests(IQueryable<Pickup> pickups)
+        public static IEnumerable<ItemRequest[]> GetItemRequestsInWeek(IQueryable<Pickup> pickups, Week week)
         {
-            return new List<ItemRequest[]>(pickups.Select(p => p.ItemRequests).ToList());
+            IQueryable<Pickup> pickupsInWeek = GetPickupsInWeek(pickups, week);
+
+            return new List<ItemRequest[]>(pickupsInWeek.Select(p => p.ItemRequests).ToList());
         }
 
-        public static IEnumerable<TrendEntry> GenerateTrendEntries(List<ItemRequest[]> itemRequests)
+        // PRIVATE  METHODS
+        // Methods for getting and parsing pickups from the DB
+        private static IQueryable<Pickup> GetPickupsFromContext(SplatContext context)
         {
-            List<TrendEntry> trendEntries = GenerateEmptyTrendEntries(itemRequests);
-            CountItemRequests(trendEntries, itemRequests);
-
-            return trendEntries;
+            return context.Pickups
+                .Where(p => p.PickupStatus != PickupStatus.CANCELED);
         }
 
-        static List<TrendEntry> GenerateEmptyTrendEntries(List<ItemRequest[]> itemRequests)
+        private static IQueryable<Pickup> GetPickupsWithinDateRange(IQueryable<Pickup> pickups, DateRange range)
+        {
+            return pickups
+                .Where(p => p.SubmittedAt >= range.DateFrom && p.SubmittedAt <= range.DateTo);
+        }
+
+        private static IQueryable<Pickup> GetPickupsInWeek(IQueryable<Pickup> pickups, Week week)
+        {
+            return pickups
+                .Where(p => p.SubmittedAt >= week.DateFrom && p.SubmittedAt <= week.DateTo);
+        }
+
+        // Methods for generating TrendEntries
+
+        private static TrendEntry GenerateTrendEntryForItem(ItemRequest[] itemRequests)
+        {
+            Item entryItem;
+            if (!RequestsAreForSingleItem(itemRequests))
+                throw new Exception("Requests for single trend entry are not all the same item!");
+            entryItem = itemRequests[0].Item;   
+
+            return new TrendEntry();
+        }
+
+        private static List<TrendEntry> GenerateEmptyTrendEntries(List<ItemRequest[]> itemRequests)
         {
             List<TrendEntry> trendEntries = new List<TrendEntry>();
 
-            foreach(ItemRequest[] requests in itemRequests)
-            {
-                foreach (ItemRequest request in requests)
-                    if (!EntryForItemExists(trendEntries, request.Item))
-                        trendEntries.Add(new TrendEntry { Item = request.Item, RequestCount = 0 });
-
-            }
-
             return trendEntries;
         }
 
-        static void CountItemRequests(List<TrendEntry> trendEntries, List<ItemRequest[]> itemRequests)
+        private static int CountItemRequests(ItemRequest[] itemRequests)
         {
-            foreach (ItemRequest[] requests in itemRequests)
-            {
-                foreach (ItemRequest request in requests)
-                {
-                    foreach (TrendEntry entry in trendEntries)
-                    {
-                        if (entry.Item.Equals(request.Item))
-                        {
-                            entry.RequestCount += request.Quantity;
-                        }
-                    }
-                }
-            }
+            int count = 0;
+            foreach (ItemRequest request in itemRequests)
+                count += request.Quantity;
+
+            return count;
         }
 
-        static bool EntryForItemExists(List<TrendEntry> trendEntries, Item item)
+        private static bool EntryForItemExists(List<TrendEntry> trendEntries, Item item)
         {
-            foreach(TrendEntry entry in trendEntries)
+            foreach (TrendEntry entry in trendEntries)
             {
                 if (entry.Item.Equals(item))
                     return true;
             }
 
             return false;
+        }
+
+        private static bool RequestsAreForSingleItem(ItemRequest[] itemRequests)
+        {
+            Item shouldAllBe = itemRequests[0].Item;
+
+            for (int i = 0; i < itemRequests.Length; i++)
+            {
+                if (!itemRequests[i].Item.Equals(shouldAllBe))
+                    return false;
+            }
+
+            return true;
         }
     }
 }
