@@ -110,12 +110,12 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
             [
                 {
                     email: 'tester@test.com',
-                    roles: ['Administrator'],
+                    role: 'Administrator',
                     id: 'tester@test.com',
                 },
                 {
                     email: 'staffTest1@gmail.com',
-                    roles: ['Staff'],
+                    role: 'Staff',
                     id: 'staffTest1@gmail.com',
                 }
             ]

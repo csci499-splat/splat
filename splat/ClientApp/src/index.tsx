@@ -7,7 +7,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { baseRequest, authRequest } from './services/api/genericRequest';
-import { getAuthToken } from './services/util/authHeader';
+import { getAuthToken } from './services/util/login';
 
 //const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
