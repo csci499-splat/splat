@@ -4,6 +4,7 @@ using Xunit;
 using splat.Models;
 using splat.Controllers;
 using System.Collections.Generic;
+using MockQueryable.Moq;
 
 namespace splat.Tests
 {
@@ -13,6 +14,8 @@ namespace splat.Tests
         [Fact]
         public void GetTotalWeights_SumOfWeights()
         {
+            var mock = GeneratePickups().AsQueryable().BuildMockDbSet();
+
             var totalWeights = TotalReportsController.GetTotalWeight(GeneratePickups().AsQueryable()).Result;
             var expectedTotalWeights = 48.5;
             Assert.StrictEqual(expectedTotalWeights, totalWeights);
@@ -119,6 +122,5 @@ namespace splat.Tests
                 }
             };
         }
-
     }
 }
