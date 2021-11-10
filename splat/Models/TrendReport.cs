@@ -4,11 +4,16 @@ namespace splat.Models
 {
     public class TrendReport
     {
-        public const int WEEK = 7;
-        public TrendEntry[] Entries { get; set; }
+        public List<TrendEntry> Entries { get; set; }
     }
 
     public class TrendEntry
+    {
+        Category category;
+        List<TrendItemEntry> ItemEntries;
+    }
+
+    public class TrendItemEntry
     {
         public Item Item { get; set; }
         public List<RequestHistogramBin> RequestBins { get; set; }
