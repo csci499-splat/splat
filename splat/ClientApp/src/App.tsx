@@ -43,9 +43,8 @@ const App: FC<{}> = (): ReactElement => {
             setDarkmode={setCurrentTheme} />
             <Switch>
                 <Route exact path='/' 
-                render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} 
+                render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
                 />
-                {/* TODO: Add AuthorizedRoutes for /student and /staff */}
                 <PrivateRoute exact path='/student' component={Student} roles={UserRoles} />
                 <PrivateRoute path='/staff' component={Staff} roles={['Staff', 'Administrator']} />
                 <Route path='/'>

@@ -10,7 +10,7 @@ import {
 } from '@mui/x-data-grid';
 import React, { FC, ReactElement } from 'react';
 import User from '../../../models/User';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import UserAddForm from '../subcomponents/UserAddForm';
 
@@ -96,7 +96,7 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
 
     const handleUserChangeRole = async (id: string, newRole: string) => {
         try {
-            await baseRequest.patch(`/users/${id}`, { roles: [newRole] });
+            await authRequest.patch(`/users/${id}`, { roles: [newRole] });
             getUsers();
         } catch(error) {
 
@@ -105,7 +105,7 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
 
     const getUsers = async () => {
         try {
-            // let res = await baseRequest.get<User[]>('/users');
+            // let res = await authRequest.get<User[]>('/users');
             let res: User[] & GridRowData[] = 
             [
                 {

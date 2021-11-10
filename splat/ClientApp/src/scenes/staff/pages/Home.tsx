@@ -3,7 +3,7 @@ import { Button, TextField } from '@mui/material';
 import React, { FC, ReactElement } from 'react';
 
 import { StaffMessage } from '../../../models/StaffMessage';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 
 interface HomeProps extends IStaffChild {
@@ -15,12 +15,12 @@ const Home: FC<HomeProps> = (props: HomeProps): ReactElement => {
     const [currentMessage, setCurrentMessage] = React.useState<string | null>();
     
     const getCurrentMessage = async () => {
-        let res = await baseRequest.get<StaffMessage>('/staffmessages');
+        let res = await authRequest.get<StaffMessage>('/staffmessages');
         setCurrentMessage(res.data.message);
     };
 
     const handleUpdateMessage = async () => {
-        await baseRequest.post<StaffMessage>('/staffmessages', {
+        await authRequest.post<StaffMessage>('/staffmessages', {
             message: currentMessage,
         });
     };
