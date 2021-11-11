@@ -59,7 +59,6 @@ const History: FC<HistoryProps> = (props: HistoryProps): ReactElement => {
             left: '30%',
           }}
         >
-        <h1>{props.pageName}</h1>
 
         <Stack direction="row" spacing={2}  >
         <MobileDatePicker
@@ -88,7 +87,7 @@ const History: FC<HistoryProps> = (props: HistoryProps): ReactElement => {
         
         <Button
         variant="contained"
-        disabled={Boolean(startDateValue)||Boolean(endDateValue)}
+        disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}
         onClick={()=> handleDialogOpen('HistoryTable')}
         >Open</Button>
         </Stack>
