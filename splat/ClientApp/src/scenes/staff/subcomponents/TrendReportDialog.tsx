@@ -1,36 +1,57 @@
 import { Dialog, DialogContent,DialogActions, DialogTitle,
-    Paper, TableBody, TableContainer, TableHead, TableRow,Typography, Button } from '@mui/material';
+    Paper, TableBody, TableContainer, TableHead, TableRow,Typography, Button, Autocomplete } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import TableCell from '@mui/material/TableCell';
 import Table from '@mui/material/Table';
 import { baseRequest } from '../../../services/api/genericRequest';
 import {TrendReport} from '../../../models/TrendReport'
 import { LineChart, Line, XAxis, YAxis, Tooltip, Label, Legend, CartesianGrid } from 'recharts';
+import ItemAutocomplete from '../../student/ItemAutocomplete';
 
 const TrendReportTest: TrendReport = {
     entries: [
         {
-            item: {
-            id:'123',
-            name:'milk',
             category:{
-                id:'11',
-                name:'milk',
-                limit: 0,
+                id:'',
+                name:'',
+                limit:0,
                 icon:'',
                 description:'',
                 visible:true,
-                createdAt:''
+                createdAt:'',
             },
-            categoryId:'',
-            description:'',
-            visible: true,
-            createdAt:'',
-        },
-        requestCount:10,
-        }
-    ]
-}
+            trendItemEntries:[
+                {
+                item :{
+                    id:'',
+                    name:'',
+                    categoryId:'',
+                    category:{
+                        id:'',
+                        name:'',
+                        limit:0,
+                        icon:'',
+                        description:'',
+                        visible:true,
+                        createdAt:'',
+                    },
+                    description:'',
+                    visible:true,
+                    createdAt:'',
+                },
+                requestBin:[
+                    {
+                    requestCount:10,
+                    binTime:{
+                        startDate: new Date(2021,10,11),
+                        endDate:new Date(2021,11,10),
+                    }
+                }
+                ],
+                average:9,
+            },
+            ],}]};
+
 
 const sleep = (delay: number) => {
     return new Promise((resolve) => {
@@ -64,6 +85,9 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogPr
         >
             <DialogTitle>TrendReport</DialogTitle>
             <DialogContent>
+                
+
+
                 <LineChart
                 width={730}
                 height={250} 
