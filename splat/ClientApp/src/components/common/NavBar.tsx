@@ -1,4 +1,4 @@
-﻿import { AccountCircle, DarkMode, LightMode, ListAlt, Login, Logout } from '@mui/icons-material';
+﻿import { AccountCircle, DarkMode, LightMode, ListAlt, Login as LoginIcon, Logout } from '@mui/icons-material';
 import {
     AppBar,
     Button,
@@ -15,10 +15,12 @@ import {
     Toolbar,
     Typography,
 } from '@mui/material';
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 
 import { DarkmodeStates } from '../../services/util/useDarkmode';
+import { login, logout, getLoggedIn } from '../../services/util/login';
+import Login from './Login';
 
 type NavBarProps = {
     loggedIn: boolean,
@@ -31,21 +33,36 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
     const loggedIn = props.loggedIn;
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [loginOpen, setLoginOpen] = useState(false);
+    
     const history = useHistory();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await logout();
         handleClose();
         props.setLoggedIn(false);
     }
 
-    const handleLogin = () => {
-        handleClose();
-        props.setLoggedIn(true);
+    const handleLoginOpen = async () => {
+       setLoginOpen(true);
     }
+
+    const handleLogin = async (email: string, pass: string) => {
+        try {
+            await login(email, pass, () => {});
+            console.log("Setting logged in to true");
+            props.setLoggedIn(true);
+        } catch(err) {
+            
+        } finally {
+            setLoginOpen(false);
+            handleClose();
+        }
+    };
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -90,12 +107,12 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                         onClose={handleClose}
                         >
                             {/* TODO: Add logout function*/}
-                            <MenuItem onClick={loggedIn ? handleLogout : handleLogin}>
+                            <MenuItem onClick={loggedIn ? handleLogout : handleLoginOpen}>
                                 <ListItemIcon>
                                     {loggedIn ? (
                                         <Logout fontSize="small" />         
                                     ) : (
-                                        <Login fontSize="small" />
+                                        <LoginIcon fontSize="small" />
                                     )}
                                 </ListItemIcon>
                                 <ListItemText>
@@ -165,6 +182,13 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                     </Link>
                 </Stack>
             </AppBar>
+
+            {loginOpen && (
+            <Login
+            loginHandler={handleLogin}
+            onClose={() => setLoginOpen(false)}
+            />
+        )}
         </>
     );
 }

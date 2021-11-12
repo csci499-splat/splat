@@ -27,9 +27,9 @@ export type StaffRoute = {
         abbv: string;
         full: string;
     };
-    icon: React.ReactElement,
-    page: React.ReactElement,
-    adminOnly?: boolean,
+    icon: React.ReactElement;
+    page: React.ReactElement;
+    allowedRoles: string[];
 };
 
 const staffRoutes: StaffRoute[] = [
@@ -40,7 +40,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'Staff Home'
         },
         icon: <HomeIcon />,
-        page: <Home />
+        page: <Home />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/pickups',
@@ -49,7 +50,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'View/Manage Pickups'
         },
         icon: <ListAlt />,
-        page: <Pickups />
+        page: <Pickups />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/categories',
@@ -58,7 +60,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'Manage Categories'
         },
         icon: <Category />,
-        page: <Categories />
+        page: <Categories />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/items',
@@ -67,7 +70,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'Manage Items'
         },
         icon: <FormatListBulleted />,
-        page: <Items />
+        page: <Items />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/donations',
@@ -76,7 +80,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'View/Add Donations'
         },
         icon: <MonetizationOn />,
-        page: <Donations />
+        page: <Donations />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/reports',
@@ -85,7 +90,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'View Reports'
         },
         icon: <Assessment />,
-        page: <Reports />
+        page: <Reports />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/hours',
@@ -94,7 +100,8 @@ const staffRoutes: StaffRoute[] = [
             full: 'Adjust Pantry Hours'
         },
         icon: <AccessTime />,
-        page: <Hours />
+        page: <Hours />,
+        allowedRoles: ['Staff', 'Administrator'],
     },
     {
         url: '/staff/users',
@@ -104,7 +111,7 @@ const staffRoutes: StaffRoute[] = [
         },
         icon: <People />,
         page: <Users />,
-        adminOnly: true,
+        allowedRoles: ['Administrator'],
     },
     {
         url: '/staff/discards',
@@ -114,6 +121,7 @@ const staffRoutes: StaffRoute[] = [
         },
         icon: <DeleteForever />,
         page: <Discards />,
+        allowedRoles: ['Staff', 'Administrator'],
     }
 ];
 

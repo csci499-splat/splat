@@ -19,7 +19,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupFulfillDialogProps extends IPickupDialogProps {
@@ -43,14 +43,14 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            await baseRequest.patch(`/pickups/${props.selectedPickup?.id}`,
+            await authRequest.patch(`/pickups/${props.selectedPickup?.id}/status`,
                 { weight: values.weight, status: PickupStatus.WAITING });
             props.onClose();
         }
     })
 
     const handleFulfill = async (id: string | undefined | null, newStatus: PickupStatus) => {
-        if(id) await baseRequest.patch(`/pickups/${id}`, { status: newStatus });
+        if(id) await authRequest.patch(`/pickups/${id}`, { status: newStatus });
         props.onClose();
     };
 

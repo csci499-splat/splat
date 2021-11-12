@@ -23,7 +23,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { CategoryIcons } from '../../../models/CategoryIcons';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 
 type CategoriesEditDialogProps = {
     onClose: () => void;
@@ -73,7 +73,7 @@ const CategoriesEditDialog: FC<CategoriesEditDialogProps> = (props: CategoriesEd
         enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
-            await baseRequest.put(`/categories/${values.id}`, values);
+            await authRequest.put(`/categories/${values.id}`, values);
             props.onClose();
         },
     });

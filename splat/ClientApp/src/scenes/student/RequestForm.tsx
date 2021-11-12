@@ -1,6 +1,7 @@
 import { Add, Delete } from '@mui/icons-material';
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -266,21 +267,25 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             </Stack>
             <Divider />
             <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
+                <FormControlLabel
+                control={
+                    <Checkbox
+                    defaultChecked
+                    checked={formik.values.householdInfo === undefined}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
+                        if(event.target.checked) {
+                            handleHouseholdRemove();
+                        } else {
+                            handleHouseholdAdd();
+                        }
+                    }}
+                    />
+                }
+                label="I am the only one in my household"
+                />
             {formik.values.householdInfo === undefined ? (
-                <Tooltip 
-                title="Add additional information if these items will be shared with people other than yourself" 
-                TransitionComponent={Zoom}
-                arrow
-                >
-                <Button
-                variant="outlined"
-                color="secondary"
-                startIcon={<Add />}
-                onClick={() => handleHouseholdAdd()}
-                >
-                    Add Household Information (optional)
-                </Button>
-                </Tooltip>
+                <>
+                </>
             ) : (
                 <>
                 <TextField

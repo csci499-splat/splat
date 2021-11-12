@@ -5,7 +5,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { UserRoles } from '../../../models/User';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 
 type UserAddFormProps = {
     open: boolean;
