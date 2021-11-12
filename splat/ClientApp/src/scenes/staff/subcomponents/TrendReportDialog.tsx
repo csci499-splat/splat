@@ -1,5 +1,5 @@
 import { Dialog, DialogContent,DialogActions, DialogTitle,
-    Paper, TableBody, TableContainer, TableHead, TableRow,Typography, Button, Autocomplete } from '@mui/material';
+    Paper, TableBody, TableContainer, TableHead, TableRow,Typography, Button, Autocomplete, TextField, CircularProgress } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import TableCell from '@mui/material/TableCell';
 import Table from '@mui/material/Table';
@@ -7,6 +7,9 @@ import { baseRequest } from '../../../services/api/genericRequest';
 import {TrendReport} from '../../../models/TrendReport'
 import { LineChart, Line, XAxis, YAxis, Tooltip, Label, Legend, CartesianGrid } from 'recharts';
 import ItemAutocomplete from '../../student/ItemAutocomplete';
+import {Item, Category} from '.././../../models/BackendTypes';
+import { matchSorter } from 'match-sorter';
+import { useEffect } from 'react';
 
 const TrendReportTest: TrendReport = {
     entries: [
@@ -62,15 +65,50 @@ const sleep = (delay: number) => {
 type TrendReportDialogProps = {
     open: boolean;
     onClose: () => void;
+    onValueChange: (option: Category | null) => void;
+    value: Category | null | undefined;
 }
 const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogProps) : ReactElement => {
     const [trendReport, setTotalReport] = useState<TrendReport[]>([]);
-    const getTotalReport = async () => {
+    const [options, setOptions] = useState<readonly Category[]>([]);
+    const[open, setOpen] = useState(false);
+    const loading = open && options.length === 0;
+
+    const filterOptions = (options: Category[], {inputValue}) => matchSorter(options,inputValue,
+        {keys: ['name', 'description']});
+
+        useEffect(() => {
+            let active = true;
+
+            if(!loading) return undefined;
+            (async () => {
+                await sleep(1000);
+                
+                let res = await baseRequest.get<Category[]>('/categories');
+
+                if(active) {
+                    setOptions(res.data);
+                }
+            })();
+
+            return() => {
+                active = false
+            };
+        }, [loading]);
+
+        useEffect(() => {
+            if(!open) {
+                setOptions([]);
+            }
+        }, [open]);
+
+
+    const getTrendReport = async () => {
         let res = await baseRequest.get<TrendReport[]> ('/trendReport');
         setTotalReport(res.data);
     };
     React.useEffect(() => {
-        getTotalReport();
+        getTrendReport();
 
     }, [])
 
@@ -85,8 +123,34 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogPr
         >
             <DialogTitle>TrendReport</DialogTitle>
             <DialogContent>
-                
-
+                <Autocomplete
+                open={open}
+                onOpen={() => setOpen(true)}
+                onClose={() => setOpen(false)}
+                sx={{width: '100%'}}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                getOptionLabel={(option) => option.name}
+                options={options}
+                loading={loading}
+                renderInput={(params) => (
+                    <TextField
+                    {...params}
+                    label="Category"
+                    InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                            <>
+                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                            </>
+                        )
+                    }}
+                    />
+                )}
+                    filterOptions={filterOptions}
+                    value={props.value}
+                    onChange={(event, value) => props.onValueChange(value)}
+                    />
 
                 <LineChart
                 width={730}

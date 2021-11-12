@@ -84,10 +84,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         open={dialogOpen.totalReport}
         onClose={() => handleDialogClose('totalReport')}
         />
-        <TrendReportDialog
-        open={dialogOpen.trendReport}
-        onClose={() => handleDialogClose('trendReport')}
-        />
+        
         <Button
         variant="contained"
         disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}
