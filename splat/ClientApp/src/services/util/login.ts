@@ -22,8 +22,6 @@ export async function logout() {
 
     } finally {
         localStorage.removeItem('userInfo');
-        console.log("Removed info");
-        console.log(localStorage.getItem('userInfo'));
     }
 }
 

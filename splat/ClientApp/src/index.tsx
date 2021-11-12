@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { baseRequest, authRequest } from './services/api/genericRequest';
 import { getAuthToken } from './services/util/login';
+import axios from 'axios';
 
 //const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
@@ -29,22 +30,32 @@ const errorHandler = error => {
     return Promise.reject({...error});
 }
 
-authRequest.interceptors.request.use(config => {
+axios.defaults.baseURL = '/api';
+axios.defaults.headers['Content-Type'] = 'application/json';
+
+axios.interceptors.request.use(config => {
     const token = getAuthToken();
 
-    if(token !== null) {
-        config.headers.Authorization = token;
+    if(token) {
+        config.headers['Authorization'] = token;
+    } else {
+        config.headers['Authorization'] = 'Bearer empty';
     }
 
     return config;
-});
+    },
+
+    error => {
+        Promise.reject(error);
+    }
+);
 
 baseRequest.interceptors.response.use(
     (response) => response,
     (error) => errorHandler(error),
 );
 
-authRequest.interceptors.response.use(
+axios.interceptors.response.use(
     (response) => response,
     (error) => errorHandler(error),
 );

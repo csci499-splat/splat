@@ -45,8 +45,12 @@ const App: FC<{}> = (): ReactElement => {
                 <Route exact path='/' 
                 render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
                 />
-                <PrivateRoute exact path='/student' component={Student} roles={UserRoles} />
-                <PrivateRoute path='/staff' component={Staff} roles={['Staff', 'Administrator']} />
+                <PrivateRoute exact path='/student' roles={UserRoles}>
+                    <Student />
+                </PrivateRoute>
+                <PrivateRoute path='/staff' roles={['Staff', 'Administrator']}>
+                    <Staff />
+                </PrivateRoute>
                 <Route path='/'>
                     <h1>404: You have reached a page that doesn't exist!</h1>
                 </Route>

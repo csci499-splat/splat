@@ -47,9 +47,10 @@ const Staff: FC<StaffProps> = (props: StaffProps): ReactElement => {
                     key={index} 
                     exact 
                     path={value.url} 
-                    component={new React.Component(value.page, {...props, pageName: value.name.full})}
                     roles={value.allowedRoles}
-                    />;
+                    >
+                        {React.cloneElement(value.page, { pageName: value.name.full})}
+                    </PrivateRoute>;
         })}
         <Route path='/'>
             <h1>404: Staff page not found</h1>
