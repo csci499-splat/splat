@@ -17,5 +17,34 @@ namespace splat.Services
         {
             _authenticationOptions = ldapOptions.Value;
         }
+
+
+        public override Task<IdentityResult> ChangePasswordAsync(TUser user, string currentPassword, string newPassword)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override Task<IdentityResult> AddPasswordAsync(TUser user, string password)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        public override Task<bool> HasPasswordAsync(TUser user)
+        {
+            return Task.FromResult(true);
+        }
+
+
+        protected override Task<PasswordVerificationResult> VerifyPasswordAsync(IUserPasswordStore<TUser> store, TUser user, string password)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        public override Task<IdentityResult> ResetPasswordAsync(TUser user, string token, string newPassword)
+        {
+            throw new NotSupportedException();
+        }
     }
 }
