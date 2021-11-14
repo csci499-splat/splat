@@ -21,7 +21,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { CategoryIcons } from '../../../models/CategoryIcons';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 
 type CategoriesAddDialogProps = {
     onClose: () => void,
@@ -65,7 +65,7 @@ const CategoriesAddDialog: FC<CategoriesAddDialogProps> = (props: CategoriesAddD
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             console.log(values);
-            await baseRequest.post('/categories', values);
+            await authRequest.post('/categories', values);
             props.onClose();
         },
     });

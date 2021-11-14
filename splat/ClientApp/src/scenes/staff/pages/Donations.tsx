@@ -10,7 +10,7 @@ import {
 import React, { FC, ReactElement } from 'react';
 
 import { Donation } from '../../../models/Donation';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import DonationAddForm from '../subcomponents/DonationAddForm';
 
@@ -35,7 +35,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const handleDonationDelete = async (id: string) => {
         try {
-            await baseRequest.delete(`/donations/${id}`);
+            await authRequest.delete(`/donations/${id}`);
             getDonations();
         } catch (error) {
             
@@ -44,7 +44,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const getDonations = async () => {
         try {
-            let res = await baseRequest.get<Donation[]>('/donations');
+            let res = await authRequest.get<Donation[]>('/donations');
             setRows(res.data);
             setCurrentWidth(1 - currentWidth);
         } catch (error) {

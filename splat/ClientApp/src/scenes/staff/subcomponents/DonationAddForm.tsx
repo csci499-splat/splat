@@ -5,7 +5,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { Donation } from '../../../models/Donation';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 
 type DonationAddFormProps = {
     open: boolean;
@@ -56,8 +56,7 @@ const DonationAddForm: FC<DonationAddFormProps> = (props: DonationAddFormProps):
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            // TODO: change to Auth
-            await baseRequest.post<Donation>('/donations', values);
+            await authRequest.post<Donation>('/donations', values);
             props.onClose();
         },
     });

@@ -12,7 +12,7 @@ import React, { FC, ReactElement, useState } from 'react';
 
 import { Category } from '../../../models/Category';
 import { CategoryIcons } from '../../../models/CategoryIcons';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import CategoriesEditDialog from './CategoriesEditDialog';
 
 type CategoriesTableProps = {
@@ -38,12 +38,12 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
     };
 
     const handleDeleteCategory = async (row: GridRowData) => {
-        await baseRequest.delete(`/categories/${row.id}`);
+        await authRequest.delete(`/categories/${row.id}`);
         getCategories();
     };
 
     const getCategories = async () => {
-        let res = await baseRequest.get<Category[]>('/categories');
+        let res = await authRequest.get<Category[]>('/categories');
         setCategories(res.data);
         setCurrentWidth(1 - currentWidth);
     };

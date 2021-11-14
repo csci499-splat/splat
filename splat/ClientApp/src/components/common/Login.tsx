@@ -15,7 +15,7 @@ import React, { FC, ReactElement, useState } from 'react';
 import * as yup from 'yup';
 
 type LoginProps = {
-    loginHandler: (email: string | null, password: string | null) => void,
+    loginHandler: (email: string, password: string) => void,
     onClose: () => void,
 }
 
@@ -35,8 +35,8 @@ const Login: FC<LoginProps> = (props: LoginProps): ReactElement => {
 
     const formik = useFormik({
         initialValues: {
-            email: null,
-            password: null
+            email: '',
+            password: '',
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {

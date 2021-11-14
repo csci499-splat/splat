@@ -15,7 +15,7 @@ import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 
 type ItemsAddDialogProps = {
@@ -70,7 +70,7 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
                 visible: values.visible,
             }
             console.log(newValues);
-            await baseRequest.post('/items', newValues);
+            await authRequest.post('/items', newValues);
             props.onClose();
         },
     });

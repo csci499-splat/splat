@@ -20,7 +20,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupFulfillDialogProps extends IPickupDialogProps {

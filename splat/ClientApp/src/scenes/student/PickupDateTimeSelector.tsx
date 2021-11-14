@@ -29,21 +29,29 @@ const PickupDateTimeSelector: FC<PickupDateTimeSelectorProps> = (props: PickupDa
 
     const fetchDisabledDays = async () => {
         setIsLoading(true);
-        let res = await baseRequest.get<ClosedDay[]>('/hours/days');
-        setDisabledDays(res.data.map((item) => new Date(item.closedOn)));
-        setIsLoading(false);
+        try {
+            let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+            setDisabledDays(res.data.map((item) => new Date(item.closedOn)));
+            setIsLoading(false);
+        } catch(err) {
+
+        }
     };
 
     const fetchCurrentHours = async () => {
-        let res = await baseRequest.get<CurrentHours>('/hours');
-        delete res.data.createdAt;
+        try {
+            let res = await baseRequest.get<CurrentHours>('/hours');
+            delete res.data.createdAt;
 
-        if(props.value.date) {
-            let key = Object.keys(res.data)[props.value.date.getDay()];
-            setCurrentHours({ timeStart: new Date(res.data[key].timeStart), timeEnd: new Date(res.data[key].timeEnd) });
-            props.onHoursChange({ timeStart: new Date(res.data[key].timeStart), timeEnd: new Date(res.data[key].timeEnd) });
-        } else {
-            setCurrentHours({timeStart: new Date(0, 0, 0, 0, 0), timeEnd: new Date(0, 0, 0, 23, 59)});
+            if(props.value.date) {
+                let key = Object.keys(res.data)[props.value.date.getDay()];
+                setCurrentHours({ timeStart: new Date(res.data[key].timeStart), timeEnd: new Date(res.data[key].timeEnd) });
+                props.onHoursChange({ timeStart: new Date(res.data[key].timeStart), timeEnd: new Date(res.data[key].timeEnd) });
+            } else {
+                setCurrentHours({timeStart: new Date(0, 0, 0, 0, 0), timeEnd: new Date(0, 0, 0, 23, 59)});
+            }
+        } catch(err) {
+            
         }
     };
 
