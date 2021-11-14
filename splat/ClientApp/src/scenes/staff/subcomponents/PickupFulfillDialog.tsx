@@ -14,6 +14,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
@@ -36,21 +37,37 @@ const validationSchema = yup.object({
 const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillDialogProps): ReactElement => {
 
     const initialValues = {
-        weight: undefined,
+        weight: 0,
     };
 
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            await authRequest.patch(`/pickups/${props.selectedPickup?.id}/status`,
-                { weight: values.weight, status: PickupStatus.WAITING });
-            props.onClose();
+            await handleFulfill(props.selectedPickup?.id, PickupStatus.WAITING, values.weight);
         }
     })
 
-    const handleFulfill = async (id: string | undefined | null, newStatus: PickupStatus) => {
-        if(id) await authRequest.patch(`/pickups/${id}`, { status: newStatus });
+    const handleFulfill = async (id: string | undefined | null, newStatus: PickupStatus, newWeight: number) => {
+        if(id)
+        try {
+            await axios.patch(`/pickups/${props.selectedPickup?.id}`,
+                [
+                    {
+                        op: "add",
+                        path: "/weight",
+                        value: newWeight,
+                    },
+                    {
+                        op: "add",
+                        path: "/pickupstatus",
+                        value: newStatus,
+                    },
+                ]);
+        } catch (err) {
+
+        }
+
         props.onClose();
     };
 
@@ -130,7 +147,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="primary">Cancel</Button>
-                <Button variant="contained" onClick={() => handleFulfill(props.selectedPickup?.id, PickupStatus.DISBURSED)} color="success">
+                <Button variant="contained" onClick={() => formik.submitForm()} color="success">
                     Confirm Picked Up
                 </Button>
             </DialogActions>

@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using splat.Models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace splat.Controllers
 {
@@ -33,7 +36,7 @@ namespace splat.Controllers
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
 
-            if(user != null)
+            if (user != null)
             {
                 var pickups = await _context.Pickups.Where(p => p.ApplicationUserEmail == user.Email).ToListAsync();
                 return pickups;
@@ -92,7 +95,44 @@ namespace splat.Controllers
             }
 
             return NotFound(new { message = "Invalid user" });
-            
+
+        }
+
+        // PATCH: api/Pickups/{id}
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdatePatch(Guid id, [FromBody] JsonPatchDocument<Pickup> patch)
+        {
+            var pickup = await _context.Pickups.FindAsync(id);
+            var prevStatus = pickup.PickupStatus;
+
+            if (pickup == null)
+            {
+                return NotFound();
+            }
+
+            patch.ApplyTo(pickup, ModelState);
+
+            if (!ModelState.IsValid || !ValidatePickupPatch(pickup, prevStatus))
+                return BadRequest(new { message = "Invalid update request" });
+
+            await _context.SaveChangesAsync();
+
+            return Ok(pickup);
+        }
+
+        private static bool ValidatePickupPatch(Pickup pickup, PickupStatus prevStatus)
+        {
+            try
+            {
+                if(prevStatus != pickup.PickupStatus)
+                    TestUpdateStatus(prevStatus, pickup.PickupStatus);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private bool PickupExists(Guid id)
@@ -101,25 +141,22 @@ namespace splat.Controllers
         }
 
 
-
-        public static void UpdateStatus(PickupStatus status, Pickup pickup)
+        public static bool TestUpdateStatus(PickupStatus prevStatus, PickupStatus nextStatus)
         {
-            
-
-            switch (status)
+            switch (nextStatus)
             {
                 case PickupStatus.PENDING:
                     throw new Exception("Can't change to PENDING");
 
                 case PickupStatus.WAITING:
-                    if(pickup.PickupStatus != PickupStatus.PENDING)
+                    if(prevStatus != PickupStatus.PENDING)
                     {
                         throw new Exception("Cannot set pickup status to Waiting");
                     }
                     break;
 
                 case PickupStatus.DISBURSED:
-                    if(pickup.PickupStatus != PickupStatus.WAITING)
+                    if(prevStatus != PickupStatus.WAITING)
                     {
                         throw new Exception("Cannot set pickup status to Disbursed");
                     }
@@ -127,7 +164,7 @@ namespace splat.Controllers
                     break;
 
                 case PickupStatus.CANCELED:
-                    if(pickup.PickupStatus != PickupStatus.PENDING && pickup.PickupStatus != PickupStatus.WAITING)
+                    if(prevStatus != PickupStatus.PENDING && prevStatus != PickupStatus.WAITING)
                     {
                         throw new Exception("Cannot set pickup status to Cancel");
                     }
@@ -138,13 +175,9 @@ namespace splat.Controllers
                     throw new Exception("Invalid pickup status.");
             }
 
-            pickup.PickupStatus = status;
+            return true;
 
         }
-
-
-
-
 
     }
 }
