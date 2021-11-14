@@ -116,7 +116,7 @@ namespace splat.Controllers
         }
 
         [HttpPatch("{id}/status")]
-        public async Task<ActionResult> UpdatePickupStatus(Guid id, PickupStatus status)
+        public async Task<ActionResult<Pickup>> UpdatePickupStatus(Guid id, [FromBody] PickupStatus status)
 
         {
             var pickup = await _context.Pickups.FindAsync(id);
