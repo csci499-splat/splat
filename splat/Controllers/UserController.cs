@@ -67,10 +67,16 @@ namespace splat.Controllers
                             SecurityAlgorithms.HmacSha256)
                     );
 
-                return Ok(new { 
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        roles = await _userManager.GetRolesAsync(user)
-                        });
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    user = new
+                    {
+                        name = user.Name,
+                        email = user.UserName,
+                        role = _userManager.GetRolesAsync(user).Result[0]
+                    }
+                });
             } 
             else if(result.IsLockedOut)
             {

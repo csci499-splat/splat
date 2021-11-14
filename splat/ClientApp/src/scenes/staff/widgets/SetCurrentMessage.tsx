@@ -27,7 +27,6 @@ const SetCurrentMessage: FC<SetCurrentMessageProps> = (props: SetCurrentMessageP
 
     const handleUpdateMessage = async () => {
         try {
-            console.log('updating');
             await axios.post<StaffMessage>('/staffmessages', {
                 message: currentMessage,
             });

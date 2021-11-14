@@ -23,7 +23,7 @@ namespace splat.Models
         [Required]
         public string Description { get; set; }
         [Required]
-        public bool? Visible { get; set; }
+        public bool Visible { get; set; }
         [DataType(DataType.DateTime)]
         [Column(TypeName = "timestamptz")]
         public DateTime CreatedAt { get; set; }

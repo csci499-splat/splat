@@ -28,6 +28,12 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
+            return await _context.Categories.Where(c => c.Visible).ToListAsync();
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetAllCategories()
+        {
             return await _context.Categories.ToListAsync();
         }
 

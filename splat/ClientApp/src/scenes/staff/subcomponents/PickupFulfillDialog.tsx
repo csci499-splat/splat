@@ -71,6 +71,29 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
         props.onClose();
     };
 
+    const handlePickup = async () => {
+        if(props.selectedPickup?.id)
+        try {
+            await axios.patch(`/pickups/${props.selectedPickup?.id}`,
+                [
+                    {
+                        op: "add",
+                        path: "/pickupstatus",
+                        value: PickupStatus.DISBURSED,
+                    },
+                    {
+                        op: "add",
+                        path: "/pickuptime",
+                        value: new Date().toISOString(),
+                    }
+                ]);
+        } catch(err) {
+
+        }
+
+        props.onClose();
+    }
+
     return (
         <>
         <Dialog 
@@ -147,7 +170,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="primary">Cancel</Button>
-                <Button variant="contained" onClick={() => formik.submitForm()} color="success">
+                <Button variant="contained" onClick={() => handlePickup()} color="success">
                     Confirm Picked Up
                 </Button>
             </DialogActions>

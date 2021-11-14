@@ -1,5 +1,6 @@
 import { DatePicker } from '@mui/lab';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, Stack, TextField } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
@@ -56,7 +57,7 @@ const DonationAddForm: FC<DonationAddFormProps> = (props: DonationAddFormProps):
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            await authRequest.post<Donation>('/donations', values);
+            await axios.post<Donation>('/donations', values);
             props.onClose();
         },
     });

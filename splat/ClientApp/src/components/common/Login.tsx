@@ -22,7 +22,7 @@ type LoginProps = {
 const validationSchema = yup.object({
     email: yup
     .string()
-    .email('Email must be valid')
+    //.email('Email must be valid')
     .required('Email address is required'),
     password: yup
     .string()

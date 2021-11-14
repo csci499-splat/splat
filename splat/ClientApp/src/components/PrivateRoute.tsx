@@ -6,14 +6,6 @@ import { getCurrentUserInfo } from '../services/util/login';
 // https://github.com/cornflourblue/react-role-based-authorization-example/blob/master/src/_components/PrivateRoute.jsx
 
 const PrivateRoute = ({ children, roles, ...rest }) => {
-    // TODO: Remove this
-    return (
-        <Route {...rest} render={(props) => {
-            return children;
-        }}
-        />
-    );
-
     return (
         <Route {...rest} render={(props) => {
             let user = getCurrentUserInfo();

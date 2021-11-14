@@ -7,6 +7,7 @@ import {
     GridToolbar,
     GridValueFormatterParams,
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { Donation } from '../../../models/Donation';
@@ -35,7 +36,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const handleDonationDelete = async (id: string) => {
         try {
-            await authRequest.delete(`/donations/${id}`);
+            await axios.delete(`/donations/${id}`);
             getDonations();
         } catch (error) {
             
@@ -44,7 +45,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const getDonations = async () => {
         try {
-            let res = await authRequest.get<Donation[]>('/donations');
+            let res = await axios.get<Donation[]>('/donations');
             setRows(res.data);
             setCurrentWidth(1 - currentWidth);
         } catch (error) {

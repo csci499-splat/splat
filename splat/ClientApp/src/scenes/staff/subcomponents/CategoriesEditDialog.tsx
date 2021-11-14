@@ -18,6 +18,7 @@ import {
     TextField,
 } from '@mui/material';
 import { GridRowData } from '@mui/x-data-grid';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
@@ -73,7 +74,7 @@ const CategoriesEditDialog: FC<CategoriesEditDialogProps> = (props: CategoriesEd
         enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
-            await authRequest.put(`/categories/${values.id}`, values);
+            await axios.put(`/categories/${values.id}`, values);
             props.onClose();
         },
     });

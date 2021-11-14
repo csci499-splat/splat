@@ -8,6 +8,7 @@ import {
     GridToolbar,
     GridValueFormatterParams,
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Category } from '../../../models/Category';
@@ -38,12 +39,12 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
     };
 
     const handleDeleteCategory = async (row: GridRowData) => {
-        await authRequest.delete(`/categories/${row.id}`);
+        await axios.delete(`/categories/${row.id}`);
         getCategories();
     };
 
     const getCategories = async () => {
-        let res = await authRequest.get<Category[]>('/categories');
+        let res = await axios.get<Category[]>('/categories');
         setCategories(res.data);
         setCurrentWidth(1 - currentWidth);
     };

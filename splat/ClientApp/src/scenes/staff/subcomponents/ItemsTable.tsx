@@ -9,6 +9,7 @@ import {
     GridValueFormatterParams,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Item } from '../../../models/Item';
@@ -39,13 +40,13 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
     };
 
     const handleDeleteItem = async (row: GridRowData)  => {
-        await authRequest.delete(`/items/${row.id}`);
+        await axios.delete(`/items/${row.id}`);
         getItems();
         setCurrentWidth(1 - currentWidth);
     };
 
     const getItems = async () => {
-        let res = await authRequest.get<Item[]>('/items');
+        let res = await axios.get<Item[]>('/items/all');
         setItems(res.data);
         setCurrentWidth(1 - currentWidth);
     };
