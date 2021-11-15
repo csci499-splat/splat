@@ -30,7 +30,7 @@ namespace splat.Services
 
             return false;
         }
-
+        
         public override Task<IdentityResult> ChangePasswordAsync(TUser user, string currentPassword, string newPassword)
         {
             throw new NotSupportedException();
