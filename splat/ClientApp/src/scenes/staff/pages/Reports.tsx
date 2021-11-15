@@ -17,19 +17,19 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     const [startDateValue, setStartDateValue] = React.useState<Date | null>();
     const [endDateValue, setEndDateValue] = React.useState<Date | null>();
     //TODO Create a new type, if user want to add new report type, they don't need to change 3 lines. 
-    const [reportType, setReportType] = React.useState<'totalReport' | 'trendReport'|''>('');
-    const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false});
+    const [reportType, setReportType] = React.useState<'totalReport' | 'trendReport'| 'history' | ''>('');
+    const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false, history: false});
     
 
-    const handleDialogOpen = (dialog: 'totalReport' | 'trendReport'|'') => {
+    const handleDialogOpen = (dialog: 'totalReport' | 'trendReport' | 'history' | '') => {
         setDialogOpen((prevState) => ({ ... prevState, [dialog]: true}));
         
     };
-    const handleDialogClose = (dialog: 'totalReport' | 'trendReport'|'') => {
+    const handleDialogClose = (dialog: 'totalReport' | 'trendReport'| 'history' | '') => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}))
     };
     const handleTypeChange = (event: SelectChangeEvent) => {
-        setReportType(event.target.value as 'totalReport' | 'trendReport'|'');
+        setReportType(event.target.value as 'totalReport' | 'trendReport'| 'history' | '');
     };
     
     return (
@@ -79,6 +79,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             <MenuItem value="totalReport">Total Report
             </MenuItem>
             <MenuItem value="trendReport">Trend Report</MenuItem>
+            <MenuItem value="history">History</MenuItem>
         </Select>
         <TotalReportDialog
         open={dialogOpen.totalReport}
@@ -87,6 +88,10 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         <TrendReportDialog
         open={dialogOpen.trendReport}
         onClose={() => handleDialogClose('trendReport')}
+        />
+        <TrendReportDialog
+        open={dialogOpen.history}
+        onClose={() => handleDialogClose('history')}
         />
         <Button
         variant="contained"

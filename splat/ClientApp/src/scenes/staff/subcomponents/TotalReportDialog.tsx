@@ -86,7 +86,8 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
             <Button variant="outlined" onClick={props.onClose} color="secondary">Closed</Button>
             </DialogActions>
         </Dialog>
-        
+    
+
         </>
     )
 };
