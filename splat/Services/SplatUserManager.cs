@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace splat.Services
 {
-    public class SplatUserManager<TUser> : UserManager<TUser> where TUser : class
+    public class SplatUserManager<TUser> : UserManager<TUser> where TUser : IdentityUser<Guid>
     {
         private readonly LDAPAuthenticationOptions _authenticationOptions;
         public SplatUserManager(IUserStore<TUser> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<TUser> passwordHasher, IEnumerable<IUserValidator<TUser>> userValidators, IEnumerable<IPasswordValidator<TUser>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<TUser>> logger, IOptions<LDAPAuthenticationOptions> ldapOptions)
@@ -18,6 +18,18 @@ namespace splat.Services
             _authenticationOptions = ldapOptions.Value;
         }
 
+        public override async Task<bool> CheckPasswordAsync(TUser user, string password)
+        {
+            using (var auth = new LDAPAuthentication(_authenticationOptions))
+            {
+                if (auth.ValidatePassword(user.UserName, password))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public override Task<IdentityResult> ChangePasswordAsync(TUser user, string currentPassword, string newPassword)
         {
