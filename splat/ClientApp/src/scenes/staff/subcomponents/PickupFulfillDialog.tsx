@@ -36,6 +36,8 @@ const validationSchema = yup.object({
 
 const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillDialogProps): ReactElement => {
 
+    console.log(props.selectedPickup?.pickupStatus);
+
     const initialValues = {
         weight: 0,
     };
@@ -63,7 +65,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                         path: "/pickupstatus",
                         value: newStatus,
                     },
-                ]);
+                ], { headers: { 'Content-Type': 'application/json-patch+json' }});
         } catch (err) {
 
         }
@@ -86,7 +88,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                         path: "/pickuptime",
                         value: new Date().toISOString(),
                     }
-                ]);
+                ], { headers: { 'Content-Type': 'application/json-patch+json' }});
         } catch(err) {
 
         }
@@ -99,9 +101,8 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
         <Dialog 
         open={props.open} 
         onClose={props.onClose}
-        fullWidth
         >
-        {props.selectedPickup?.status === PickupStatus.PENDING ? (
+        {(props.selectedPickup?.pickupStatus === PickupStatus.PENDING) ? (
             <>
             <DialogTitle>
                 Fulfill Request

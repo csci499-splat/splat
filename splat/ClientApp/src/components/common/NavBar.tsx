@@ -19,7 +19,7 @@ import React, { FC, ReactElement, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 
 import { DarkmodeStates } from '../../services/util/useDarkmode';
-import { login, logout, getLoggedIn } from '../../services/util/login';
+import { login, logout, getLoggedIn, getCurrentUserInfo } from '../../services/util/login';
 import Login from './Login';
 
 type NavBarProps = {
@@ -106,7 +106,14 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                         >
-                            {/* TODO: Add logout function*/}
+                            {loggedIn && (
+                                <ListItem>
+                                    {getCurrentUserInfo()?.name}
+                                </ListItem>
+                            )}
+                            {loggedIn && (
+                                <Divider />
+                            )}
                             <MenuItem onClick={loggedIn ? handleLogout : handleLoginOpen}>
                                 <ListItemIcon>
                                     {loggedIn ? (

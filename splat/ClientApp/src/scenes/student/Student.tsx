@@ -18,9 +18,6 @@ const Student: FC<StudentProps> = (props: StudentProps): ReactElement => {
 
     return (
         <>
-            <h2>
-                Make your requests here!
-            </h2>
             <Button
             variant="contained"
             onClick={handleShowRequestForm}

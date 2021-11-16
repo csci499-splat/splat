@@ -63,7 +63,8 @@ namespace splat.Controllers
                         claims: claims,
                         expires: DateTime.UtcNow.AddDays(60),
                         notBefore: DateTime.UtcNow,
-                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
+                        // TODO: Change to use Key from config file
+                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("bigdbbdjffhbfhjs;ash74587w3uobkdfbkfd")),
                             SecurityAlgorithms.HmacSha256)
                     );
 

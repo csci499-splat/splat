@@ -16,8 +16,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
-    //[Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "ElevatedRights")]
     public class PickupsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -42,12 +41,11 @@ namespace splat.Controllers
                 return pickups;
             }
 
-            return NotFound(new { message = "Invalid user" });
+            return Unauthorized(new { message = "Invalid request. Try signing out and back in" });
         }
 
         // GET: api/Pickups/all
         [HttpGet("all")]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetAllPickups()
         {
             return await _context.Pickups.ToListAsync();
@@ -55,7 +53,6 @@ namespace splat.Controllers
 
         // GET: api/Pickups/id
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<Pickup>> GetPickups(Guid id)
         {
             var pickup = await _context.Pickups.FindAsync(id);
@@ -70,7 +67,6 @@ namespace splat.Controllers
 
         // GET: api/Pickups/active
         [HttpGet("active")]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetActivePickups()
         {
             return await _context.Pickups
@@ -81,6 +77,7 @@ namespace splat.Controllers
         // POST: api/Pickups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Pickup>> PostPickup(Pickup pickup)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -94,7 +91,7 @@ namespace splat.Controllers
                 return CreatedAtAction("GetPickup", new { id = pickup.Id }, pickup);
             }
 
-            return NotFound(new { message = "Invalid user" });
+            return Unauthorized(new { message = "Invalid request" });
 
         }
 

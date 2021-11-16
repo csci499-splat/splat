@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace splat
 {
@@ -38,10 +39,8 @@ namespace splat
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllersWithViews(options =>
-            {
-                options.InputFormatters.Insert(0, GetJsonPathInputFormatter());
-            });
+            services.AddControllers()
+                    .AddNewtonsoftJson();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -84,30 +83,11 @@ namespace splat
                     policy => policy.RequireRole("Administrator", "Staff"));
             });
 
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequiredUniqueChars = 3;
-
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = false;
-
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-            });
-
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
 
-                options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
             });
 
@@ -175,22 +155,6 @@ namespace splat
             });
         }
 
-        private static NewtonsoftJsonPatchInputFormatter GetJsonPathInputFormatter()
-        {
-            var builder = new ServiceCollection()
-               .AddLogging()
-               .AddMvc()
-               .AddNewtonsoftJson()
-               .Services.BuildServiceProvider();
-
-            return builder
-                .GetRequiredService<IOptions<MvcOptions>>()
-                .Value
-                .InputFormatters
-                .OfType<NewtonsoftJsonPatchInputFormatter>()
-                .First();
-        }
-
         private async Task AddRoles(IServiceProvider serviceProvider)
         {
             var _roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
@@ -216,29 +180,44 @@ namespace splat
                 Email = "admin@gmail.com"
             };
 
+            var staffUser = new ApplicationUser
+            {
+                Name = "staff2",
+                UserName = "staff2",
+                Email = "staff2@gmail.com"
+            };
+
             string userPass = "testPass123%";
 
-            var user = await _userManager.FindByNameAsync(adminUser.UserName);
-            if(user != null)
-            {
-                await _userManager.DeleteAsync(user);
-                user = null;
-            }
+            var initUsers = new List<ApplicationUser> { adminUser, staffUser };
 
-            if(user == null)
+            foreach(var foundUser in initUsers)
             {
-                Console.WriteLine("Creating user " + adminUser);
+                var user = await _userManager.FindByNameAsync(foundUser.UserName);
 
-                var createUser = await _userManager.CreateAsync(adminUser, userPass);
-                if(createUser.Succeeded)
+                if (user != null)
                 {
-                    Console.WriteLine("success");
-                    await _userManager.AddToRoleAsync(adminUser, "Administrator");
-                } else
+                    await _userManager.DeleteAsync(user);
+                    user = null;
+                }
+
+                if (user == null)
                 {
-                    Console.WriteLine(createUser.Errors);
+                    Console.WriteLine("Creating user " + foundUser);
+
+                    var createUser = await _userManager.CreateAsync(foundUser, userPass);
+                    if (createUser.Succeeded)
+                    {
+                        Console.WriteLine("success");
+                        await _userManager.AddToRoleAsync(foundUser, "Administrator");
+                    }
+                    else
+                    {
+                        Console.WriteLine(createUser.Errors);
+                    }
                 }
             }
+
         }
     }
 }

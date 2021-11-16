@@ -29,6 +29,7 @@ namespace splat.Models
         public DateTime CreatedAt { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         public List<Item> Items { get; set; }
     }
 }

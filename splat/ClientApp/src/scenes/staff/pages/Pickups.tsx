@@ -7,6 +7,7 @@ import {
     GridRowData,
     GridSortModel,
     GridToolbar,
+    GridValueFormatterParams,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
@@ -51,6 +52,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: IPickupRow) => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: true }));
         setSelectedPickup(currentRow);
+        console.log("Current row = ", currentRow);
     };
 
     const handleDialogClose = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation') => {
@@ -108,6 +110,9 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 flex: .9,
                 headerName: 'Requested Pickup Time',
                 type: 'dateTime',
+                valueFormatter: (params: GridValueFormatterParams) => {
+                    return new Date(params.value as string).toLocaleString();
+                },
                 headerAlign: 'center',
                 align: 'center',
             },
@@ -153,7 +158,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                     <Tooltip
-                    title={params.row.pickupStatus === "PENDING" ? 
+                    title={(params.row.pickupStatus === PickupStatus.PENDING) ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton
