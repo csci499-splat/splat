@@ -1,15 +1,18 @@
 import { Dialog, DialogContent,DialogActions, DialogTitle,
-    Paper, TableBody, TableContainer, TableHead, TableRow,Typography, Button, Autocomplete, TextField, CircularProgress } from '@mui/material';
-import React, { FC, ReactElement, useState } from 'react';
+    Paper, TableBody, TableContainer, TableHead, TableRow,Typography, Button, Autocomplete, TextField, CircularProgress, Grid } from '@mui/material';
+import React, { FC, ReactElement, useState, PureComponent} from 'react';
 import TableCell from '@mui/material/TableCell';
 import Table from '@mui/material/Table';
 import { baseRequest } from '../../../services/api/genericRequest';
 import {TrendReport} from '../../../models/TrendReport'
-import { LineChart, Line, XAxis, YAxis, Tooltip, Label, Legend, CartesianGrid } from 'recharts';
+import { ComposedChart,Line,Area,Bar,XAxis,YAxis,CartesianGrid,Tooltip,Legend,ResponsiveContainer,} from 'recharts';
 import ItemAutocomplete from '../../student/ItemAutocomplete';
 import {Item, Category} from '.././../../models/BackendTypes';
 import { matchSorter } from 'match-sorter';
 import { useEffect } from 'react';
+import CategoryAutocomplete from '../../student/CategoryAutocomplete';
+import { FormikProvider, useFormik } from 'formik';
+import { FormatItalic } from '@mui/icons-material';
 
 const TrendReportTest: TrendReport = {
     entries: [
@@ -65,8 +68,7 @@ const sleep = (delay: number) => {
 type TrendReportDialogProps = {
     open: boolean;
     onClose: () => void;
-    onValueChange: (option: Category | null) => void;
-    value: Category | null | undefined;
+    
 }
 const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogProps) : ReactElement => {
     const [trendReport, setTotalReport] = useState<TrendReport[]>([]);
@@ -111,7 +113,13 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogPr
         getTrendReport();
 
     }, [])
-
+    const formik = useFormik({
+        initialValues: TrendReportTest,
+        onSubmit: async (values) => {
+            console.log(values);
+            props.onClose();
+        },
+    });
 
 
     return(
@@ -123,57 +131,27 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogPr
         >
             <DialogTitle>TrendReport</DialogTitle>
             <DialogContent>
-                <Autocomplete
-                open={open}
-                onOpen={() => setOpen(true)}
-                onClose={() => setOpen(false)}
-                sx={{width: '100%'}}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                getOptionLabel={(option) => option.name}
-                options={options}
-                loading={loading}
-                renderInput={(params) => (
-                    <TextField
-                    {...params}
-                    label="Category"
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
+                <FormikProvider
+                value={formik}
+                >
+                    {formik.values.entries.map((selection, index: number) => {
+                        return(
                             <>
-                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
+                            <Grid>
+                            <CategoryAutocomplete
+                            value={formik.values.entries[index].category}
+                            onValueChange={(newValue) => {
+                                formik.setFieldValue(`entries[${index}].category`, newValue);
+
+                            }}
+                            />
+                            </Grid>
                             </>
                         )
-                    }}
-                    />
-                )}
-                    filterOptions={filterOptions}
-                    value={props.value}
-                    onChange={(event, value) => props.onValueChange(value)}
-                    />
-
-                <LineChart
-                width={730}
-                height={250} 
-                data={trendReport}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                    <XAxis dataKey="date">
-                    </XAxis>
-                    <YAxis type="number">
-                    <Label angle={270} position="center"
-                    style={{textAnchor: 'middle'}}>
-                        Item Count
-                    </Label>
-                    </YAxis>
-                    <Line
-                        type="monotone"
-                        stroke="#829ddf"
-                        dot={false}
-                        dataKey="requestCount"
-                    />
-
-                </LineChart>
+                    })}
+                </FormikProvider>
+                
+                
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
             <Button variant="outlined" onClick={props.onClose} color="secondary">Closed</Button>
