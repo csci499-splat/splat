@@ -34,7 +34,7 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
         if(!loading) return undefined;
 
         (async () => {
-
+            // TODO: fetch items based on category
             // simulate getting data with given props.category
             await sleep(1000);
 

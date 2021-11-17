@@ -12,7 +12,7 @@ import {
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Item } from '../../../models/Item';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import ItemsEditDialog from './ItemsEditDialog';
 
 
@@ -39,13 +39,13 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
     };
 
     const handleDeleteItem = async (row: GridRowData)  => {
-        await baseRequest.delete(`/items/${row.id}`);
+        await authRequest.delete(`/items/${row.id}`);
         getItems();
         setCurrentWidth(1 - currentWidth);
     };
 
     const getItems = async () => {
-        let res = await baseRequest.get<Item[]>('/items');
+        let res = await authRequest.get<Item[]>('/items');
         setItems(res.data);
         setCurrentWidth(1 - currentWidth);
     };

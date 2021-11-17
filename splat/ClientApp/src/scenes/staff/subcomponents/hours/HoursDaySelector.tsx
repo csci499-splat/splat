@@ -4,7 +4,7 @@ import React, { FC, ReactElement } from 'react';
 import { toast } from 'react-toastify';
 
 import DaySelector from '../../../../components/common/DaySelector';
-import { baseRequest } from '../../../../services/api/genericRequest';
+import { authRequest } from '../../../../services/api/genericRequest';
 
 import type { ClosedDay } from '../../../../models/ClosedDay';
 
@@ -20,20 +20,20 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
 
     const retrieveDisabledDays = async () => {
         try {
-            let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+            let res = await authRequest.get<ClosedDay[]>('/hours/days');
             setDisabledDays(res.data.map((item) => item.closedOn));
         } catch(error) { }
     };
 
     const handleRemoveDay = async (day: Date) => {
-        await baseRequest.delete(`/hours/days/${day.toISOString()}`);
+        await authRequest.delete(`/hours/days/${day.toISOString()}`);
         await retrieveDisabledDays();
     };
 
     const handleAddDay = async () => {
         if(selectedDate) {
             try {
-                await baseRequest.post('/hours/days', { closedOn: selectedDate });
+                await authRequest.post('/hours/days', { closedOn: selectedDate });
                 handleDayClose();
                 await retrieveDisabledDays();
             } catch (error) {

@@ -1,6 +1,9 @@
 import { Box, Tab, Tabs } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import { Link, Route, Switch, useRouteMatch } from 'react-router-dom';
+import PrivateRoute from '../../components/PrivateRoute';
+import User from '../../models/User';
+import { getCurrentUserInfo } from '../../services/util/login';
 
 import { StaffRoute, staffRoutes } from './pages/staffRoutes';
 
@@ -30,24 +33,24 @@ const Staff: FC<StaffProps> = (props: StaffProps): ReactElement => {
         centered
         >
             { staffRoutes.map((value: StaffRoute, index) => {
-                if(value.adminOnly) {
-                    // TODO: Check if user is an admin, only show tab if they are
-                    return <Tab key={index} label={value.name.abbv} value={value.url} to={value.url} component={Link} icon={value.icon} />
-                } else {
-                    return <Tab key={index} label={value.name.abbv} value={value.url} to={value.url} component={Link} icon={value.icon} />
-                }
+                let userInfo: User | null = getCurrentUserInfo();
+
+                if(userInfo)
+                    if(value.allowedRoles.indexOf(userInfo.role) !== -1)
+                        return <Tab key={index} label={value.name.abbv} value={value.url} to={value.url} component={Link} icon={value.icon} />;
             })}
         </Tabs>
         </Box>
         <Switch>
         { staffRoutes.map((value: StaffRoute, index) => {
-            if(value.adminOnly) {
-                // TODO: Change to a secure admin route
-                return <Route key={index} exact path={value.url} render={(props) => React.cloneElement(value.page, {...props, pageName: value.name.full})} />
-            } else {
-                // TODO: Change to a secure staff auth route
-                return <Route key={index} exact path={value.url} render={(props) => React.cloneElement(value.page, {...props, pageName: value.name.full})} />
-            }
+            return <PrivateRoute 
+                    key={index} 
+                    exact 
+                    path={value.url} 
+                    roles={value.allowedRoles}
+                    >
+                        {React.cloneElement(value.page, { pageName: value.name.full})}
+                    </PrivateRoute>;
         })}
         <Route path='/'>
             <h1>404: Staff page not found</h1>
