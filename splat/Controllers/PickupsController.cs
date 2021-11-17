@@ -81,9 +81,10 @@ namespace splat.Controllers
         // GET: api/Pickups/history
         [HttpGet("history")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Pickup>>> GetHistoryPickups() 
+        public async Task<ActionResult<IEnumerable<Pickup>>> GetHistoryPickups([FromQuery] DateRange range) 
         {
             return await _context.Pickups
+                .Where(p => p.SubmittedAt >= range.DateFrom && p.SubmittedAt <= range.DateTo)
                 .Where(p => p.PickupStatus == PickupStatus.DISBURSED || p.PickupStatus == PickupStatus.CANCELED)
                 .ToListAsync();
         }
