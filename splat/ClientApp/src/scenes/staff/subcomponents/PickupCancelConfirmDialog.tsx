@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography }
 import React, { FC, ReactElement } from 'react';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
@@ -12,7 +12,7 @@ interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
 const PickupCancelConfirmationDialog: FC<PickupCancelConfirmationDialogProps> = (props: PickupCancelConfirmationDialogProps): ReactElement => {
 
     const handleCancel = async (id: string | undefined | null) => {
-        if(id) await baseRequest.patch(`/pickups/${id}`, { status: PickupStatus.CANCELED });
+        if(id) await authRequest.patch(`/pickups/${id}/status`, { status: PickupStatus.CANCELED });
         props.onClose();
     };
 

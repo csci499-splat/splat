@@ -12,16 +12,19 @@ import Student from './scenes/student/Student';
 import darkTheme from './services/util/darkTheme';
 import primaryTheme from './services/util/primaryTheme';
 import { DarkmodeStates, useDarkmode } from './services/util/useDarkmode';
+import { getLoggedIn } from './services/util/login';
+import PrivateRoute from './components/PrivateRoute';
+import { UserRoles } from './models/User';
 
 const App: FC<{}> = (): ReactElement => {
-    // TODO: Create hooks for updating logged-in state and dark mode use
     const [currentTheme, setCurrentTheme] = useDarkmode();
     const history = useHistory();
 
-    const [loggedIn, setLoggedIn] = React.useState(false);
+    const [loggedIn, setLoggedIn] = React.useState(getLoggedIn());
     const theme = currentTheme === DarkmodeStates.DARK ? darkTheme : primaryTheme;
 
     React.useEffect(() => {
+        console.log("Set logged in to ", loggedIn);
         if(!loggedIn) {
             history.push("/");
         }
@@ -33,18 +36,21 @@ const App: FC<{}> = (): ReactElement => {
         <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <CssBaseline />
-            <NavBar 
-            loggedIn={loggedIn} 
-            setLoggedIn={setLoggedIn} 
+            <NavBar
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
             useDarkmode={currentTheme === DarkmodeStates.DARK}
             setDarkmode={setCurrentTheme} />
             <Switch>
                 <Route exact path='/' 
-                render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} 
+                render={(props) => <Landing {...props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
                 />
-                {/* TODO: Add AuthorizedRoutes for /student and /staff */}
-                <Route exact path='/student' component={Student} /> 
-                <Route path='/staff' component={Staff} />
+                <PrivateRoute exact path='/student' roles={UserRoles}>
+                    <Student />
+                </PrivateRoute>
+                <PrivateRoute path='/staff' roles={['Staff', 'Administrator']}>
+                    <Staff />
+                </PrivateRoute>
                 <Route path='/'>
                     <h1>404: You have reached a page that doesn't exist!</h1>
                 </Route>

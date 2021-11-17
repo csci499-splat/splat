@@ -17,7 +17,7 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { CurrentHours } from '../../../../models/BackendTypes';
-import { baseRequest } from '../../../../services/api/genericRequest';
+import { authRequest } from '../../../../services/api/genericRequest';
 
 type HoursTableProps = {
     
@@ -170,7 +170,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            await baseRequest.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
+            await authRequest.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
             handleGetCurrentHours();
         },
     });
@@ -180,7 +180,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         formik.setValues({});
 
         try {
-            let res = await baseRequest.get<CurrentHours>('/Hours');
+            let res = await authRequest.get<CurrentHours>('/Hours');
             if(res.data !== "")
                 setInitialValues(res.data);
         } catch(error) {

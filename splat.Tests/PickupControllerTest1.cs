@@ -11,83 +11,64 @@ namespace splat.Tests
     [Fact]
         public void UpdateStatusFromPendingToWaiting_ShouldChangeToWaiting()
         {
-            var testPickup = GeneratePickupWithStatus(PickupStatus.PENDING);
-            PickupsController.UpdateStatus(PickupStatus.WAITING, testPickup);
+            var result = PickupsController.TestUpdateStatus(PickupStatus.PENDING, PickupStatus.WAITING);
 
-            Assert.Equal(PickupStatus.WAITING, testPickup.PickupStatus);
+            Assert.True(result);
         }
 
         [Fact]
         public void UpdateStatusFromPendingToCanceled_ShouldChangeToCancel()
         {
-            var testPickup2 = GeneratePickupWithStatus(PickupStatus.PENDING);
-            PickupsController.UpdateStatus(PickupStatus.CANCELED, testPickup2);
+            var result = PickupsController.TestUpdateStatus(PickupStatus.PENDING, PickupStatus.CANCELED);
 
-            Assert.Equal(PickupStatus.CANCELED, testPickup2.PickupStatus);     
+            Assert.True(result);
         }
 
         [Fact]
         public void UpdateStatusFromWaitingToDisbursed_ShouldChangeToDisbursed()
         {
-            var testPickup3 = GeneratePickupWithStatus(PickupStatus.WAITING);
-            PickupsController.UpdateStatus(PickupStatus.DISBURSED, testPickup3);
+            var result = PickupsController.TestUpdateStatus(PickupStatus.WAITING, PickupStatus.DISBURSED);
 
-            Assert.Equal(PickupStatus.DISBURSED, testPickup3.PickupStatus);      
+            Assert.True(result);
         }
 
         [Fact]
         public void UpdateStatusFromPendingToWaiting_ShouldChangeToCancel()
         {
-            var testPickup4 = GeneratePickupWithStatus(PickupStatus.WAITING);
-            PickupsController.UpdateStatus(PickupStatus.CANCELED, testPickup4);
+            var result = PickupsController.TestUpdateStatus(PickupStatus.WAITING, PickupStatus.CANCELED);
 
-            Assert.Equal(PickupStatus.CANCELED, testPickup4.PickupStatus);
+            Assert.True(result);
         }
 
         [Fact]
         public void UpdateStatusFromPendingToDispursed_ShouldThrowExceptionError()
         {
-            var testPickup5 = GeneratePickupWithStatus(PickupStatus.PENDING);
-
-            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.DISBURSED, testPickup5));
-            Assert.Equal("Cannot set pickup status to Disbursed", exception.Message);
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.PENDING, PickupStatus.DISBURSED));
         }
 
         [Fact]
         public void UpdateStatusFromCanceledToWaiting_ShouldThrowExceptionError()
         {
-            var testPickup6 = GeneratePickupWithStatus(PickupStatus.CANCELED);
-
-            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.WAITING, testPickup6));
-            Assert.Equal("Cannot set pickup status to Waiting", exception.Message);
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.CANCELED, PickupStatus.WAITING));
         }
 
         [Fact]
         public void UpdateStatusFromCanceledToCanceled_ShouldThrowExceptionError()
         {
-            var testPickup7 = GeneratePickupWithStatus(PickupStatus.CANCELED);
-
-            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.CANCELED, testPickup7));
-            Assert.Equal("Cannot set pickup status to Cancel", exception.Message);
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.CANCELED, PickupStatus.CANCELED));
         }
 
 
         [Fact]
         public void UpdateStatusFromDisbursedToCanceled_ShouldThrowExceptionError()
         {
-            var testPickup8 = GeneratePickupWithStatus(PickupStatus.DISBURSED);
-
-            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.CANCELED, testPickup8));
-            Assert.Equal("Cannot set pickup status to Cancel", exception.Message);
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.DISBURSED, PickupStatus.CANCELED));
         }
 
         [Fact]
         public void UpdateStatusFromPendingToPending_ShouldThrowExceptionError()
         {
-            var testPickup9 = GeneratePickupWithStatus(PickupStatus.PENDING);
-
-            var exception = Assert.Throws<Exception>(() => PickupsController.UpdateStatus(PickupStatus.PENDING, testPickup9));
-            Assert.Equal("Can't change to PENDING", exception.Message);
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.PENDING, PickupStatus.PENDING));
         }
 
 

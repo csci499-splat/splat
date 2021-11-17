@@ -6,6 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import Login from '../../components/common/Login';
 import { StaffMessage } from '../../models/StaffMessage';
 import { baseRequest } from '../../services/api/genericRequest';
+import { login } from '../../services/util/login';
 
 type LandingProps = {
     loggedIn: boolean,
@@ -17,10 +18,15 @@ const Landing: FC<LandingProps> = (props: LandingProps): ReactElement => {
     const [loginOpen, setLoginOpen] = useState(false);
     const [message, setMessage] = useState({open: false, message: ''});
 
-    const handleLogin = (email: string | null, pass: string | null): void => {
-        alert(`Email='${email}', Password='${pass}'`);
-        setLoginOpen(false);
-        props.setLoggedIn(true);
+    const handleLogin = async (email: string, pass: string) => {
+        try {
+            await login(email, pass, () => {});
+            props.setLoggedIn(true);
+        } catch(err) {
+            
+        } finally {
+            setLoginOpen(false);
+        }
     };
 
     const handleGetMessage = async () => {

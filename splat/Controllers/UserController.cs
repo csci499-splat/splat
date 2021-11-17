@@ -42,17 +42,26 @@ namespace splat.Controllers
             _configuration = configuration;
         }
 
+        /*
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
-            //var signin = _userManager.CheckPasswordAsync();
-
-
-            if (result.Succeeded)
+            var signinValid = await _userManager.CheckPasswordAsync(new ApplicationUser
             {
-                var user = await _userManager.FindByNameAsync(login.UserName);
+                UserName = login.UserName
+            }, login.Password);
+
+            if(!signinValid)
+            {
+                // return generic login failure
+                return BadRequest(new { message = "Username or password is incorrect" });
+            }
+            var user = await _userManager.FindByNameAsync(login.UserName);
+            if (user == null)
+            {
+
+                
                 // return success and token
                 var claims = new[]
                 {
@@ -74,19 +83,9 @@ namespace splat.Controllers
                         token = new JwtSecurityTokenHandler().WriteToken(token),
                         roles = await _userManager.GetRolesAsync(user)
                         });
-            } 
-            else if(result.IsLockedOut)
-            {
-                // return locked out message
-                return Unauthorized(new { message = "Locked out. Contact your administrator" });
-            } 
-            else
-            {
-                // return generic login failure
-                return BadRequest(new { message = "Username or password is incorrect" });
             }
         }
-
+        */
         [HttpPost("logout")]
         [AllowAnonymous]
         public async Task<IActionResult> Logout()

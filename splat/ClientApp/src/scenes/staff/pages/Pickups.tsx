@@ -13,7 +13,7 @@ import React, { FC, ReactElement, useState } from 'react';
 
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
+import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
 import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
@@ -59,7 +59,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     };
 
     const getPickups = async () => {
-        let res = await baseRequest.get<Pickup[]>('/pickups/active');
+        let res = await authRequest.get<Pickup[]>('/pickups/active');
         setPickups(res.data);
         setCurrentWidth(1 - currentWidth);
     }
