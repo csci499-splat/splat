@@ -72,38 +72,6 @@ type TrendReportDialogProps = {
 }
 const TrendReportDialog: FC<TrendReportDialogProps> = (props:TrendReportDialogProps) : ReactElement => {
     const [trendReport, setTotalReport] = useState<TrendReport[]>([]);
-    const [options, setOptions] = useState<readonly Category[]>([]);
-    const[open, setOpen] = useState(false);
-    const loading = open && options.length === 0;
-
-    const filterOptions = (options: Category[], {inputValue}) => matchSorter(options,inputValue,
-        {keys: ['name', 'description']});
-
-        useEffect(() => {
-            let active = true;
-
-            if(!loading) return undefined;
-            (async () => {
-                await sleep(1000);
-                
-                let res = await baseRequest.get<Category[]>('/categories');
-
-                if(active) {
-                    setOptions(res.data);
-                }
-            })();
-
-            return() => {
-                active = false
-            };
-        }, [loading]);
-
-        useEffect(() => {
-            if(!open) {
-                setOptions([]);
-            }
-        }, [open]);
-
 
     const getTrendReport = async () => {
         let res = await baseRequest.get<TrendReport[]> ('/trendReport');
