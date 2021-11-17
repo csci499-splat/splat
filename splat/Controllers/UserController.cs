@@ -47,7 +47,7 @@ namespace splat.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
-            //var signin = _userManager.CheckPasswordAsync();
+            
 
 
             if (result.Succeeded)
