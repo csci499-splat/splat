@@ -78,6 +78,16 @@ namespace splat.Controllers
                 .ToListAsync();
         }
 
+        // GET: api/Pickups/history
+        [HttpGet("history")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Pickup>>> GetHistoryPickups() 
+        {
+            return await _context.Pickups
+                .Where(p => p.PickupStatus == PickupStatus.DISBURSED || p.PickupStatus == PickupStatus.CANCELED)
+                .ToListAsync();
+        }
+
         // POST: api/Pickups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
