@@ -66,37 +66,48 @@ namespace splat.Controllers
             if (user == null)
             {
                 var signinSucceeded = await Register(loginUser);
-           
+
                 if (!signinSucceeded) return BadRequest();
-
-                await _signInManager.SignInAsync(loginUser, true);
-
-                // return success and token
-                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
-
-                var token = new JwtSecurityToken
-                    (
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddDays(7),
-                        notBefore: DateTime.UtcNow,
-                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
-                            SecurityAlgorithms.HmacSha256)
-                    );
-
-                return Ok(new { 
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        roles = await _userManager.GetRolesAsync(user)
-                        });
             }
 
-            return BadRequest();
+            await _signInManager.SignInAsync(loginUser, true);
 
+            // return success and token
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken
+                (
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddDays(7),
+                    notBefore: DateTime.UtcNow,
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
+                        SecurityAlgorithms.HmacSha256)
+                );
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+
+                user = new
+                {
+                    email = user.Email,
+                    role = roles.Count == 0 ? "" : roles[0]
+                }
+            }) ;;
         }
+
+            
+
+        
         
         [HttpPost("logout")]
         [AllowAnonymous]
@@ -115,6 +126,7 @@ namespace splat.Controllers
             newUser.Email = newUser.UserName;
 
             var result = await _userManager.CreateAsync(newUser);
+            await _userManager.AddToRoleAsync(newUser, "Student");
 
             return result.Succeeded;
         }
