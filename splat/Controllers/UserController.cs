@@ -65,10 +65,12 @@ namespace splat.Controllers
 
             if (user == null)
             {
-                var signinSucceded = await Register(loginUser);
+                var signinSucceeded = await Register(loginUser);
            
-                if (!signinSucceded) return BadRequest();
-                
+                if (!signinSucceeded) return BadRequest();
+
+                await _signInManager.SignInAsync(loginUser, true);
+
                 // return success and token
                 var claims = new[]
                 {
@@ -91,6 +93,9 @@ namespace splat.Controllers
                         roles = await _userManager.GetRolesAsync(user)
                         });
             }
+
+            return BadRequest();
+
         }
         
         [HttpPost("logout")]
