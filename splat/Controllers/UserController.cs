@@ -42,25 +42,32 @@ namespace splat.Controllers
             _configuration = configuration;
         }
 
-        /*
+        
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var signinValid = await _userManager.CheckPasswordAsync(new ApplicationUser
+
+            var loginUser = new ApplicationUser
             {
                 UserName = login.UserName
-            }, login.Password);
+            };
+
+            var signinValid = await _userManager.CheckPasswordAsync(loginUser , login.Password);
 
             if(!signinValid)
             {
                 // return generic login failure
                 return BadRequest(new { message = "Username or password is incorrect" });
             }
-            var user = await _userManager.FindByNameAsync(login.UserName);
+
+            var user = await _userManager.FindByNameAsync(loginUser.UserName);
+
             if (user == null)
             {
-
+                var signinSucceded = await Register(loginUser);
+           
+                if (!signinSucceded) return BadRequest();
                 
                 // return success and token
                 var claims = new[]
@@ -73,7 +80,7 @@ namespace splat.Controllers
                 var token = new JwtSecurityToken
                     (
                         claims: claims,
-                        expires: DateTime.UtcNow.AddDays(60),
+                        expires: DateTime.UtcNow.AddDays(7),
                         notBefore: DateTime.UtcNow,
                         signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
                             SecurityAlgorithms.HmacSha256)
@@ -85,7 +92,7 @@ namespace splat.Controllers
                         });
             }
         }
-        */
+        
         [HttpPost("logout")]
         [AllowAnonymous]
         public async Task<IActionResult> Logout()
@@ -95,25 +102,16 @@ namespace splat.Controllers
             return Ok(new { message = "Signed out successfully" });
         }
         
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel newUser)
+
+        public async Task<bool> Register(ApplicationUser newUser)
         {
-            ApplicationUser user = new ApplicationUser 
-            { 
-                UserName = newUser.UserName,
-                Email = newUser.Email 
-            };
+            if (newUser == null) return false;
 
-            var result = await _userManager.CreateAsync(user, newUser.Password);
+            newUser.Email = newUser.UserName;
 
-            result = await _userManager.AddToRoleAsync(user, newUser.Role);
+            var result = await _userManager.CreateAsync(newUser);
 
-            if(result.Succeeded)
-            {
-                return CreatedAtAction("RegisterUser", new { id = user.Id }, user);
-            }
-
-            return UnprocessableEntity();
+            return result.Succeeded;
         }
     }
 }
