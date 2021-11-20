@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
 import TrendReportDialog from '../subcomponents/TrendReportDialog';
+import { Category } from '../../../models/BackendTypes';
 
 interface ReportProps extends IStaffChild {
     
@@ -85,9 +86,12 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         onClose={() => handleDialogClose('totalReport')}
         />
         <TrendReportDialog
-        open={dialogOpen.trendReport}
-        onClose={() => handleDialogClose('trendReport')}
-        />
+            open={dialogOpen.trendReport}
+            onClose={() => handleDialogClose('trendReport')} 
+            onValueChange={function (option: Category | null): void {
+                console.log(option);
+            } } 
+            value={undefined}        />
         <Button
         variant="contained"
         disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}
