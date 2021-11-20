@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from 'react';
 import { Add, Clear } from '@mui/icons-material';
 import { Button, TextField, IconButton, InputAdornment, Stack } from '@mui/material';
-import { authRequest, baseRequest } from '../../../services/api/genericRequest';
+import { baseRequest } from '../../../services/api/genericRequest';
 import { StaffMessage } from '../../../models/StaffMessage';
 import axios from 'axios';
 

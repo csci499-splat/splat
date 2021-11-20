@@ -11,6 +11,7 @@ using splat.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using System.Security.Claims;
 
 namespace splat.Controllers
 {
@@ -33,12 +34,19 @@ namespace splat.Controllers
         [Authorize]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetUserPickups()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            if (user != null)
+            if(identity != null)
             {
-                var pickups = await _context.Pickups.Where(p => p.ApplicationUserEmail == user.Email).ToListAsync();
-                return pickups;
+                var username = identity.FindFirst("username").Value;
+
+                var user = await _userManager.FindByNameAsync(username);
+
+                if (user != null)
+                {
+                    var pickups = await _context.Pickups.Where(p => p.ApplicationUserEmail == user.Email).ToListAsync();
+                    return pickups;
+                }
             }
 
             return Unauthorized(new { message = "Invalid request. Try signing out and back in" });

@@ -11,7 +11,6 @@ import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { Donation } from '../../../models/Donation';
-import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import DonationAddForm from '../subcomponents/DonationAddForm';
 

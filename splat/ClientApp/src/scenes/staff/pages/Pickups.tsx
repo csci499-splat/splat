@@ -14,7 +14,6 @@ import React, { FC, ReactElement, useState } from 'react';
 
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
-import { authRequest } from '../../../services/api/genericRequest';
 import axios from 'axios';
 import { IStaffChild } from '../Staff';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';

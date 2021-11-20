@@ -3,7 +3,6 @@ import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { authRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {

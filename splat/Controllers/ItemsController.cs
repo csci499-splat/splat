@@ -12,8 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = "ElevatedRights")]
-    [AllowAnonymous]
+    [Authorize(Policy = "ElevatedRights")]
     public class ItemsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -44,7 +43,6 @@ namespace splat.Controllers
 
         // GET: api/Items/Id
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<Item>> GetItem(Guid id)
         {
             // var item = await _context.Items.FindAsync(id);

@@ -5,6 +5,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    InputAdornment,
     Table,
     TableBody,
     TableCell,
@@ -20,7 +21,6 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { authRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupFulfillDialogProps extends IPickupDialogProps {
@@ -35,8 +35,6 @@ const validationSchema = yup.object({
 });
 
 const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillDialogProps): ReactElement => {
-
-    console.log(props.selectedPickup?.pickupStatus);
 
     const initialValues = {
         weight: 0,
@@ -112,23 +110,17 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell colSpan={4} align="center">Items</TableCell>
+                                <TableCell colSpan={3} align="center">Items in request</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             <TableRow>
-                                <TableCell />
                                 <TableCell>Item Name</TableCell>
                                 <TableCell>Category Name</TableCell>
                                 <TableCell align="right">Quantity</TableCell>
                             </TableRow>
                             {props.selectedPickup?.itemRequests.map((row, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>
-                                        <Checkbox
-                                        color="primary"
-                                        />
-                                    </TableCell>
                                     <TableCell>{row.item.name}</TableCell>
                                     <TableCell>{row.category?.name}</TableCell>
                                     <TableCell>{row.quantity}</TableCell>
@@ -148,11 +140,15 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                     onChange={formik.handleChange}
                     error={formik.touched.weight && Boolean(formik.errors.weight)}
                     helperText={formik.touched.weight && formik.errors.weight}
+                    InputProps={{
+                        endAdornment: <InputAdornment position="end">lb</InputAdornment>,
+                    }}
+                    sx={{ marginTop: 1 }}
                     />
                 </Form>
                 </FormikProvider>
             </DialogContent>
-            <DialogActions sx={{margin: 1}}>
+            <DialogActions sx={{ margin: 1 }}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
                 <Button variant="contained" onClick={() => formik.submitForm()} color="primary">
                     Fulfill

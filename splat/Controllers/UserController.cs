@@ -47,26 +47,32 @@ namespace splat.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
+            
             if(result.Succeeded)
             {
+                IdentityOptions _options = new IdentityOptions();
+
                 var user = await _userManager.FindByNameAsync(login.UserName);
+                var roles = await _userManager.GetRolesAsync(user);
                 // return success and token
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
+                    new Claim("username", user.UserName),
+                    new Claim("role", roles[0])
                 };
 
                 var token = new JwtSecurityToken
-                    (
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddDays(60),
-                        notBefore: DateTime.UtcNow,
-                        // TODO: Change to use Key from config file
-                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("bigdbbdjffhbfhjs;ash74587w3uobkdfbkfd")),
-                            SecurityAlgorithms.HmacSha256)
-                    );
+                (
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddDays(60),
+                    notBefore: DateTime.UtcNow,
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
+                        SecurityAlgorithms.HmacSha256)
+                );
 
                 return Ok(new
                 {
@@ -92,7 +98,7 @@ namespace splat.Controllers
         }
 
         [HttpPost("logout")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

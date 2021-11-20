@@ -55,25 +55,29 @@ namespace splat
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<ApplicationRole>()
-                .AddEntityFrameworkStores<SplatContext>();
+                .AddEntityFrameworkStores<SplatContext>()
+                .AddDefaultTokenProviders();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddIdentityServerJwt()
-                .AddCookie()
-                .AddJwtBearer(jwtBearerOptions =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddIdentityServerJwt()
+            .AddJwtBearer(jwtBearerOptions =>
+            {
+                jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateActor = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Token:Issuer"],
-                        ValidAudience = Configuration["Token:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-                                                           (Configuration["Key"]))
-                    };
-                });
+                    ValidateActor = false,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+                                                        (Configuration["Token:Key"]))
+                };
+                jwtBearerOptions.SaveToken = true;
+            });
 
             services.AddAuthorization(options =>
             {
@@ -82,27 +86,6 @@ namespace splat
                 options.AddPolicy("ElevatedRights",
                     policy => policy.RequireRole("Administrator", "Staff"));
             });
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromHours(8);
-
-                options.SlidingExpiration = true;
-            });
-
-            services.Configure<JwtBearerOptions>(
-                IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
-                options =>
-                {
-                    var onTokenValidated = options.Events.OnTokenValidated;
-
-                    options.Events.OnTokenValidated = async context =>
-                    {
-                        await onTokenValidated(context);
-                        // add custom logic below if wanted
-                    };
-                });
 
         }
 
@@ -136,6 +119,7 @@ namespace splat
             app.UseAuthorization();
 
             AddRoles(services).Wait();
+            AddDefaultUsers(services).Wait();
 
             app.UseEndpoints(endpoints =>
             {
@@ -157,67 +141,63 @@ namespace splat
 
         private async Task AddRoles(IServiceProvider serviceProvider)
         {
+            Console.WriteLine("test");
             var _roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-            var _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var roles = new string[] { "Administrator", "Staff", "Student"};
+
+            var roles = Configuration.GetSection("Accounts:Roles").Get<string[]>();
+
+            Console.WriteLine(roles);
+
             IdentityResult roleResult;
 
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 var exists = await _roleManager.RoleExistsAsync(role);
-                if(!exists)
+                if (!exists)
                 {
                     roleResult = await _roleManager.CreateAsync(new ApplicationRole(role));
                 }
             }
+        }
 
-            // TODO: grab these from configuation file
-            // TODO: place into separate method
-            var adminUser = new ApplicationUser
+        class DefaultUser
+        {
+            public string Email { get; set; }
+            public string Role { get; set; }
+            public string Name { get; set; }
+        }
+
+        private async Task AddDefaultUsers(IServiceProvider serviceProvider)
+        {
+            var defaultUsers = Configuration.GetSection("Accounts:InitialUsers").Get<DefaultUser[]>();
+
+            foreach(var defaultUser in defaultUsers)
             {
-                Name = "admin",
-                UserName = "admin",
-                Email = "admin@gmail.com"
-            };
+                var _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            var staffUser = new ApplicationUser
-            {
-                Name = "staff2",
-                UserName = "staff2",
-                Email = "staff2@gmail.com"
-            };
+                var user = await _userManager.FindByNameAsync(defaultUser.Email);
 
-            string userPass = "testPass123%";
-
-            var initUsers = new List<ApplicationUser> { adminUser, staffUser };
-
-            foreach(var foundUser in initUsers)
-            {
-                var user = await _userManager.FindByNameAsync(foundUser.UserName);
-
-                if (user != null)
+                // user does not already exist
+                if(user == null)
                 {
-                    await _userManager.DeleteAsync(user);
-                    user = null;
-                }
-
-                if (user == null)
-                {
-                    Console.WriteLine("Creating user " + foundUser);
-
-                    var createUser = await _userManager.CreateAsync(foundUser, userPass);
-                    if (createUser.Succeeded)
+                    var createdUser = new ApplicationUser
                     {
-                        Console.WriteLine("success");
-                        await _userManager.AddToRoleAsync(foundUser, "Administrator");
-                    }
+                        UserName = defaultUser.Email,
+                        Email = defaultUser.Email,
+                        Name = defaultUser.Name
+                    };
+
+                    var createdUserResult = await _userManager.CreateAsync(
+                        createdUser,
+                        Configuration["Accounts:DefaultPassword"]);
+
+                    if (createdUserResult.Succeeded)
+                        await _userManager.AddToRoleAsync(createdUser, defaultUser.Role);
                     else
-                    {
-                        Console.WriteLine(createUser.Errors);
-                    }
+                        Console.Error.WriteLine(createdUserResult.Errors);
                 }
+            
             }
-
         }
     }
 }

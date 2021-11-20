@@ -1,13 +1,21 @@
+import { Button } from '@mui/material';
 import { DataGrid, GridColDef, GridSortModel, GridToolbar, GridValueFormatterParams, GridValueGetterParams } from '@mui/x-data-grid';
 import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
 import { Pickup, PickupStatus } from '../../models/Pickup';
+import RequestForm from './RequestForm';
 
 type StudentRequestTableProps = {
 
 }
 
 const StudentRequestTable: FC<StudentRequestTableProps> = (props: StudentRequestTableProps): ReactElement => {
+
+    const [requestFormOpen, setRequestFormOpen] = React.useState(false);
+    
+    const handleShowRequestForm = () => {
+        setRequestFormOpen(true);
+    };
 
     const columns: GridColDef[] = React.useMemo(
         () => [
@@ -96,12 +104,26 @@ const StudentRequestTable: FC<StudentRequestTableProps> = (props: StudentRequest
         }
     };
 
+    const handlePickupRequestFormClose = () => {
+        setRequestFormOpen(false);
+        getPickups();
+    };
+
     React.useEffect(() => {
         getPickups();
     }, []);
 
     return (
         <>
+        <Button
+        variant="contained"
+        onClick={handleShowRequestForm}
+        >New Request</Button>
+        {requestFormOpen && (
+            <RequestForm 
+            onClose={() => handlePickupRequestFormClose()}
+            />
+        )}
         <div style={{height: 'calc(100vh - 150px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}

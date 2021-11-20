@@ -6,7 +6,6 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { Donation } from '../../../models/Donation';
-import { authRequest } from '../../../services/api/genericRequest';
 
 type DonationAddFormProps = {
     open: boolean;

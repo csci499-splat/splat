@@ -1,11 +1,11 @@
 import { DatePicker } from '@mui/lab';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, Stack, TextField } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { Discard } from '../../../models/Discard';
-import { authRequest } from '../../../services/api/genericRequest';
 
 type DiscardAddFormProps = {
     open: boolean;
@@ -34,8 +34,7 @@ const DiscardAddForm: FC<DiscardAddFormProps> = (props: DiscardAddFormProps): Re
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            // TODO: change to Auth
-            await authRequest.post<Discard>('/discards', values);
+            await axios.post<Discard>('/discards', values);
             props.onClose();
         },
     });

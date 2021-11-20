@@ -18,7 +18,6 @@ import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
-import { authRequest } from '../../../services/api/genericRequest';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 
 type ItemsEditDialogProps = {

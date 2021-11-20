@@ -24,7 +24,6 @@ const App: FC<{}> = (): ReactElement => {
     const theme = currentTheme === DarkmodeStates.DARK ? darkTheme : primaryTheme;
 
     React.useEffect(() => {
-        console.log("Set logged in to ", loggedIn);
         if(!loggedIn) {
             history.push("/");
         }

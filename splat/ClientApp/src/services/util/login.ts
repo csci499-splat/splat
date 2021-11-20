@@ -1,5 +1,6 @@
 import { authRequest, baseRequest } from "../api/genericRequest";
 import User from '../../models/User';
+import axios from "axios";
 
 type LoginResponse = {
     user: User;
@@ -9,7 +10,7 @@ type LoginResponse = {
 export async function login(username: string, password: string, onSuccess: () => void) {
     let res = await baseRequest.post<LoginResponse>('user/login', { userName: username, password: password });
     let user = res.data.user;
-    user.authHeader = { token: res.data.token };
+    user.authHeader = { token: 'Bearer ' + res.data.token };
     console.log(user);
     localStorage.setItem('userInfo', JSON.stringify(user));
     console.log(getCurrentUserInfo());
@@ -18,7 +19,7 @@ export async function login(username: string, password: string, onSuccess: () =>
 
 export async function logout() {
     try {
-        await authRequest.post('user/logout');
+        await axios.post('user/logout');
     } catch(err) {
 
     } finally {

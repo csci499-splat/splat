@@ -21,6 +21,7 @@ import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { DarkmodeStates } from '../../services/util/useDarkmode';
 import { login, logout, getLoggedIn, getCurrentUserInfo } from '../../services/util/login';
 import Login from './Login';
+import { toast } from 'react-toastify';
 
 type NavBarProps = {
     loggedIn: boolean,
@@ -54,7 +55,15 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
     const handleLogin = async (email: string, pass: string) => {
         try {
             await login(email, pass, () => {});
-            console.log("Setting logged in to true");
+            toast.success('Logged in successfully', {
+                position: 'top-center',
+                autoClose: 6000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false,
+                progress: 0,
+            });
             props.setLoggedIn(true);
         } catch(err) {
             

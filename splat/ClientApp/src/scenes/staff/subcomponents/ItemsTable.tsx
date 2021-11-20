@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -13,7 +13,7 @@ import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Item } from '../../../models/Item';
-import { authRequest } from '../../../services/api/genericRequest';
+import ItemsAddDialog from './ItemsAddDialog';
 import ItemsEditDialog from './ItemsEditDialog';
 
 
@@ -27,6 +27,16 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
     const [selectedRow, setSelectedRow] = useState<GridRowData>();
     const [items, setItems] = useState<Item[]>([]);
     const [currentWidth, setCurrentWidth] = useState(0);
+    const [addItemsOpen, setAddItemsOpen] = React.useState(false);
+    
+    const handleShowAddItems = () => {
+        setAddItemsOpen(true);
+    };
+
+    const handleCloseAddItems = () => {
+        setAddItemsOpen(false);
+        getItems();
+    };
 
     const handleShowEditItem = (row: GridRowData) => {
         setEditItemOpen(true);
@@ -144,6 +154,12 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         
     return (
         <>
+        <Button
+        variant="contained"
+        onClick={handleShowAddItems}
+        >
+            Create Item
+        </Button>
         <div style={{ height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
@@ -157,6 +173,10 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         onClose={handleCloseEditItem}
         item={selectedRow}
         open={editItemOpen}
+        />
+        <ItemsAddDialog
+        onClose={() => handleCloseAddItems()}
+        open={addItemsOpen}
         />
         </>
     )
