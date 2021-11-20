@@ -3,14 +3,8 @@ import {
     Paper, TableBody, TableContainer, TableHead, TableRow, Typography, Button, Autocomplete, TextField, CircularProgress
 } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
-import TableCell from '@mui/material/TableCell';
-import Table from '@mui/material/Table';
-import { baseRequest } from '../../../services/api/genericRequest';
-import { TrendReport } from '../../../models/TrendReport'
-import { BarChart, ComposedChart, Line, Bar, Cell, XAxis, YAxis, Tooltip, Label, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
-import ItemAutocomplete from '../../student/ItemAutocomplete';
-import { Item, Category } from '.././../../models/BackendTypes';
-import { matchSorter } from 'match-sorter';
+import { DateRange, TrendEntry, TrendItemEntry, TrendReport } from '../../../models/TrendReport'
+import { BarChart, ComposedChart, Line, Bar, Cell, XAxis, YAxis, Tooltip, Label, Legend, ResponsiveContainer, CartesianGrid, LineChart } from 'recharts';
 import { useEffect } from 'react';
 
 const TrendReportTest: TrendReport = {
@@ -46,21 +40,21 @@ const TrendReportTest: TrendReport = {
                     },
                     requestBin: [
                         {
-                            requestCount: 10,
+                            requestCount: 5,
                             binTime: {
                                 startDate: new Date(2021, 11, 1),
                                 endDate: new Date(2021, 11, 7),
                             }
                         },
                         {
-                            requestCount: 5,
+                            requestCount: 55,
                             binTime: {
                                 startDate: new Date(2021, 11, 8),
                                 endDate: new Date(2021, 11, 14),
                             }
                         },
                     ],
-                    average: 9,
+                    average: 30,
                 },
                 {
                     item: {
@@ -96,231 +90,147 @@ const TrendReportTest: TrendReport = {
                             }
                         },
                     ],
-                    average: 9,
+                    average: 43,
                 },
-
-
-
             ],
-
-
-        }]
-};
-
-const barChartData = [
-    {
-        week: 'Week 1',
-        item1: 40,
-        item2: 24,
-        item3: 20,
-        total: 84
-    },
-    {
-        week: 'Week 2',
-        item1: 20,
-        item2: 34,
-        item3: 15,
-        total: 69
-    },
-    {
-        week: 'Week 3',
-        item1: 18,
-        item2: 27,
-        item3: 9,
-        total: 54
-    },
-    {
-        week: 'Week 4',
-        item1: 51,
-        item2: 12,
-        item3: 10,
-        total: 73
-    }
-];
-
-
-const sleep = (delay: number) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
+        },
+    ]
 };
 
 type TrendReportDialogProps = {
     open: boolean;
     onClose: () => void;
-    onValueChange: (option: Category | null) => void;
-    value: Category | null | undefined;
-}
+};
+
+type ParsedTrendResult = {
+    itemCounts: any[];
+    trendLines: any[];
+};
+
 const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogProps): ReactElement => {
     const [trendReport, setTotalReport] = useState<TrendReport[]>([]);
-    const [options, setOptions] = useState<readonly Category[]>([]);
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [open, setOpen] = useState(false);
-    const loading = open && options.length === 0;
-    const barElements = [];
+    const [chartData, setChartData] = useState<ParsedTrendResult>();
     const colorArray = ['#8884d8', '#82ca9d', '#9dca82'];
-    const filterOptions = (options: Category[], { inputValue }) => matchSorter(options, inputValue,
-        { keys: ['name', 'description'] });
-
-    useEffect(() => {
-        let active = true;
-
-        if (!loading) return undefined;
-        (async () => {
-            await sleep(1000);
-
-            let res = await baseRequest.get<Category[]>('/categories');
-
-            if (active) {
-                setOptions(res.data);
-            }
-        })();
-
-        return () => {
-            active = false
-        };
-    }, [loading]);
-
-    useEffect(() => {
-        if (!open) {
-            setOptions([]);
-        }
-    }, [open]);
-
 
     const getTrendReport = async () => {
-        // let res = await baseRequest.get<TrendReport[]>('/trendReport');
+        // let res = await axios.get<TrendReport[]>('/trendReport');
         // setChartData(tranformData(res.data));
-        setChartData(tranformData(TrendReportTest));
+        setChartData(parseTrendData(TrendReportTest.entries[0]));
     };
 
-    // tranform the data to what the chart needed
-    const tranformData = (data) => {
-        const items = data.entries[0].trendItemEntries;
-        let weekData: any[] = [];
-        let weekNameArray: string[] = [];
-        if (items.length == 0) {
-            return weekData;
-        } else {
-            let firstItem = items[0];
-            for (let i = 0; i < firstItem.requestBin.length; i++) {
-                const element = firstItem.requestBin[i];
-                const weekKey = getKeyFromStartAndEndDate(element.binTime.startDate, element.binTime.endDate);
-                weekNameArray.push(weekKey);
-                let itemName = firstItem.item.name;
-                let item: any = {};
-                item.week = weekKey;
-                item[itemName] = element.requestCount;
-                item.total = element.requestCount;
-                weekData.push(item);
-            }
-            for (let k = 1; k < items.length; k++) {
-                const other = items[k];
-                for (let i = 0; i < other.requestBin.length; i++) {
-                    const element = other.requestBin[i];
-                    const weekKey = getKeyFromStartAndEndDate(element.binTime.startDate, element.binTime.endDate);
-                    let itemName = other.item.name;
-                    for (let j = 0; j < weekData.length; j++) {
-                        let weekItem :any = weekData[j];
-                        if (weekItem.week == weekKey) {
-                            weekItem[itemName] = element.requestCount;
-                            weekItem.total = weekItem.total+element.requestCount;
-                            weekData[j] = weekItem;
-                        }
-                    }
-                }
-            }
-        }
-        return weekData;
-    }
+    type LineOfBestFit = {
+        m: number;
+        b: number;
+    };
 
-    const getKeyFromStartAndEndDate = (startDate, endDate) =>{
-        return (1900+startDate.getYear())+'/'+startDate.getMonth()+'/'+startDate.getDate()+'-'
-            +(1900+endDate.getYear())+'/'+endDate.getMonth()+'/'+endDate.getDate();
-    }
+    const getLineOfBestFit = (entry: TrendItemEntry): LineOfBestFit => {
+        let avgX = Math.floor((entry.requestBin.length - 1) / 2);
+        let avgY = entry.average;
+
+        let mNum = 0;
+        let mDem = 0;
+        
+        for(let i = 0; i < entry.requestBin.length; i++) {
+            let currentBin = entry.requestBin[i];
+
+            mNum += (i - avgX) * (currentBin.requestCount - avgY);
+            mDem += (i - avgX) * (i - avgX);
+        }
+
+        let m = mNum / mDem;
+
+        let b = avgY - (m * avgX);
+
+        return { m: m, b: b };
+    };
+
+    const parseTrendData = (data: TrendEntry): ParsedTrendResult => {
+        let itemCounts: any[] = [];
+        let trendLines: any[] = [];
+
+        const binCount: number = data.trendItemEntries[0].requestBin.length;
+
+        const linesOfBestFit: LineOfBestFit[] = data.trendItemEntries.map((entry) => getLineOfBestFit(entry));
+
+        for(let binIndex = 0; binIndex < binCount; binIndex++) {
+            let currentWeek: DateRange = data.trendItemEntries[0].requestBin[binIndex].binTime;
+            let itemCountsEntry = { name: `${currentWeek.startDate.toLocaleDateString()} - ${currentWeek.endDate.toLocaleDateString()}` };
+            let trendLinesEntry = { name: `${currentWeek.startDate.toLocaleDateString()} - ${currentWeek.endDate.toLocaleDateString()}` };
+
+            for(let i = 0; i < data.trendItemEntries.length; i++) {
+                let entry: TrendItemEntry = data.trendItemEntries[i];
+
+                itemCountsEntry[entry.item.name] = entry.requestBin[binIndex].requestCount;
+
+                let lineOfBestFitEq: LineOfBestFit = linesOfBestFit[i];
+                // binIndex = x     y = mx + b
+                trendLinesEntry[entry.item.name] = lineOfBestFitEq.m * binIndex + lineOfBestFitEq.b;
+            }
+            
+            itemCounts.push(itemCountsEntry);
+            trendLines.push(trendLinesEntry);
+        }
+
+        return { itemCounts: itemCounts, trendLines: trendLines };
+    };
 
     React.useEffect(() => {
-        getTrendReport();
-
-    }, [])
-    
-    var lis: any = [];
-
-    for (var i=0; i<TrendReportTest.entries[0].trendItemEntries.length; i++) {
-        let item = TrendReportTest.entries[0].trendItemEntries[i];
-        lis.push(<Bar key={item.item.name} dataKey={item.item.name} stackId="a" fill={colorArray[i]} />);
-    }
+        setChartData(parseTrendData(TrendReportTest.entries[0]));
+    }, []);
 
     return (
-        <>
-            <div>
-                <Dialog
-                    open={props.open}
-                    onClose={props.onClose}
+        <Dialog
+        open={props.open}
+        onClose={props.onClose}
+        maxWidth="lg"
+        >
+            <DialogTitle>Trend Report</DialogTitle>
+            <DialogContent>
+                <BarChart
+                width={800}
+                height={300}
+                data={parseTrendData(TrendReportTest.entries[0]).itemCounts}
+                margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                }}
                 >
-                    <DialogTitle>TrendReport</DialogTitle>
-                    <DialogContent>
-                        <Autocomplete
-                            open={open}
-                            onOpen={() => setOpen(true)}
-                            onClose={() => setOpen(false)}
-                            sx={{ width: '100%' }}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            getOptionLabel={(option) => option.name}
-                            options={options}
-                            loading={loading}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Category"
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <>
-                                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                {params.InputProps.endAdornment}
-                                            </>
-                                        )
-                                    }}
-                                />
-                            )}
-                            filterOptions={filterOptions}
-                            value={props.value}
-                            onChange={(event, value) => props.onValueChange(value)}
-                        />
-                        <ComposedChart
-                            width={500}
-                            height={300}
-                            data={chartData}
-                            margin={{
-                                top: 20,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="week" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            {
-                                // TrendReportTest.entries[0].trendItemEntries.forEach((item, index) => {
-                                    // <Bar dataKey="Milk" stackId="a" fill="#8884d8" />
-                                // })
-                                lis
-                            }
-                            {/* <Bar dataKey="Milk" stackId="a" fill="#8884d8" />
-                            <Bar dataKey="Water" stackId="a" fill="#82ca9d" /> */}
-                            <Line type="monotone" dataKey="total" stroke="#ff7300" />
-                        </ComposedChart>
-                    </DialogContent>
-                    <DialogActions sx={{ margin: 1 }}>
-                        <Button variant="outlined" onClick={props.onClose} color="secondary">Closed</Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        </>
-    )
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    { TrendReportTest.entries[0].trendItemEntries.map((entry, index) => (
+                        <Bar key={index} dataKey={entry.item.name} stackId="a" fill={colorArray[index]} />
+                    )) }
+                </BarChart>
+                <LineChart
+                width={800}
+                height={300}
+                data={parseTrendData(TrendReportTest.entries[0]).trendLines}
+                margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis padding={{ left: 50, right: 50 }} dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    { TrendReportTest.entries[0].trendItemEntries.map((entry, index) => (
+                        <Line key={index} dataKey={entry.item.name} stroke={colorArray[index]} />
+                    )) }
+                </LineChart>
+            </DialogContent>
+            <DialogActions sx={{ margin: 1 }}>
+                <Button variant="outlined" onClick={props.onClose} color="secondary">Close</Button>
+            </DialogActions>
+        </Dialog>
+    );
 };
 export default TrendReportDialog;

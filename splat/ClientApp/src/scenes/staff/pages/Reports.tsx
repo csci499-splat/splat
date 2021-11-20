@@ -13,24 +13,26 @@ interface ReportProps extends IStaffChild {
     
 }
 
+type DialogType = 'totalReport' | 'trendReport' | '';
+
 const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     
     const [startDateValue, setStartDateValue] = React.useState<Date | null>();
     const [endDateValue, setEndDateValue] = React.useState<Date | null>();
     //TODO Create a new type, if user want to add new report type, they don't need to change 3 lines. 
-    const [reportType, setReportType] = React.useState<'totalReport' | 'trendReport'|''>('');
+    const [reportType, setReportType] = React.useState<DialogType>('');
     const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false});
     
 
-    const handleDialogOpen = (dialog: 'totalReport' | 'trendReport'|'') => {
+    const handleDialogOpen = (dialog: DialogType) => {
         setDialogOpen((prevState) => ({ ... prevState, [dialog]: true}));
         
     };
-    const handleDialogClose = (dialog: 'totalReport' | 'trendReport'|'') => {
+    const handleDialogClose = (dialog: DialogType) => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}))
     };
     const handleTypeChange = (event: SelectChangeEvent) => {
-        setReportType(event.target.value as 'totalReport' | 'trendReport'|'');
+        setReportType(event.target.value as DialogType);
     };
     
     return (
@@ -43,13 +45,12 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             left: '30%',
           }}
         >
-        <h1>{props.pageName}</h1>
         <Stack direction="row" spacing={2}  >
 
         <MobileDatePicker
             label="Select start date"
             value={startDateValue}
-            maxDate={endDateValue}
+            maxDate={(endDateValue) ? endDateValue : new Date()}
             onChange={(newStartDateValue) => {
                 setStartDateValue(newStartDateValue)
             }}
@@ -59,7 +60,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             <MobileDatePicker
             label="Select end date"
             value={endDateValue}
-            minDate= {startDateValue}
+            minDate={startDateValue}
             
             maxDate={new Date()}
             onChange={(newEndDateValue) => {
@@ -75,23 +76,21 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         value={reportType}
         onChange={handleTypeChange}
         label="Report Type"
+        sx={{ minWidth: 70 }}
         disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}
         >
-            <MenuItem value="totalReport">Total Report
-            </MenuItem>
-            <MenuItem value="trendReport">Trend Report</MenuItem>
+            <MenuItem value="" disabled><em>None</em></MenuItem>
+            <MenuItem value="totalReport">Total</MenuItem>
+            <MenuItem value="trendReport">Trend</MenuItem>
         </Select>
         <TotalReportDialog
         open={dialogOpen.totalReport}
         onClose={() => handleDialogClose('totalReport')}
         />
         <TrendReportDialog
-            open={dialogOpen.trendReport}
-            onClose={() => handleDialogClose('trendReport')} 
-            onValueChange={function (option: Category | null): void {
-                console.log(option);
-            } } 
-            value={undefined}        />
+        open={dialogOpen.trendReport}
+        onClose={() => handleDialogClose('trendReport')} 
+        />
         <Button
         variant="contained"
         disabled={!(Boolean(startDateValue)||Boolean(endDateValue))}

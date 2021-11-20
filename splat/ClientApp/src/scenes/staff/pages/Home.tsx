@@ -15,8 +15,13 @@ const Home: FC<HomeProps> = (props: HomeProps): ReactElement => {
     const [currentMessage, setCurrentMessage] = React.useState<string | null>();
     
     const getCurrentMessage = async () => {
-        let res = await baseRequest.get<StaffMessage>('/staffmessages');
-        setCurrentMessage(res.data.message);
+        try {
+            let res = await baseRequest.get<StaffMessage>('/staffmessages');
+            setCurrentMessage(res.data.message);
+        } catch (err) {
+            
+        }
+        
     };
 
     const handleUpdateMessage = async () => {

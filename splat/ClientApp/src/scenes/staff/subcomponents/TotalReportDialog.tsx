@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogActions, DialogTitle, Paper,
 import React, { FC, ReactElement, useState } from 'react';
 import { baseRequest } from '../../../services/api/genericRequest';
 import {TotalReport} from '../../../models/TotalReport';
+import axios from 'axios';
 
 const TotalReportTest: TotalReport = {
     foodWeight:200,
@@ -20,14 +21,18 @@ type TotalReportDialogProps = {
 const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogProps) : ReactElement => {
 
     const [totalReport, setTotalReport] = useState<TotalReport>();
+
     const getTotalReport = async () => {
-        let res = await baseRequest.get<TotalReport> ('/totalReport');
-        setTotalReport(res.data);
+        try {
+            let res = await axios.get<TotalReport> ('/totalReport');
+            setTotalReport(res.data);
+        } catch(err) {
+
+        }
     };
 
     React.useEffect(() => {
         getTotalReport();
-
     }, [])
 
     
