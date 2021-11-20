@@ -11,8 +11,12 @@ export type TrendEntry = {
 };
 
 export type TrendItemEntry = {
-    item: Item;
-    requestBin: RequestHistoryBin[];
+    item1: Item;
+    item2: Item;
+    requestBin1: RequestHistoryBin[];
+    requestBin2: RequestHistoryBin[];
+    requestBin3: RequestHistoryBin[];
+    requestBin4: RequestHistoryBin[];
     average: number;
 };
 

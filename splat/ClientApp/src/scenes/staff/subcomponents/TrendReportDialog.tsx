@@ -28,7 +28,7 @@ const TrendReportTest: TrendReport = {
             },
             trendItemEntries:[
                 {
-                item :{
+                item1 :{
                     id:'',
                     name:'',
                     categoryId:'',
@@ -45,12 +45,56 @@ const TrendReportTest: TrendReport = {
                     visible:true,
                     createdAt:'',
                 },
-                requestBin:[
+                item2 :{
+                    id:'',
+                    name:'',
+                    categoryId:'',
+                    category:{
+                        id:'',
+                        name:'',
+                        limit:0,
+                        icon:'',
+                        description:'',
+                        visible:true,
+                        createdAt:'',
+                    },
+                    description:'',
+                    visible:true,
+                    createdAt:'',
+                },
+                requestBin1:[
                     {
                     requestCount:10,
                     binTime:{
+                        startDate: new Date(2021,10,3),
+                        endDate:new Date(2021,10,10),
+                    }
+                }
+                ],
+                requestBin2:[
+                    {
+                    requestCount:20,
+                    binTime:{
                         startDate: new Date(2021,10,11),
-                        endDate:new Date(2021,11,10),
+                        endDate:new Date(2021,10,17),
+                    }
+                }
+                ],
+                requestBin3:[
+                    {
+                    requestCount:9,
+                    binTime:{
+                        startDate: new Date(2021,10,3),
+                        endDate:new Date(2021,10,10),
+                    }
+                }
+                ],
+                requestBin4:[
+                    {
+                    requestCount:40,
+                    binTime:{
+                        startDate: new Date(2021,10,11),
+                        endDate:new Date(2021,10,17),
                     }
                 }
                 ],
@@ -59,11 +103,6 @@ const TrendReportTest: TrendReport = {
             ],}]};
 
 
-const sleep = (delay: number) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
-};
 
 type TrendReportDialogProps = {
     open: boolean;
