@@ -1,18 +1,19 @@
 import {
     Dialog, DialogContent, DialogActions, DialogTitle,
-    Paper, TableBody, TableContainer, TableHead, TableRow, Typography, Button, Autocomplete, TextField, CircularProgress
+    Paper, TableBody, TableContainer, TableHead, TableRow, Typography, Button, Autocomplete, TextField, CircularProgress, Stack
 } from '@mui/material';
-import React, { FC, ReactElement, useState } from 'react';
+import React, { FC, ReactElement, useState, useEffect } from 'react';
 import { DateRange, TrendEntry, TrendItemEntry, TrendReport } from '../../../models/TrendReport'
 import { BarChart, ComposedChart, Line, Bar, Cell, XAxis, YAxis, Tooltip, Label, Legend, ResponsiveContainer, CartesianGrid, LineChart } from 'recharts';
-import { useEffect } from 'react';
+import { Category } from '../../../models/BackendTypes';
+import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 
 const TrendReportTest: TrendReport = {
     entries: [
         {
             category: {
                 id: '',
-                name: '',
+                name: 'Test category',
                 limit: 0,
                 icon: '',
                 description: '',
@@ -53,8 +54,15 @@ const TrendReportTest: TrendReport = {
                                 endDate: new Date(2021, 11, 14),
                             }
                         },
+                        {
+                            requestCount: 60,
+                            binTime: {
+                                startDate: new Date(2021, 11, 15),
+                                endDate: new Date(2021, 11, 21),
+                            }
+                        },
                     ],
-                    average: 30,
+                    average: 40,
                 },
                 {
                     item: {
@@ -89,8 +97,58 @@ const TrendReportTest: TrendReport = {
                                 endDate: new Date(2021, 11, 14),
                             }
                         },
+                        {
+                            requestCount: 43,
+                            binTime: {
+                                startDate: new Date(2021, 11, 15),
+                                endDate: new Date(2021, 11, 21),
+                            }
+                        },
                     ],
                     average: 43,
+                },
+                {
+                    item: {
+                        id: '123',
+                        name: 'Milk2',
+                        categoryId: '2',
+                        category: {
+                            id: '',
+                            name: '',
+                            limit: 0,
+                            icon: '',
+                            description: '',
+                            visible: true,
+                            createdAt: '',
+                        },
+                        description: '',
+                        visible: true,
+                        createdAt: '',
+                    },
+                    requestBin: [
+                        {
+                            requestCount: 30,
+                            binTime: {
+                                startDate: new Date(2021, 11, 1),
+                                endDate: new Date(2021, 11, 7),
+                            }
+                        },
+                        {
+                            requestCount: 42,
+                            binTime: {
+                                startDate: new Date(2021, 11, 8),
+                                endDate: new Date(2021, 11, 14),
+                            }
+                        },
+                        {
+                            requestCount: 40,
+                            binTime: {
+                                startDate: new Date(2021, 11, 15),
+                                endDate: new Date(2021, 11, 21),
+                            }
+                        },
+                    ],
+                    average: 37.33,
                 },
             ],
         },
@@ -107,15 +165,43 @@ type ParsedTrendResult = {
     trendLines: any[];
 };
 
+type CategoryListElement = {
+    category: Category;
+    index: number;
+};
+
 const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogProps): ReactElement => {
-    const [trendReport, setTotalReport] = useState<TrendReport[]>([]);
+    const [trendReport, setTrendReport] = useState<TrendReport>();
     const [chartData, setChartData] = useState<ParsedTrendResult>();
+    const [categories, setCategories] = useState<CategoryListElement[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>();
+    const [categoryIndex, setCategoryIndex] = useState<number>(0);
+
+    // TODO: pseudorandom color generation
+
     const colorArray = ['#8884d8', '#82ca9d', '#9dca82'];
 
+    const extractCategories = (report: TrendReport): CategoryListElement[] => {
+        return report.entries.map((entry, index) => ({ category: entry.category, index: index }));
+    };
+
+    const handleChangeCategory = (newCategory: Category | null) => {
+        setSelectedCategory(newCategory);
+        if(trendReport) {
+            for(let i = 0; i < categories.length; i++) {
+                if(categories[i].category.id === newCategory?.id) {
+                    setCategoryIndex(i);
+                }
+            }
+        }
+        
+    };
+
     const getTrendReport = async () => {
-        // let res = await axios.get<TrendReport[]>('/trendReport');
+        // let res = await axios.get<TrendReport>('/trendReport');
         // setChartData(tranformData(res.data));
-        setChartData(parseTrendData(TrendReportTest.entries[0]));
+        setCategories(extractCategories(TrendReportTest));
+        setTrendReport(TrendReportTest);
     };
 
     type LineOfBestFit = {
@@ -124,7 +210,7 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
     };
 
     const getLineOfBestFit = (entry: TrendItemEntry): LineOfBestFit => {
-        let avgX = Math.floor((entry.requestBin.length - 1) / 2);
+        let avgX = (entry.requestBin.length - 1) / 2;
         let avgY = entry.average;
 
         let mNum = 0;
@@ -175,7 +261,7 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
     };
 
     React.useEffect(() => {
-        setChartData(parseTrendData(TrendReportTest.entries[0]));
+        getTrendReport();
     }, []);
 
     return (
@@ -186,9 +272,21 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
         >
             <DialogTitle>Trend Report</DialogTitle>
             <DialogContent>
+            <Stack direction="row" justifyContent="center">
+                <div style={{ width: '50%', paddingTop: 20, marginBottom: 20 }}>
+                    <CategoryAutocomplete
+                    value={selectedCategory}
+                    onValueChange={(option) => handleChangeCategory(option)}
+                    options={categories?.map((elem) => elem.category)}
+                    />
+                </div>
+            </Stack>
+            
+            
+            {Boolean(selectedCategory) ? (
+            <>
+            <ResponsiveContainer width={800} height={500}>
                 <BarChart
-                width={800}
-                height={300}
                 data={parseTrendData(TrendReportTest.entries[0]).itemCounts}
                 margin={{
                     top: 20,
@@ -201,15 +299,18 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Legend />
-                    { TrendReportTest.entries[0].trendItemEntries.map((entry, index) => (
+                    <Legend 
+                    height={10}
+                    verticalAlign="top"
+                    />
+                    { TrendReportTest.entries[categoryIndex].trendItemEntries.map((entry, index) => (
                         <Bar key={index} dataKey={entry.item.name} stackId="a" fill={colorArray[index]} />
                     )) }
                 </BarChart>
+            </ResponsiveContainer>
+            <ResponsiveContainer width={800} height={400}>
                 <LineChart
-                width={800}
-                height={300}
-                data={parseTrendData(TrendReportTest.entries[0]).trendLines}
+                data={parseTrendData(TrendReportTest.entries[categoryIndex]).trendLines}
                 margin={{
                     top: 20,
                     right: 30,
@@ -220,12 +321,19 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis padding={{ left: 50, right: 50 }} dataKey="name" />
                     <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    { TrendReportTest.entries[0].trendItemEntries.map((entry, index) => (
+                    <Legend 
+                    height={36}
+                    verticalAlign="top"
+                    />
+                    { TrendReportTest.entries[categoryIndex].trendItemEntries.map((entry, index) => (
                         <Line key={index} dataKey={entry.item.name} stroke={colorArray[index]} />
                     )) }
                 </LineChart>
+            </ResponsiveContainer>
+            </>
+            ) : (
+                <h3 style={{ marginTop: 50 }} >Select a category to get started</h3>
+            )}
             </DialogContent>
             <DialogActions sx={{ margin: 1 }}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Close</Button>
