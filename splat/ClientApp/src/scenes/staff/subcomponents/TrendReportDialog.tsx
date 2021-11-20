@@ -28,10 +28,10 @@ const TrendReportTest: TrendReport = {
             },
             trendItemEntries:[
                 {
-                item1 :{
-                    id:'',
-                    name:'',
-                    categoryId:'',
+                item :{
+                    id:'312',
+                    name:'Water',
+                    categoryId:'44',
                     category:{
                         id:'',
                         name:'',
@@ -45,62 +45,67 @@ const TrendReportTest: TrendReport = {
                     visible:true,
                     createdAt:'',
                 },
-                item2 :{
-                    id:'',
-                    name:'',
-                    categoryId:'',
-                    category:{
-                        id:'',
-                        name:'',
-                        limit:0,
-                        icon:'',
-                        description:'',
-                        visible:true,
-                        createdAt:'',
-                    },
-                    description:'',
-                    visible:true,
-                    createdAt:'',
-                },
-                requestBin1:[
+                requestBin:[
                     {
                     requestCount:10,
                     binTime:{
-                        startDate: new Date(2021,10,3),
-                        endDate:new Date(2021,10,10),
+                        startDate: new Date(2021,11,1),
+                        endDate:new Date(2021,11,7),
                     }
-                }
-                ],
-                requestBin2:[
-                    {
-                    requestCount:20,
+                },
+                {
+                    requestCount:5,
                     binTime:{
-                        startDate: new Date(2021,10,11),
-                        endDate:new Date(2021,10,17),
+                        startDate: new Date(2021,11,8),
+                        endDate:new Date(2021,11,14),
                     }
-                }
-                ],
-                requestBin3:[
-                    {
-                    requestCount:9,
-                    binTime:{
-                        startDate: new Date(2021,10,3),
-                        endDate:new Date(2021,10,10),
-                    }
-                }
-                ],
-                requestBin4:[
-                    {
-                    requestCount:40,
-                    binTime:{
-                        startDate: new Date(2021,10,11),
-                        endDate:new Date(2021,10,17),
-                    }
-                }
+                },
                 ],
                 average:9,
             },
-            ],}]};
+            {
+                item :{
+                    id:'123',
+                    name:'Milk',
+                    categoryId:'2',
+                    category:{
+                        id:'',
+                        name:'',
+                        limit:0,
+                        icon:'',
+                        description:'',
+                        visible:true,
+                        createdAt:'',
+                    },
+                    description:'',
+                    visible:true,
+                    createdAt:'',
+                },
+                requestBin:[
+                    {
+                    requestCount:44,
+                    binTime:{
+                        startDate: new Date(2021,11,1),
+                        endDate:new Date(2021,11,7),
+                    }
+                },
+                {
+                    requestCount:42,
+                    binTime:{
+                        startDate: new Date(2021,11,8),
+                        endDate:new Date(2021,11,14),
+                    }
+                },
+                ],
+                average:9,
+            },
+
+            
+
+            ],
+        
+        
+        }]};
 
 
 

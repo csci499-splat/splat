@@ -11,14 +11,11 @@ export type TrendEntry = {
 };
 
 export type TrendItemEntry = {
-    item1: Item;
-    item2: Item;
-    requestBin1: RequestHistoryBin[];
-    requestBin2: RequestHistoryBin[];
-    requestBin3: RequestHistoryBin[];
-    requestBin4: RequestHistoryBin[];
+    item: Item;
+    requestBin: RequestHistoryBin[];
     average: number;
 };
+
 
 export type RequestHistoryBin = {
     requestCount: number;
@@ -27,5 +24,5 @@ export type RequestHistoryBin = {
 
 export type DateRange = {
     startDate: Date;
-    endDate: Date;
+    endDate: Date;      
 };
