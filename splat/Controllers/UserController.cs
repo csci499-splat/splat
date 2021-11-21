@@ -51,25 +51,31 @@ namespace splat.Controllers
                 UserName = login.UserName
             };
 
-            var signinValid = await _userManager.CheckPasswordAsync(loginUser , login.Password);
-
-            if(!signinValid)
-            {
-                // return generic login failure
-                return BadRequest(new { message = "Username or password is incorrect" });
-            }
+            // attempt to sign in a user
+            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, true, false);
 
             var user = await _userManager.FindByNameAsync(loginUser.UserName);
 
-            if (user == null)
+            if (!result.Succeeded)
             {
-                var signinSucceeded = await Register(loginUser);
+                // user does not exist locally
+                if (user == null)
+                {
+                    // attempt to register
+                    var ldapCheckSucceeded = await _userManager.CheckPasswordAsync(loginUser, login.Password);
+                    if (!ldapCheckSucceeded)
+                    {
+                        return Unauthorized(new { message = "Unable to sign in with given credentials" });
+                    }
 
-                if (!signinSucceeded) return BadRequest();
+                    var registerSucceeded = await Register(loginUser);
+                    if (!registerSucceeded)
+                        return StatusCode(500);
+                }
+
+                // return generic login failure
+                return Unauthorized(new { message = "Username or password is incorrect 2" });
             }
-
-            await _signInManager.SignInAsync(loginUser, true);
-            
             
             IdentityOptions _options = new IdentityOptions();
 
@@ -88,7 +94,7 @@ namespace splat.Controllers
             var token = new JwtSecurityToken
             (
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(60),
+                expires: DateTime.UtcNow.AddDays(7),
                 notBefore: DateTime.UtcNow,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
                     SecurityAlgorithms.HmacSha256)
@@ -101,7 +107,7 @@ namespace splat.Controllers
                 {
                     name = user.Name,
                     email = user.UserName,
-                    role = _userManager.GetRolesAsync(user).Result[0]
+                    role = roles.Count == 0 ? "" : roles[0]
                 }
             });
         }

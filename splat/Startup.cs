@@ -23,6 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using splat.Services;
 
 namespace splat
 {
@@ -53,10 +54,27 @@ namespace splat
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
+            if (Configuration["Mode"] == "Normal")
+            {
+                Console.WriteLine("Using LDAP for authentication");
+
+                services.Configure<LDAPAuthenticationOptions>(Configuration.GetSection("LdapAuth"));
+
+                services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddUserManager<SplatUserManager<ApplicationUser>>()
                 .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<SplatContext>()
                 .AddDefaultTokenProviders();
+            } 
+            else if(Configuration["Mode"] == "BypassLDAP")
+            {
+                Console.WriteLine("Bypassing LDAP for authentication!");
+
+                services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<SplatContext>()
+                .AddDefaultTokenProviders();
+            }
 
             services.AddAuthentication(options =>
             {
@@ -141,12 +159,9 @@ namespace splat
 
         private async Task AddRoles(IServiceProvider serviceProvider)
         {
-            Console.WriteLine("test");
             var _roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
             var roles = Configuration.GetSection("Accounts:Roles").Get<string[]>();
-
-            Console.WriteLine(roles);
 
             IdentityResult roleResult;
 
