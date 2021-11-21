@@ -1,12 +1,13 @@
 import {
     Dialog, DialogContent, DialogActions, DialogTitle,
-    Paper, TableBody, TableContainer, TableHead, TableRow, Typography, Button, Autocomplete, TextField, CircularProgress, Stack
+    Button, Autocomplete, TextField, CircularProgress, Stack, IconButton, Tooltip
 } from '@mui/material';
 import React, { FC, ReactElement, useState, useEffect } from 'react';
 import { DateRange, TrendEntry, TrendItemEntry, TrendReport } from '../../../models/TrendReport'
-import { BarChart, ComposedChart, Line, Bar, Cell, XAxis, YAxis, Tooltip, Label, Legend, ResponsiveContainer, CartesianGrid, LineChart } from 'recharts';
+import { BarChart, ComposedChart, Line, Bar, Cell, XAxis, YAxis, Tooltip as TooltipCharts, Label, Legend, ResponsiveContainer, CartesianGrid, LineChart } from 'recharts';
 import { Category } from '../../../models/BackendTypes';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
+import { Refresh } from '@mui/icons-material';
 
 const TrendReportTest: TrendReport = {
     entries: [
@@ -172,14 +173,10 @@ type CategoryListElement = {
 
 const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogProps): ReactElement => {
     const [trendReport, setTrendReport] = useState<TrendReport>();
-    const [chartData, setChartData] = useState<ParsedTrendResult>();
     const [categories, setCategories] = useState<CategoryListElement[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>();
     const [categoryIndex, setCategoryIndex] = useState<number>(0);
-
-    // TODO: pseudorandom color generation
-
-    const colorArray = ['#8884d8', '#82ca9d', '#9dca82'];
+    const [colorArray, setColorArray] = useState<string[]>([]);
 
     const extractCategories = (report: TrendReport): CategoryListElement[] => {
         return report.entries.map((entry, index) => ({ category: entry.category, index: index }));
@@ -191,11 +188,19 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
             for(let i = 0; i < categories.length; i++) {
                 if(categories[i].category.id === newCategory?.id) {
                     setCategoryIndex(i);
+                    handleUpdateColors();
                 }
             }
         }
-        
     };
+
+    const handleUpdateColors = () => {
+        if(trendReport) {
+            setColorArray(trendReport.entries[categoryIndex].trendItemEntries.map((entry) => 
+                `rgb(${[1,2,3].map(x=>Math.random()*256|0)})`
+            ));
+        }
+    }
 
     const getTrendReport = async () => {
         // let res = await axios.get<TrendReport>('/trendReport');
@@ -272,7 +277,7 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
         >
             <DialogTitle>Trend Report</DialogTitle>
             <DialogContent>
-            <Stack direction="row" justifyContent="center">
+            <Stack direction="row" justifyContent="center" alignItems="center">
                 <div style={{ width: '50%', paddingTop: 20, marginBottom: 20 }}>
                     <CategoryAutocomplete
                     value={selectedCategory}
@@ -280,6 +285,17 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
                     options={categories?.map((elem) => elem.category)}
                     />
                 </div>
+                {Boolean(selectedCategory) && (
+                <Tooltip title="Change colors">
+                    <IconButton
+                    color="primary"
+                    onClick={handleUpdateColors}
+                    sx={{ width: 45, height: 45, marginLeft: 1 }}
+                    >
+                        <Refresh />
+                    </IconButton>
+                </Tooltip>
+                )}
             </Stack>
             
             
@@ -287,7 +303,7 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
             <>
             <ResponsiveContainer width={800} height={500}>
                 <BarChart
-                data={parseTrendData(TrendReportTest.entries[0]).itemCounts}
+                data={parseTrendData(TrendReportTest.entries[categoryIndex]).itemCounts}
                 margin={{
                     top: 20,
                     right: 30,
@@ -298,7 +314,7 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    <TooltipCharts />
                     <Legend 
                     height={10}
                     verticalAlign="top"
