@@ -7,6 +7,8 @@ import Box from '@mui/material/Box';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
 import TrendReportDialog from '../subcomponents/TrendReportDialog';
+import HistoryDialog from '../subcomponents/HistoryDialog';
+
 
 interface ReportProps extends IStaffChild {
     
@@ -89,7 +91,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         open={dialogOpen.trendReport}
         onClose={() => handleDialogClose('trendReport')}
         />
-        <TrendReportDialog
+        <HistoryDialog
         open={dialogOpen.history}
         onClose={() => handleDialogClose('history')}
         />
