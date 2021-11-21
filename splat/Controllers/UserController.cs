@@ -46,55 +46,64 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
-            
-            if(result.Succeeded)
+            var loginUser = new ApplicationUser
             {
-                IdentityOptions _options = new IdentityOptions();
+                UserName = login.UserName
+            };
 
-                var user = await _userManager.FindByNameAsync(login.UserName);
-                var roles = await _userManager.GetRolesAsync(user);
-                // return success and token
-                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
-                    new Claim("username", user.UserName),
-                    new Claim("role", roles[0])
-                };
+            var signinValid = await _userManager.CheckPasswordAsync(loginUser , login.Password);
 
-                var token = new JwtSecurityToken
-                (
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddDays(60),
-                    notBefore: DateTime.UtcNow,
-                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
-                        SecurityAlgorithms.HmacSha256)
-                );
-
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    user = new
-                    {
-                        name = user.Name,
-                        email = user.UserName,
-                        role = _userManager.GetRolesAsync(user).Result[0]
-                    }
-                });
-            } 
-            else if(result.IsLockedOut)
-            {
-                // return locked out message
-                return Unauthorized(new { message = "Locked out. Contact your administrator" });
-            } 
-            else
+            if(!signinValid)
             {
                 // return generic login failure
                 return BadRequest(new { message = "Username or password is incorrect" });
             }
+
+            var user = await _userManager.FindByNameAsync(loginUser.UserName);
+
+            if (user == null)
+            {
+                var signinSucceeded = await Register(loginUser);
+
+                if (!signinSucceeded) return BadRequest();
+            }
+
+            await _signInManager.SignInAsync(loginUser, true);
+            
+            
+            IdentityOptions _options = new IdentityOptions();
+
+            var roles = await _userManager.GetRolesAsync(user);
+            // return success and token
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
+                new Claim("username", user.UserName),
+                new Claim("role", roles.Count == 0 ? "" : roles[0])
+            };
+
+            var token = new JwtSecurityToken
+            (
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(60),
+                notBefore: DateTime.UtcNow,
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
+                    SecurityAlgorithms.HmacSha256)
+            );
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                user = new
+                {
+                    name = user.Name,
+                    email = user.UserName,
+                    role = _userManager.GetRolesAsync(user).Result[0]
+                }
+            });
         }
 
         [HttpPost("logout")]
@@ -105,26 +114,17 @@ namespace splat.Controllers
 
             return Ok(new { message = "Signed out successfully" });
         }
-        
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel newUser)
+
+        public async Task<bool> Register(ApplicationUser newUser)
         {
-            ApplicationUser user = new ApplicationUser 
-            { 
-                UserName = newUser.UserName,
-                Email = newUser.Email 
-            };
+            if (newUser == null) return false;
 
-            var result = await _userManager.CreateAsync(user, newUser.Password);
+            newUser.Email = newUser.UserName;
 
-            result = await _userManager.AddToRoleAsync(user, newUser.Role);
+            var result = await _userManager.CreateAsync(newUser);
+            await _userManager.AddToRoleAsync(newUser, "Student");
 
-            if(result.Succeeded)
-            {
-                return CreatedAtAction("RegisterUser", new { id = user.Id }, user);
-            }
-
-            return UnprocessableEntity();
+            return result.Succeeded;
         }
     }
 }
