@@ -7,13 +7,14 @@ import {
     GridRowData,
     GridSortModel,
     GridToolbar,
+    GridValueFormatterParams,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
-import { authRequest } from '../../../services/api/genericRequest';
+import axios from 'axios';
 import { IStaffChild } from '../Staff';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
 import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
@@ -50,6 +51,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: IPickupRow) => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: true }));
         setSelectedPickup(currentRow);
+        console.log("Current row = ", currentRow);
     };
 
     const handleDialogClose = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation') => {
@@ -59,7 +61,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     };
 
     const getPickups = async () => {
-        let res = await authRequest.get<Pickup[]>('/pickups/active');
+        let res = await axios.get<Pickup[]>('/pickups/active');
         setPickups(res.data);
         setCurrentWidth(1 - currentWidth);
     }
@@ -107,6 +109,9 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 flex: .9,
                 headerName: 'Requested Pickup Time',
                 type: 'dateTime',
+                valueFormatter: (params: GridValueFormatterParams) => {
+                    return new Date(params.value as string).toLocaleString();
+                },
                 headerAlign: 'center',
                 align: 'center',
             },
@@ -152,7 +157,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                     <Tooltip
-                    title={params.row.pickupStatus === "PENDING" ? 
+                    title={(params.row.pickupStatus === PickupStatus.PENDING) ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton

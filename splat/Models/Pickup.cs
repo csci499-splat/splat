@@ -32,7 +32,7 @@ namespace splat.Models
         [Column(TypeName = "timestamptz")]
         public DateTime SubmittedAt { get; set; }
         [Column(TypeName = "jsonb")]
-        public HouseholdInfo? HouseholdInfo { get; set; }
+        public HouseholdInfo HouseholdInfo { get; set; }
         [Required]
         [Column(TypeName = "jsonb")]
         public ItemRequest[] ItemRequests { get; set; }

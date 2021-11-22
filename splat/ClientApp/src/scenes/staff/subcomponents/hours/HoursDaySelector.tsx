@@ -4,9 +4,9 @@ import React, { FC, ReactElement } from 'react';
 import { toast } from 'react-toastify';
 
 import DaySelector from '../../../../components/common/DaySelector';
-import { authRequest } from '../../../../services/api/genericRequest';
 
 import type { ClosedDay } from '../../../../models/ClosedDay';
+import axios from 'axios';
 
 type HoursDaySelectorProps = {
     
@@ -20,20 +20,20 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
 
     const retrieveDisabledDays = async () => {
         try {
-            let res = await authRequest.get<ClosedDay[]>('/hours/days');
+            let res = await axios.get<ClosedDay[]>('/hours/days');
             setDisabledDays(res.data.map((item) => item.closedOn));
         } catch(error) { }
     };
 
     const handleRemoveDay = async (day: Date) => {
-        await authRequest.delete(`/hours/days/${day.toISOString()}`);
+        await axios.delete(`/hours/days/${day.toISOString()}`);
         await retrieveDisabledDays();
     };
 
     const handleAddDay = async () => {
         if(selectedDate) {
             try {
-                await authRequest.post('/hours/days', { closedOn: selectedDate });
+                await axios.post('/hours/days', { closedOn: selectedDate });
                 handleDayClose();
                 await retrieveDisabledDays();
             } catch (error) {

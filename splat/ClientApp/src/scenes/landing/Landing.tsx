@@ -2,6 +2,7 @@
 import { Alert, Button, Collapse, Divider, Grid, IconButton, Stack, Typography } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import Login from '../../components/common/Login';
 import { StaffMessage } from '../../models/StaffMessage';
@@ -21,6 +22,15 @@ const Landing: FC<LandingProps> = (props: LandingProps): ReactElement => {
     const handleLogin = async (email: string, pass: string) => {
         try {
             await login(email, pass, () => {});
+            toast.success('Logged in successfully', {
+                position: 'top-center',
+                autoClose: 6000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: false,
+                progress: 0,
+            });
             props.setLoggedIn(true);
         } catch(err) {
             

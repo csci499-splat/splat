@@ -34,16 +34,10 @@ namespace splat.Models
             builder.Entity<Category>()
                 .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
-            builder.Entity<Category>()
-                .Property(b => b.Visible)
-                .HasDefaultValue(true);
 
             builder.Entity<Item>()
                 .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(0)");
-            builder.Entity<Item>()
-                .Property(b => b.Visible)
-                .HasDefaultValue(true);
 
             builder.Entity<Donation>()
                 .Property(b => b.DonatedAt)

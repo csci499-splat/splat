@@ -11,11 +11,11 @@ import {
     Switch,
     TextField,
 } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
-import { authRequest } from '../../../services/api/genericRequest';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 
 type ItemsAddDialogProps = {
@@ -70,7 +70,7 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
                 visible: values.visible,
             }
             console.log(newValues);
-            await authRequest.post('/items', newValues);
+            await axios.post('/items', newValues);
             props.onClose();
         },
     });

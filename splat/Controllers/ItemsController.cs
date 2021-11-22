@@ -12,8 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = "ElevatedRights")]
-    [AllowAnonymous]
+    [Authorize(Policy = "ElevatedRights")]
     public class ItemsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -23,18 +22,27 @@ namespace splat.Controllers
             _context = context;
         }
 
-        // GET: api/Items
+        // GET: api/Items?c={category}
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Item>>> GetItems()
+        public async Task<ActionResult<IEnumerable<Item>>> GetItems([FromQuery] Guid c)
         {
-            return await _context.Items.Include(b => b.Category).ToListAsync();
-            //return await _context.Items.Include(c => c.Category).ToListAsync();
+            return await _context.Items.Where(b => b.CategoryId == c)
+                .Include(b => b.Category)
+                .Where(b => b.Category.Visible && b.Visible)
+                .ToListAsync();
+        }
+
+        // GET: api/Items/all
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<Item>>> GetAllItems()
+        {
+            return await _context.Items.Include(b => b.Category)
+                .ToListAsync();
         }
 
         // GET: api/Items/Id
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<Item>> GetItem(Guid id)
         {
             // var item = await _context.Items.FindAsync(id);

@@ -13,11 +13,11 @@ import {
     TextField,
 } from '@mui/material';
 import { GridRowData } from '@mui/x-data-grid';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
-import { authRequest } from '../../../services/api/genericRequest';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 
 type ItemsEditDialogProps = {
@@ -83,7 +83,7 @@ const ItemsEditDialog: FC<ItemsEditDialogProps> = (props: ItemsEditDialogProps):
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            await authRequest.put(`/items/${values.id}`, values);
+            await axios.put(`/items/${values.id}`, values);
             props.onClose();
         },
     });
