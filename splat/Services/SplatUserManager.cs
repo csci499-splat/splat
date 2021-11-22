@@ -20,16 +20,21 @@ namespace splat.Services
 
         public override async Task<bool> CheckPasswordAsync(TUser user, string password)
         {
-            using (var auth = new LDAPAuthentication(_authenticationOptions))
+            var result = await Task.Run(() =>
             {
-                if (auth.ValidatePassword(user.UserName, password))
+                using (var auth = new LDAPAuthentication(_authenticationOptions))
                 {
-                    Console.WriteLine("validate returned true");
-                    return true;
+                    if (auth.ValidatePassword(user.UserName, password))
+                    {
+                        Console.WriteLine("validate returned true");
+                        return true;
+                    }
                 }
-            }
 
-            return false;
+                return false;
+            });
+
+            return result;
         }
 
         public override Task<IdentityResult> ChangePasswordAsync(TUser user, string currentPassword, string newPassword)

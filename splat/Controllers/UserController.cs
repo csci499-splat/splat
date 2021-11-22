@@ -92,7 +92,7 @@ namespace splat.Controllers
 
             Console.WriteLine("user=" + user);
 
-            IdentityOptions _options = new IdentityOptions();
+            IdentityOptions _options = new();
 
             var roles = await _userManager.GetRolesAsync(user);
             // return success and token
@@ -120,7 +120,7 @@ namespace splat.Controllers
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 user = new
                 {
-                    name = user.Name != null ? user.Name : user.Email,
+                    name = user.Name ?? user.Email,
                     email = user.UserName,
                     role = roles.Count == 0 ? "" : roles[0]
                 }
@@ -136,7 +136,7 @@ namespace splat.Controllers
             return Ok(new { message = "Signed out successfully" });
         }
 
-        public async Task<string> GetLdapNameAsync(ApplicationUser user)
+        private async Task<string> GetLdapNameAsync(ApplicationUser user)
         {
             var name = await Task.Run(() =>
             {
@@ -147,7 +147,7 @@ namespace splat.Controllers
             return name;
         }
 
-        public async Task<bool> Register(ApplicationUser newUser)
+        private async Task<bool> Register(ApplicationUser newUser)
         {
             if (newUser == null) return false;
 
@@ -163,39 +163,53 @@ namespace splat.Controllers
 
             return result.Succeeded;
         }
-        /*
-        [HttpGet("list")]
-        [Authorize]
-        public async Task<List<ApplicationUserDTO>> GetAllUsers()
+
+        
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ApplicationUserDTO>>> GetAllUsers()
         {
-            var userStore = new UserStore<IdentityUser>(_context);
-            var userManager = new UserManager<IdentityUser>(userStore);
-            var roles =_userManager.GetRolesAsync();
-            var user = _userManager.GetUserAsync()
-            return await ;
+            var users = await _userManager.Users.ToListAsync();
+            var usersDTO = new List<ApplicationUserDTO>();
+
+            foreach(var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                usersDTO.Add(new ApplicationUserDTO
+                {
+                    Name = user.Name,
+                    Email = user.Email,
+                    Role = roles[0]
+                });
+            }
+
+            return usersDTO;
         }
-        */
-        [HttpPost("changerole")]
-        [Authorize]
-        public async Task<IActionResult> ChangeRole([FromQuery] string username, [FromQuery] string newrole)
+
+        [HttpPost("role")]
+        public async Task<IActionResult> ChangeRole([FromBody] ApplicationUserChangeRoleDTO roleChange)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByNameAsync(roleChange.UserName);
+
             if(user == null)
             {
                 return NotFound(new { message = "User does not exist" });
             }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
+
             await _userManager.RemoveFromRoleAsync(user, currentRoles[0]);
-            var roleExists = await _roleManager.RoleExistsAsync(newrole);
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleChange.NewRole);
 
             if(!roleExists)
             {
                 return NotFound(new { message = "Role does not exist" });
             }
 
-            await _userManager.AddToRoleAsync(user, newrole);
-            return Ok(new { message = "Role changed successfully" }); ;
+            await _userManager.AddToRoleAsync(user, roleChange.NewRole);
+
+            return Ok(new { message = "Role changed successfully" });
         }
     }
 }

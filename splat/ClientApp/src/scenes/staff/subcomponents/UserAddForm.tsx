@@ -79,7 +79,7 @@ const UserAddForm: FC<UserAddFormProps> = (props: UserAddFormProps): ReactElemen
                         name="role"
                         onChange={formik.handleChange}
                         >
-                            <MenuItem value="None">
+                            <MenuItem value="None" disabled>
                                 <em>None</em>
                             </MenuItem>
                             <MenuItem value="Staff">Staff</MenuItem>
