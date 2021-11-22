@@ -15,7 +15,6 @@ namespace splat.Services
         public LDAPAuthentication(LDAPAuthenticationOptions options)
         {
             _options = options;
-            Console.WriteLine(options);
             _connection = new PrincipalContext(ContextType.Domain, options.LDAPServer, options.Account, options.Password);
         }
 

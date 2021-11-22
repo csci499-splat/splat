@@ -26,7 +26,6 @@ namespace splat.Services
                 {
                     if (auth.ValidatePassword(user.UserName, password))
                     {
-                        Console.WriteLine("validate returned true");
                         return true;
                     }
                 }

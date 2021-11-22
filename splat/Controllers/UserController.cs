@@ -54,17 +54,15 @@ namespace splat.Controllers
             };
             
             var user = await _userManager.FindByNameAsync(loginUser.UserName);
-            Console.WriteLine("user=" + user);
 
             if (user == null)
             {
                 // attempt to register
                 var ldapCheckSucceeded = await _userManager.CheckPasswordAsync(loginUser, login.Password);
-                Console.WriteLine(ldapCheckSucceeded);
+                
                 if (!ldapCheckSucceeded)
                 {
-                    Console.WriteLine("ldap failed");
-                    return Unauthorized(new { message = "Unable to sign in with given credentials" });
+                    return Unauthorized(new { message = "Username or password is incorrect" });
                 }
 
                 var registerSucceeded = await Register(loginUser);
@@ -81,16 +79,10 @@ namespace splat.Controllers
 
                 if (!result.Succeeded)
                 {
-                    Console.WriteLine("did not succeed");
-                    // user does not exist locally
-            
-
                     // return generic login failure
-                    return Unauthorized(new { message = "Username or password is incorrect 2" });
+                    return Unauthorized(new { message = "Username or password is incorrect" });
                 }
             }
-
-            Console.WriteLine("user=" + user);
 
             IdentityOptions _options = new();
 
@@ -157,9 +149,7 @@ namespace splat.Controllers
             var result = await _userManager.CreateAsync(newUser);
             await _userManager.AddToRoleAsync(newUser, "Student");
 
-            Console.WriteLine("registered user");
             var roles = await _userManager.GetRolesAsync(newUser);
-            Console.WriteLine(roles[0]);
 
             return result.Succeeded;
         }
