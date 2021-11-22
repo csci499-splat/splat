@@ -50,33 +50,45 @@ namespace splat.Controllers
             {
                 UserName = login.UserName
             };
-
-            // attempt to sign in a user
-            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, true, false);
-
+            
             var user = await _userManager.FindByNameAsync(loginUser.UserName);
+            Console.WriteLine("user=" + user);
 
-            if (!result.Succeeded)
+            if (user == null)
             {
-                // user does not exist locally
-                if (user == null)
+                // attempt to register
+                var ldapCheckSucceeded = await _userManager.CheckPasswordAsync(loginUser, login.Password);
+                Console.WriteLine(ldapCheckSucceeded);
+                if (!ldapCheckSucceeded)
                 {
-                    // attempt to register
-                    var ldapCheckSucceeded = await _userManager.CheckPasswordAsync(loginUser, login.Password);
-                    if (!ldapCheckSucceeded)
-                    {
-                        return Unauthorized(new { message = "Unable to sign in with given credentials" });
-                    }
-
-                    var registerSucceeded = await Register(loginUser);
-                    if (!registerSucceeded)
-                        return StatusCode(500);
+                    Console.WriteLine("ldap failed");
+                    return Unauthorized(new { message = "Unable to sign in with given credentials" });
                 }
 
-                // return generic login failure
-                return Unauthorized(new { message = "Username or password is incorrect 2" });
+                var registerSucceeded = await Register(loginUser);
+
+                if (!registerSucceeded)
+                    return StatusCode(500);
             }
+            else
+            {
+                // attempt to sign in a user
+                var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, true, false);
+
+                if (!result.Succeeded)
+                {
+                    Console.WriteLine("did not succeed");
+                    // user does not exist locally
             
+
+                    // return generic login failure
+                    return Unauthorized(new { message = "Username or password is incorrect 2" });
+                }
+            }
+
+            user = await _userManager.FindByNameAsync(loginUser.UserName);
+            Console.WriteLine("user=" + user);
+
             IdentityOptions _options = new IdentityOptions();
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -88,7 +100,7 @@ namespace splat.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
                 new Claim("username", user.UserName),
-                new Claim("role", roles.Count == 0 ? "" : roles[0])
+                new Claim(ClaimTypes.Role, roles.Count == 0 ? "" : roles[0])
             };
 
             var token = new JwtSecurityToken
@@ -105,7 +117,7 @@ namespace splat.Controllers
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 user = new
                 {
-                    name = user.Name,
+                    name = user.Name != null ? user.Name : user.Email,
                     email = user.UserName,
                     role = roles.Count == 0 ? "" : roles[0]
                 }
@@ -129,6 +141,10 @@ namespace splat.Controllers
 
             var result = await _userManager.CreateAsync(newUser);
             await _userManager.AddToRoleAsync(newUser, "Student");
+
+            Console.WriteLine("registered user");
+            var roles = await _userManager.GetRolesAsync(newUser);
+            Console.WriteLine(roles[0]);
 
             return result.Succeeded;
         }
