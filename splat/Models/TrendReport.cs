@@ -9,8 +9,9 @@ namespace splat.Models
 
     public class TrendEntry
     {
-        Category category;
-        List<TrendItemEntry> ItemEntries;
+        public Category Category { get; set; }
+        public List<TrendItemEntry> ItemEntries { get; set; }
+        public DateRange TimePeriod { get; set; }
     }
 
     public class TrendItemEntry
@@ -22,7 +23,8 @@ namespace splat.Models
 
     public class RequestHistogramBin
     {
-        int RequestCount;
-        DateRange BinTime;
+        public int RequestedItemCount { get; set; }
+        // has to be sent as BinTIme
+        public Week Week { get; set; }
     }
 }

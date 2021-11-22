@@ -7,47 +7,74 @@ namespace splat.Models
     [Keyless]
     public class DateRange
     {
+        public DateRange(DateTime dateFrom, DateTime dateTo)
+        {
+            DateFrom = dateFrom;
+            DateTo = dateTo;
+        }
+        public DateRange(DateRange timePeriod)
+        {
+            DateFrom = timePeriod.DateFrom;
+            DateTo = timePeriod.DateTo;
+        }
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime DateFrom { get; set; }
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime DateTo { get; set; }
+
+        public TimeSpan GetDuratrion()
+        {
+            TimeSpan span = DateFrom - DateTo;
+            return span.Duration();
+        }
     }
 
-    public class WeekInfo
+    public class WeeksInfo
     {
-        private const int NUM_WEEKS = 0;
+        private const int NUM_FULL_WEEKS = 0;
         private const int REMAINDER = 1;
         private const int SIZE = 2;
 
         private int[] Info;
 
-        public WeekInfo(int numWeeks, int daysRemaining)
+        public WeeksInfo(DateRange timePeriod)
         {
             Info = new int[SIZE];
-            Info[NUM_WEEKS] = numWeeks;
-            Info[REMAINDER] = daysRemaining;
+            ExtractInfo(timePeriod);
         }
 
-        public int GetNumWeeks() { return Info[NUM_WEEKS]; }
-        public int GetNDaysRemaing() { return Info[REMAINDER]; }
+        void ExtractInfo(DateRange timePeriod)
+        {
+            int numDays = timePeriod.GetDuratrion().Days;
+            Info[NUM_FULL_WEEKS] = numDays / Week.WEEK.Days;
+            Info[REMAINDER] = numDays % Week.WEEK.Days;
+        }
+
+        public int GetNumFullweeks() { return Info[NUM_FULL_WEEKS]; }
+        public int GetRemainingNumDays() { return Info[REMAINDER]; }
     }
 
     public class Week : DateRange
     {
-        readonly TimeSpan WEEK = new TimeSpan(7, 0, 0, 0);
-        public Week(DateRange range) : base() 
+        public static readonly TimeSpan WEEK = new TimeSpan(7, 0, 0, 0);
+        public Week(DateTime dateFrom, DateTime dateTo) : base(dateFrom, dateTo)
         {
-            TimeSpan diff = range.DateTo - range.DateFrom;
-            int compareResult = diff.CompareTo(WEEK);
-            if (compareResult > 0)
+            if (BiggerThanWeek(dateTo - dateFrom))
                 throw new Exception("DateRange greater than a week!");
             else
             {
-                DateFrom = range.DateFrom;
-                DateTo = range.DateTo;
+                DateFrom = dateFrom;
+                DateTo = dateTo;
             }
+        }
+
+        bool BiggerThanWeek(TimeSpan diff)
+        {
+            return diff.CompareTo(WEEK) > 0;
         }
     }
 }

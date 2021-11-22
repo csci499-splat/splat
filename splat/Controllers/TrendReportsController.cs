@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -24,67 +25,114 @@ namespace splat.Controllers
         }
 
         // GET: api/trendreports/?DateFrom=value&DateTo=value
+        /*
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange range)
+        public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange timePeriod)
         {
-            var reportPickups = GetPickupsWithinDateRange(GetPickupsFromContext(_context), range);
+            var reportPickups = GetPickupsWithinDateRange(await GetPickupsFromContext(_context), timePeriod);
 
-            return await GenerateReport(reportPickups);
+            return await GenerateTrendReport(reportPickups, timePeriod);
         }
 
-        public static async Task<TrendReport> GenerateReport(IQueryable<Pickup> pickups)
+        public static async Task<TrendReport> GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
-            return new TrendReport { };
+            return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+        }
+        */
+        public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
+        {
+            return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
         }
 
-        public static IEnumerable<ItemRequest[]> GetItemRequestsInWeek(IQueryable<Pickup> pickups, Week week)
-        {
-            IQueryable<Pickup> pickupsInWeek = GetPickupsInWeek(pickups, week);
-
-            return new List<ItemRequest[]>(pickupsInWeek.Select(p => p.ItemRequests).ToList());
-        }
-
-        // PRIVATE  METHODS
         // Methods for getting and parsing pickups from the DB
-        private static IQueryable<Pickup> GetPickupsFromContext(SplatContext context)
+        static async Task<IQueryable<Pickup>> GetPickupsFromContext(SplatContext context)
         {
             return context.Pickups
                 .Where(p => p.PickupStatus != PickupStatus.CANCELED);
         }
 
-        private static IQueryable<Pickup> GetPickupsWithinDateRange(IQueryable<Pickup> pickups, DateRange range)
+        static IQueryable<Pickup> GetPickupsWithinDateRange(IQueryable<Pickup> pickups, DateRange range)
         {
             return pickups
                 .Where(p => p.SubmittedAt >= range.DateFrom && p.SubmittedAt <= range.DateTo);
         }
 
-        private static IQueryable<Pickup> GetPickupsInWeek(IQueryable<Pickup> pickups, Week week)
+        // Methods for generating and filling TrendEntries and TrendItemEntries
+        static List<TrendEntry> GenerateTrendEntries(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
-            return pickups
-                .Where(p => p.SubmittedAt >= week.DateFrom && p.SubmittedAt <= week.DateTo);
-        }
-
-        // Methods for generating TrendEntries
-
-        private static TrendEntry GenerateTrendEntryForItem(ItemRequest[] itemRequests)
-        {
-            Item entryItem;
-            if (!RequestsAreForSingleItem(itemRequests))
-                throw new Exception("Requests for single trend entry are not all the same item!");
-            entryItem = itemRequests[0].Item;   
-
-            return new TrendEntry();
-        }
-
-        private static List<TrendEntry> GenerateEmptyTrendEntries(List<ItemRequest[]> itemRequests)
-        {
+            List<ItemRequest> itemRequests = GetItemRequests(pickups);
+            List<Category> categories = GetDistinctCategories(itemRequests);
             List<TrendEntry> trendEntries = new List<TrendEntry>();
+
+            foreach (Category category in categories)
+            {
+                TrendEntry nextTrendEntry = new TrendEntry
+                {
+                    Category = category,
+                    ItemEntries = GenerateTrendItemEntries(GetDistictItems(itemRequests), timePeriod),
+                    TimePeriod = timePeriod
+                };
+
+                trendEntries.Add(nextTrendEntry);
+            }
 
             return trendEntries;
         }
 
-        private static int CountItemRequests(ItemRequest[] itemRequests)
+        static List<TrendItemEntry> GenerateTrendItemEntries(List<Item> items, DateRange timePeriod)
+        {
+            List<TrendItemEntry> trendItemEntries = new List<TrendItemEntry>(); 
+
+            foreach(Item item in items)
+            {
+                TrendItemEntry nextItemEntry = new TrendItemEntry
+                {
+                    Item = item,
+                    RequestBins = GenerateHistogramBins(GetListOfWeeks(timePeriod)),
+                    Average = 0
+                };
+            }
+
+            return trendItemEntries;
+        }
+
+        static List<RequestHistogramBin> GenerateHistogramBins(List<Week> weeks)
+        {
+            List<RequestHistogramBin> bins = new List<RequestHistogramBin>();
+
+            foreach(Week week in weeks)
+            {
+                bins.Add(new RequestHistogramBin
+                {
+                    RequestedItemCount = 0,
+                    Week = week
+                });
+            }
+
+            return bins;
+        }
+
+        static void FillTrendEntry(IQueryable<Pickup> pickups, TrendEntry entry)
+        {
+            foreach (TrendItemEntry itemEntry in entry.ItemEntries)
+                FillTrendItemEntry(pickups, itemEntry);
+        }
+
+        static void FillTrendItemEntry(IQueryable<Pickup> pickups, TrendItemEntry itemEntry)
+        {
+            int count = 0;
+            foreach(RequestHistogramBin weekBin in itemEntry.RequestBins)
+            {
+                List<ItemRequest> weeklyRequests = GetRequestsForGivenItemAndWeek(pickups, itemEntry.Item, weekBin.Week);
+                count = CountItemRequestsForAGivenWeek(weeklyRequests);
+                weekBin.RequestedItemCount = count;
+            }
+
+            itemEntry.Average = count / itemEntry.RequestBins.Count;
+        }
+
+        private static int CountItemRequestsForAGivenWeek(List<ItemRequest> itemRequests)
         {
             int count = 0;
             foreach (ItemRequest request in itemRequests)
@@ -93,28 +141,113 @@ namespace splat.Controllers
             return count;
         }
 
-        private static bool EntryForItemExists(List<TrendEntry> trendEntries, Item item)
+        static List<ItemRequest> GetItemRequests(IQueryable<Pickup> pickups)
         {
-            foreach (TrendEntry entry in trendEntries)
+            List<ItemRequest> itemRequests = new List<ItemRequest>();
+
+            foreach(Pickup pickup in pickups)
             {
-                if (entry.Item.Equals(item))
-                    return true;
+                foreach (ItemRequest request in pickup.ItemRequests)
+                    itemRequests.Add(request);
             }
 
-            return false;
+            return itemRequests;
         }
 
-        private static bool RequestsAreForSingleItem(ItemRequest[] itemRequests)
+        static List<Category> GetDistinctCategories(List<ItemRequest> itemRequests)
         {
-            Item shouldAllBe = itemRequests[0].Item;
+            List<Category> categories = new List<Category>();
 
-            for (int i = 0; i < itemRequests.Length; i++)
+            foreach(ItemRequest request in itemRequests)
             {
-                if (!itemRequests[i].Item.Equals(shouldAllBe))
-                    return false;
+                if (!categories.Contains(request.Item.Category, new CategoryComparitor()))
+                    categories.Add(request.Item.Category);
             }
 
-            return true;
+            return categories;
+        }
+
+        static List<Item> GetDistictItems(List<ItemRequest> itemRequests)
+        {
+            List<Item> items = new List<Item>();
+
+            foreach (ItemRequest request in itemRequests)
+            {
+                if (!items.Contains(request.Item, new ItemComparitor()))
+                    items.Add(request.Item);
+            }
+
+            return items;
+        }
+
+        public class ItemComparitor : IEqualityComparer<Item>
+        {
+            public bool Equals(Item x, Item y)
+            {
+                return x.Id.Equals(y.Id);
+            }
+
+            public int GetHashCode([DisallowNull] Item obj)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class CategoryComparitor : IEqualityComparer<Category>
+        {
+            public bool Equals(Category x, Category y)
+            {
+                return x.Id.Equals(y.Id);
+            }
+
+            public int GetHashCode([DisallowNull] Category obj)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        static List<ItemRequest> GetRequestsForGivenItemAndWeek(IQueryable<Pickup> pickups, Item item, Week week)
+        {
+            List<ItemRequest> requestsForItem = new List<ItemRequest>();
+
+            var filteredPickups = pickups.Where(p => p.SubmittedAt >= week.DateFrom && p.SubmittedAt <= week.DateTo)
+                .Where(p => p.ItemRequests[0].Item.Equals(item));
+
+            foreach(Pickup pickup in filteredPickups)
+            {
+                foreach (ItemRequest request in pickup.ItemRequests)
+                    requestsForItem.Add(request);
+            }
+
+            return requestsForItem;
+        }
+        // Look up linq syntax for partition
+        static List<Week> GetListOfWeeks(DateRange timePeriod)
+        {
+            List<Week> weeks = new List<Week>();
+            WeeksInfo info = new WeeksInfo(timePeriod);
+            int numFullWeeks = info.GetNumFullweeks(), nextDay = 1;
+            DateTime startOfWeek = timePeriod.DateFrom, endOfWeek;
+
+            try
+            {
+                weeks.Add(new Week(timePeriod.DateFrom, timePeriod.DateTo));
+            }
+            catch (Exception e)
+            {
+                for (int weekNunmber = 0; weekNunmber < numFullWeeks; weekNunmber++)
+                {
+                    endOfWeek = startOfWeek.AddDays(Week.WEEK.Days);
+                    weeks.Add(new Week(startOfWeek, endOfWeek));
+                    startOfWeek = endOfWeek.AddDays(nextDay);
+                }
+            }
+            // Append the list with the short week
+            int remainingDays = info.GetRemainingNumDays();
+            endOfWeek = startOfWeek.AddDays(remainingDays);
+            weeks.Add(new Week(startOfWeek, endOfWeek));
+
+            return weeks;
         }
     }
 }
