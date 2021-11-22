@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using splat.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace splat.Controllers
 {
@@ -147,6 +148,40 @@ namespace splat.Controllers
             Console.WriteLine(roles[0]);
 
             return result.Succeeded;
+        }
+        /*
+        [HttpGet("list")]
+        [Authorize]
+        public async Task<List<ApplicationUserDTO>> GetAllUsers()
+        {
+            var userStore = new UserStore<IdentityUser>(_context);
+            var userManager = new UserManager<IdentityUser>(userStore);
+            var roles =_userManager.GetRolesAsync();
+            var user = _userManager.GetUserAsync()
+            return await ;
+        }
+        */
+        [HttpPost("changerole")]
+        [Authorize]
+        public async Task<IActionResult> ChangeRole([FromQuery] string username, [FromQuery] string newrole)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if(user == null)
+            {
+                return NotFound(new { message = "User does not exist" });
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRoleAsync(user, currentRoles[0]);
+            var roleExists = await _roleManager.RoleExistsAsync(newrole);
+
+            if(!roleExists)
+            {
+                return NotFound(new { message = "Role does not exist" });
+            }
+
+            await _userManager.AddToRoleAsync(user, newrole);
+            return Ok(new { message = "Role changed successfully" }); ;
         }
     }
 }
