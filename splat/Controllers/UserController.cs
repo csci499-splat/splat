@@ -15,6 +15,7 @@ using splat.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using splat.Services;
 
 namespace splat.Controllers
 {
@@ -70,6 +71,8 @@ namespace splat.Controllers
 
                 if (!registerSucceeded)
                     return StatusCode(500);
+
+                user = await _userManager.FindByNameAsync(loginUser.UserName);
             }
             else
             {
@@ -87,7 +90,6 @@ namespace splat.Controllers
                 }
             }
 
-            user = await _userManager.FindByNameAsync(loginUser.UserName);
             Console.WriteLine("user=" + user);
 
             IdentityOptions _options = new IdentityOptions();
@@ -101,7 +103,7 @@ namespace splat.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
                 new Claim("username", user.UserName),
-                new Claim(ClaimTypes.Role, roles.Count == 0 ? "" : roles[0])
+                new Claim("roles", roles[0])
             };
 
             var token = new JwtSecurityToken
@@ -134,11 +136,23 @@ namespace splat.Controllers
             return Ok(new { message = "Signed out successfully" });
         }
 
+        public async Task<string> GetLdapNameAsync(ApplicationUser user)
+        {
+            var name = await Task.Run(() =>
+            {
+                using var auth = new LDAPAuthentication(_configuration.GetSection("LdapAuth").Get<LDAPAuthenticationOptions>());
+                return auth.GetName(user.UserName);
+            });
+
+            return name;
+        }
+
         public async Task<bool> Register(ApplicationUser newUser)
         {
             if (newUser == null) return false;
 
             newUser.Email = newUser.UserName;
+            newUser.Name = await GetLdapNameAsync(newUser);
 
             var result = await _userManager.CreateAsync(newUser);
             await _userManager.AddToRoleAsync(newUser, "Student");

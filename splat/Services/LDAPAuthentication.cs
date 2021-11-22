@@ -43,8 +43,27 @@ namespace splat.Services
             }
 
             return _connection.ValidateCredentials(distinguishedName, password);
-         }
+        }
 
+        public string GetName(string distinguishedName)
+        {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(nameof(PrincipalContext));
+            }
+
+            if (string.IsNullOrEmpty(_options.LDAPServer))
+            {
+                throw new InvalidOperationException("The LDAP Hostname cannot be empty or null.");
+            }
+
+            var foundUser = UserPrincipal.FindByIdentity(_connection, IdentityType.DistinguishedName, distinguishedName);
+
+            if (foundUser == null)
+                return null;
+
+            return foundUser.DisplayName;
+        }
     }
 
 }

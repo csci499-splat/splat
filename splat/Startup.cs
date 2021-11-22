@@ -40,9 +40,6 @@ namespace splat
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers()
-                    .AddNewtonsoftJson();
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -105,6 +102,8 @@ namespace splat
                     policy => policy.RequireRole("Administrator", "Staff"));
             });
 
+            services.AddControllers()
+                    .AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -131,9 +130,8 @@ namespace splat
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseRouting();
-
             app.UseAuthentication();
+            app.UseRouting();
             app.UseAuthorization();
 
             AddRoles(services).Wait();

@@ -32,20 +32,6 @@ namespace splat.Services
             return false;
         }
 
-        public async Task<bool> CheckPasswordAsync(string userName, string password)
-        {
-            using (var auth = new LDAPAuthentication(_authenticationOptions))
-            {
-                if (auth.ValidatePassword(userName, password))
-                {
-                    Console.WriteLine("validate returned true");
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public override Task<IdentityResult> ChangePasswordAsync(TUser user, string currentPassword, string newPassword)
         {
             throw new NotSupportedException();
