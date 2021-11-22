@@ -49,9 +49,10 @@ namespace splat.Models
 
         void ExtractInfo(DateRange timePeriod)
         {
+            int daysPerWeek = (Week.WEEK.Days + 1);
             int numDays = timePeriod.GetDuratrion().Days;
-            Info[NUM_FULL_WEEKS] = numDays / Week.WEEK.Days;
-            Info[REMAINDER] = numDays % Week.WEEK.Days;
+            Info[NUM_FULL_WEEKS] = numDays / daysPerWeek;
+            Info[REMAINDER] = numDays % daysPerWeek;
         }
 
         public int GetNumFullweeks() { return Info[NUM_FULL_WEEKS]; }
@@ -60,7 +61,8 @@ namespace splat.Models
 
     public class Week : DateRange
     {
-        public static readonly TimeSpan WEEK = new TimeSpan(7, 0, 0, 0);
+        // A week is six days here to account for +/- 1 at the end of each week.
+        public static readonly TimeSpan WEEK = new TimeSpan(6, 0, 0, 0);
         public Week(DateTime dateFrom, DateTime dateTo) : base(dateFrom, dateTo)
         {
             if (BiggerThanWeek(dateTo - dateFrom))

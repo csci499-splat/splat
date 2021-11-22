@@ -12,16 +12,22 @@ namespace splat.Tests
     {
         static DateTime startDate = new DateTime(2021, 01, 1, 0, 0, 0);
         static DateTime endDate = new DateTime(2021, 03, 1, 0, 0, 0);
-        DateRange timePeriod = new DateRange(startDate, endDate);
-        IQueryable<Pickup> pickups = TestPickups.Pickups.AsQueryable();
+        static DateRange timePeriod = new DateRange(startDate, endDate);
+        static IQueryable<Pickup> pickups = TestPickups.Pickups.AsQueryable();
+        TrendReport trendReport = TrendReportsController.GenerateTrendReport(pickups, timePeriod);
 
         [Fact]
         public void GenerateTrendEntries_CheckIfTrendEntriesContainsCorrectNumberOfEntries()
         {
-            TrendReport trendReport = TrendReportsController.GenerateTrendReport(pickups, timePeriod);
             int expectedNumberOfEntries = 4;
-
             Assert.Equal(expectedNumberOfEntries, trendReport.Entries.Count());
+        }
+
+        [Fact]
+        public void GenerateTrendEntries_CheckSpecificTrendItemEntryForCorrectAverage()
+        {
+            double expectedWeeklyAverageForBeans = 68.0/9;
+            Assert.Equal(expectedWeeklyAverageForBeans, trendReport.Entries[0].ItemEntries[0].Average);
         }
     }
 }

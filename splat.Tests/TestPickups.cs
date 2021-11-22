@@ -30,7 +30,7 @@ namespace splat.Tests
                     Quantity = 2
                 },
             },
-            PickupTime = new DateTime(2021, 1, 13, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 1, 13, 12, 0, 0)
         };
 
         public static readonly Pickup P1 = new Pickup
@@ -56,7 +56,7 @@ namespace splat.Tests
                     Quantity = 2
                 },
             },
-            PickupTime = new DateTime(2021, 1, 14, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 1, 14, 12, 0, 0)
         };
 
         public static readonly Pickup P2 = new Pickup
@@ -82,7 +82,7 @@ namespace splat.Tests
                     Quantity = 5
                 },
             },
-            PickupTime = new DateTime(2021, 1, 16, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 1, 16, 12, 0, 0)
         };
 
         public static readonly Pickup P3 = new Pickup
@@ -113,7 +113,7 @@ namespace splat.Tests
                     Quantity = 7
                 }
             },
-            PickupTime = new DateTime(2021, 1, 19, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 1, 19, 12, 0, 0)
         };
 
         public static readonly Pickup P4 = new Pickup
@@ -129,7 +129,7 @@ namespace splat.Tests
                     Quantity = 15
                 },
             },
-            PickupTime = new DateTime(2021, 2, 6, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 2, 6, 12, 0, 0)
         };
 
         public static readonly Pickup P5 = new Pickup
@@ -150,7 +150,7 @@ namespace splat.Tests
                     Quantity = 2
                 }
             },
-            PickupTime = new DateTime(2021, 2, 10, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 2, 10, 12, 0, 0)
         };
 
         public static readonly Pickup P6 = new Pickup
@@ -181,7 +181,7 @@ namespace splat.Tests
                     Quantity = 15
                 },
             },
-            PickupTime = new DateTime(2021, 2, 15, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 2, 15, 12, 0, 0)
         };
 
         public static readonly Pickup P7 = new Pickup
@@ -207,7 +207,7 @@ namespace splat.Tests
                     Quantity = 18
                 },
             },
-            PickupTime = new DateTime(2021, 2, 20, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 2, 20, 12, 0, 0)
         };
 
         public static readonly Pickup P8 = new Pickup
@@ -233,7 +233,7 @@ namespace splat.Tests
                     Quantity = 11
                 },
             },
-            PickupTime = new DateTime(2021, 2, 27, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
         };
 
         public static readonly Pickup P9 = new Pickup
@@ -254,7 +254,7 @@ namespace splat.Tests
                     Quantity = 17
                 },
             },
-            PickupTime = new DateTime(2021, 2, 27, 12, 0, 0)
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
         };
 
         public static readonly Pickup[] Pickups = new Pickup[NUM_TEST_PICKUPS]

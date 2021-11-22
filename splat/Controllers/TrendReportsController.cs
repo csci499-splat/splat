@@ -42,7 +42,12 @@ namespace splat.Controllers
         */
         public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
-            return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+            TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+
+            foreach (TrendEntry entry in report.Entries)
+                FillTrendEntry(pickups, entry);
+
+            return report;
         }
 
         // Methods for getting and parsing pickups from the DB
@@ -64,13 +69,23 @@ namespace splat.Controllers
             List<ItemRequest> itemRequests = GetItemRequests(pickups);
             List<Category> categories = GetDistinctCategories(itemRequests);
             List<TrendEntry> trendEntries = new List<TrendEntry>();
+            List<TrendItemEntry> unCategorizedEntries = GenerateTrendItemEntries(pickups, GetDistictItems(itemRequests), timePeriod);
+
 
             foreach (Category category in categories)
             {
+                List<TrendItemEntry> itemEntries = new List<TrendItemEntry>();
+
+                foreach(TrendItemEntry entry in unCategorizedEntries)
+                {
+                    if (category.Id.Equals(entry.Item.CategoryId))
+                        itemEntries.Add(entry);
+                }
+
                 TrendEntry nextTrendEntry = new TrendEntry
                 {
                     Category = category,
-                    ItemEntries = GenerateTrendItemEntries(GetDistictItems(itemRequests), timePeriod),
+                    ItemEntries = itemEntries,
                     TimePeriod = timePeriod
                 };
 
@@ -80,7 +95,7 @@ namespace splat.Controllers
             return trendEntries;
         }
 
-        static List<TrendItemEntry> GenerateTrendItemEntries(List<Item> items, DateRange timePeriod)
+        static List<TrendItemEntry> GenerateTrendItemEntries(IQueryable<Pickup> pickups, List<Item> items, DateRange timePeriod)
         {
             List<TrendItemEntry> trendItemEntries = new List<TrendItemEntry>(); 
 
@@ -92,6 +107,9 @@ namespace splat.Controllers
                     RequestBins = GenerateHistogramBins(GetListOfWeeks(timePeriod)),
                     Average = 0
                 };
+
+                FillTrendItemEntry(pickups, nextItemEntry);
+                trendItemEntries.Add(nextItemEntry);
             }
 
             return trendItemEntries;
@@ -122,14 +140,16 @@ namespace splat.Controllers
         static void FillTrendItemEntry(IQueryable<Pickup> pickups, TrendItemEntry itemEntry)
         {
             int count = 0;
+            double totalCount = 0;
             foreach(RequestHistogramBin weekBin in itemEntry.RequestBins)
             {
                 List<ItemRequest> weeklyRequests = GetRequestsForGivenItemAndWeek(pickups, itemEntry.Item, weekBin.Week);
                 count = CountItemRequestsForAGivenWeek(weeklyRequests);
                 weekBin.RequestedItemCount = count;
+                totalCount += count;
             }
 
-            itemEntry.Average = count / itemEntry.RequestBins.Count;
+            itemEntry.Average = totalCount / itemEntry.RequestBins.Count;
         }
 
         private static int CountItemRequestsForAGivenWeek(List<ItemRequest> itemRequests)
@@ -210,16 +230,26 @@ namespace splat.Controllers
         {
             List<ItemRequest> requestsForItem = new List<ItemRequest>();
 
-            var filteredPickups = pickups.Where(p => p.SubmittedAt >= week.DateFrom && p.SubmittedAt <= week.DateTo)
-                .Where(p => p.ItemRequests[0].Item.Equals(item));
+            var pickupsForWeek = pickups.Where(p => DateFallsWithinWeek(p.SubmittedAt, week));
 
-            foreach(Pickup pickup in filteredPickups)
+            foreach(Pickup pickup in pickupsForWeek)
             {
                 foreach (ItemRequest request in pickup.ItemRequests)
-                    requestsForItem.Add(request);
+                {
+                    if(request.Item.Id.Equals(item.Id))
+                        requestsForItem.Add(request);
+                }           
             }
 
             return requestsForItem;
+        }
+
+        static bool DateFallsWithinWeek(DateTime submittedAt, Week week)
+        {
+            bool IsLaterThan = submittedAt.CompareTo(week.DateFrom) >= 0;
+            bool IsEarlierThan = submittedAt.CompareTo(week.DateTo) <= 0;
+
+            return IsLaterThan && IsEarlierThan;
         }
         // Look up linq syntax for partition
         static List<Week> GetListOfWeeks(DateRange timePeriod)
