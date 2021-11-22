@@ -3,6 +3,7 @@ import { matchSorter } from 'match-sorter';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { Category, Item } from '../../models/BackendTypes';
+import { baseRequest } from '../../services/api/genericRequest';
 
 type ItemAutocompleteProps = {
     value: Item | null;
@@ -12,12 +13,6 @@ type ItemAutocompleteProps = {
         error: boolean,
         helperText: string,
     };
-};
-
-const sleep = (delay: number) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
 };
 
 const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProps): ReactElement => {
@@ -34,12 +29,18 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
         if(!loading) return undefined;
 
         (async () => {
+            try {
+                let res = await baseRequest.get<Item[]>('/items', { 
+                    params: {
+                        c: props.category?.id 
+                    },
+                });
 
-            // simulate getting data with given props.category
-            await sleep(1000);
-
-            if(active) {
-                setOptions([]);
+                if (active) {
+                    setOptions(res.data);
+                }
+            } catch(err) {
+                
             }
         })();
 

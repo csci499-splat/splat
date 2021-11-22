@@ -7,10 +7,10 @@ import {
     GridToolbar,
     GridValueFormatterParams,
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { Discard } from '../../../models/Discard';
-import { baseRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import DiscardAddForm from '../subcomponents/DiscardAddForm';
 
@@ -35,7 +35,7 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
 
     const handleDiscardDelete = async (id: string) => {
         try {
-            await baseRequest.delete(`/discards/${id}`);
+            await axios.delete(`/discards/${id}`);
             getDiscards();
         } catch (error) {
             
@@ -44,7 +44,7 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
 
     const getDiscards = async () => {
         try {
-            let res = await baseRequest.get<Discard[]>('/discards');
+            let res = await axios.get<Discard[]>('/discards');
             setRows(res.data);
             setCurrentWidth(1 - currentWidth);
         } catch (error) {

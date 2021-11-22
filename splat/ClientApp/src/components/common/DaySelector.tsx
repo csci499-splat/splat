@@ -1,10 +1,10 @@
 import { CalendarPickerSkeleton, DatePicker, PickersDay } from '@mui/lab';
 import { TextField } from '@mui/material';
+import axios from 'axios';
 import moment from 'moment';
 import React, { FC, ReactElement } from 'react';
 
 import { ClosedDay } from '../../models/ClosedDay';
-import { baseRequest } from '../../services/api/genericRequest';
 
 type DaySelectorProps = {
     value: Date | null;
@@ -20,7 +20,7 @@ const DaySelector: FC<DaySelectorProps> = (props: DaySelectorProps): ReactElemen
 
     const fetchDisabledDays = async () => {
         setIsLoading(true);
-        let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+        let res = await axios.get<ClosedDay[]>('/hours/days');
         setDisabledDays(res.data.map((item) => new Date(item.closedOn)));
         setIsLoading(false);
     };

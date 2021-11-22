@@ -1,8 +1,8 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
@@ -12,7 +12,25 @@ interface PickupCancelConfirmationDialogProps extends IPickupDialogProps {
 const PickupCancelConfirmationDialog: FC<PickupCancelConfirmationDialogProps> = (props: PickupCancelConfirmationDialogProps): ReactElement => {
 
     const handleCancel = async (id: string | undefined | null) => {
-        if(id) await baseRequest.patch(`/pickups/${id}`, { status: PickupStatus.CANCELED });
+        if(id)
+        try {
+            await axios.patch(`/pickups/${props.selectedPickup?.id}`,
+                [
+                    {
+                        op: "add",
+                        path: "/pickupstatus",
+                        value: PickupStatus.CANCELED,
+                    },
+                    {
+                        op: "add",
+                        path: "/canceledtime",
+                        value: new Date().toISOString(),
+                    }
+                ]);
+        } catch (err) {
+
+        };
+        
         props.onClose();
     };
 

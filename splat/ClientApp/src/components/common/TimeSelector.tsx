@@ -1,9 +1,9 @@
 import { TimePicker } from '@mui/lab';
 import { TextField } from '@mui/material';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { CurrentHours, HourRange } from '../../models/CurrentHours';
-import { baseRequest } from '../../services/api/genericRequest';
 
 type TimeSelectorProps = {
     value: Date | null;
@@ -17,7 +17,7 @@ const TimeSelector: FC<TimeSelectorProps> = (props: TimeSelectorProps): ReactEle
         {timeStart: new Date(0, 0, 0, 0), timeEnd: new Date(0, 0, 0, 23, 59)});
 
     const fetchCurrentHours = async () => {
-        let res = await baseRequest.get<CurrentHours>('/hours');
+        let res = await axios.get<CurrentHours>('/hours');
         delete res.data.createdAt;
 
         if(props.selectedDate) {
