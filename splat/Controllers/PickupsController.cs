@@ -12,12 +12,13 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "Default", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PickupsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -31,7 +32,6 @@ namespace splat.Controllers
 
         // GET: api/Pickups
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetUserPickups()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -54,6 +54,7 @@ namespace splat.Controllers
 
         // GET: api/Pickups/all
         [HttpGet("all")]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetAllPickups()
         {
             return await _context.Pickups.ToListAsync();
@@ -61,6 +62,7 @@ namespace splat.Controllers
 
         // GET: api/Pickups/id
         [HttpGet("{id}")]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Pickup>> GetPickups(Guid id)
         {
             var pickup = await _context.Pickups.FindAsync(id);
@@ -75,6 +77,7 @@ namespace splat.Controllers
 
         // GET: api/Pickups/active
         [HttpGet("active")]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetActivePickups()
         {
             return await _context.Pickups
@@ -85,7 +88,6 @@ namespace splat.Controllers
         // POST: api/Pickups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult<Pickup>> PostPickup(Pickup pickup)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -105,6 +107,7 @@ namespace splat.Controllers
 
         // PATCH: api/Pickups/{id}
         [HttpPatch("{id}")]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> UpdatePatch(Guid id, [FromBody] JsonPatchDocument<Pickup> patch)
         {
             var pickup = await _context.Pickups.FindAsync(id);

@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using splat.Services;
+using System.Security.Claims;
 
 namespace splat
 {
@@ -97,9 +98,11 @@ namespace splat
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdministratorRole",
-                    policy => policy.RequireRole("Administrator"));
+                    policy => policy.RequireClaim(ClaimTypes.Role, "Administrator"));
                 options.AddPolicy("ElevatedRights",
-                    policy => policy.RequireRole("Administrator", "Staff"));
+                    policy => policy.RequireClaim(ClaimTypes.Role, "Administrator", "Staff"));
+                options.AddPolicy("Default",
+                    policy => policy.RequireClaim(ClaimTypes.Role, "Administrator", "Staff", "Student"));
             });
 
             services.AddControllers()
