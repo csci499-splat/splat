@@ -12,8 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
-    //[Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "ElevatedRights")]
     public class CategoriesController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -23,17 +22,22 @@ namespace splat.Controllers
             _context = context;
         }
 
-        // GET: api/Examples
+        // GET: api/Categories
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
+            return await _context.Categories.Where(c => c.Visible).ToListAsync();
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<Category>>> GetAllCategories()
+        {
             return await _context.Categories.ToListAsync();
         }
 
-        // GET: api/Examples/5
+        // GET: api/Categories/{id}
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult<Category>> GetCategory(Guid id)
         {
             var category = await _context.Categories.FindAsync(id);

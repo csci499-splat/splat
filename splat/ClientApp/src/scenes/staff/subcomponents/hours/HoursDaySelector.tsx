@@ -4,9 +4,10 @@ import React, { FC, ReactElement } from 'react';
 import { toast } from 'react-toastify';
 
 import DaySelector from '../../../../components/common/DaySelector';
-import { baseRequest } from '../../../../services/api/genericRequest';
 
 import type { ClosedDay } from '../../../../models/ClosedDay';
+import axios from 'axios';
+
 type HoursDaySelectorProps = {
     
 };
@@ -15,25 +16,26 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
 
     const [disabledDays, setDisabledDays] = React.useState<Date[]>([]);
     const [addDayOpen, setAddDayOpen] = React.useState(false);
-    const [selectedDate, setSelectedDate] = React.useState<Date | null>(new Date());
+    const [selectedDate, setSelectedDate] = React.useState<Date | null | undefined>(null);
 
     const retrieveDisabledDays = async () => {
         try {
-            let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+            let res = await axios.get<ClosedDay[]>('/hours/days');
             setDisabledDays(res.data.map((item) => item.closedOn));
         } catch(error) { }
     };
 
     const handleRemoveDay = async (day: Date) => {
-        await baseRequest.delete(`/hours/days/${day.toISOString()}`);
-        retrieveDisabledDays();
+        await axios.delete(`/hours/days/${day.toISOString()}`);
+        await retrieveDisabledDays();
     };
 
     const handleAddDay = async () => {
         if(selectedDate) {
             try {
-                await baseRequest.post('/hours/days', { closedOn: selectedDate });
+                await axios.post('/hours/days', { closedOn: selectedDate });
                 handleDayClose();
+                await retrieveDisabledDays();
             } catch (error) {
                 
             }
@@ -73,13 +75,12 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
                 </TableHead>
                 <TableBody>
                     {disabledDays.map((day: Date, index) => {
-                        console.log(new Date(day).toLocaleDateString());
                         return (
-                        <TableRow>
+                        <TableRow key={index}>
                             <TableCell align="left" key={index}>{new Date(day).toLocaleDateString()}</TableCell>
                             <TableCell align="center">
                                 <IconButton
-                                onClick={() => handleRemoveDay(day)}
+                                onClick={() => handleRemoveDay(new Date(day))}
                                 >
                                     <Delete />
                                 </IconButton>
@@ -106,7 +107,6 @@ const HoursDaySelector: FC<HoursDaySelectorProps> = (props: HoursDaySelectorProp
                 // @ts-ignore
                 value={selectedDate}
                 onChange={(newValue: Date | null) => setSelectedDate(newValue)}
-                error={Boolean(selectedDate)}
                 />
                 <Stack direction="row" spacing={2}>
                     <Button

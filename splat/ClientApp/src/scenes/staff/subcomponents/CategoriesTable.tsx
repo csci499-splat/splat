@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -8,11 +8,13 @@ import {
     GridToolbar,
     GridValueFormatterParams,
 } from '@mui/x-data-grid';
+import { useTheme } from '@mui/styles';
+import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Category } from '../../../models/Category';
 import { CategoryIcons } from '../../../models/CategoryIcons';
-import { baseRequest } from '../../../services/api/genericRequest';
+import CategoriesAddDialog from './CategoriesAddDialog';
 import CategoriesEditDialog from './CategoriesEditDialog';
 
 type CategoriesTableProps = {
@@ -21,10 +23,21 @@ type CategoriesTableProps = {
 
 const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) : ReactElement => {
 
+    const [addCategoriesOpen, setAddCategoriesOpen] = React.useState(false);
     const [editCategoryOpen, setEditCategoryOpen] = useState(false);
+
     const [selectedRow, setSelectedRow] = useState<GridRowData>();
     const [categories, setCategories] = useState<Category[]>([]);
     const [currentWidth, setCurrentWidth] = useState(0);
+
+    const handleOpenAddCategories = () => {
+        setAddCategoriesOpen(true);
+    };
+
+    const handleCloseAddCategories = () => {
+        setAddCategoriesOpen(false);
+        getCategories();
+    };
 
     const handleOpenEditCategory = (row: GridRowData) => {
         setEditCategoryOpen(true);
@@ -38,12 +51,12 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
     };
 
     const handleDeleteCategory = async (row: GridRowData) => {
-        await baseRequest.delete(`/categories/${row.id}`);
+        await axios.delete(`/categories/${row.id}`);
         getCategories();
     };
 
     const getCategories = async () => {
-        let res = await baseRequest.get<Category[]>('/categories');
+        let res = await axios.get<Category[]>('/categories/all');
         setCategories(res.data);
         setCurrentWidth(1 - currentWidth);
     };
@@ -155,15 +168,23 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
                 disableExport: true,
             },
         ],[]);
+
+    const theme = useTheme();
         
     return (
         <>
-        <div style={{height: 750, width: `100% - ${currentWidth}px`}}>
+        <Button
+        variant="contained"
+        onClick={handleOpenAddCategories}
+        >
+            Create Category
+        </Button>
+        <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={categories}
             components={{
-                Toolbar: GridToolbar
+                Toolbar: GridToolbar,
             }}
             />
         </div>
@@ -171,6 +192,10 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
         onClose={handleCloseEditCategory}
         category={selectedRow}
         open={editCategoryOpen}
+        />
+        <CategoriesAddDialog
+        onClose={() => handleCloseAddCategories()}
+        open={addCategoriesOpen}
         />
         </>
     )

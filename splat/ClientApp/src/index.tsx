@@ -6,8 +6,9 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { baseRequest, authRequest } from './services/api/genericRequest';
-import { getAuthToken } from './services/util/authHeader';
+import { baseRequest } from './services/api/genericRequest';
+import { getAuthToken, logout } from './services/util/login';
+import axios from 'axios';
 
 //const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
@@ -15,7 +16,13 @@ const rootElement = document.getElementById('root');
 // https://stackoverflow.com/questions/55149816/is-it-possible-to-use-toast-in-axios-interceptors
 
 const errorHandler = error => {
-    toast.error(`Error ${error.request.status}: ${error.response.statusText}`, {
+    let errorText = error.response.data?.message ? error.response.data?.message : error.response.statusText;
+
+    if(error.response.status === 401) {
+        errorText = "Try signing out and back in";
+    }
+
+    toast.error(`Error ${error.request.status}: ${errorText}`, {
         position: 'top-center',
         autoClose: 6000,
         hideProgressBar: false,
@@ -28,22 +35,32 @@ const errorHandler = error => {
     return Promise.reject({...error});
 }
 
-authRequest.interceptors.request.use(config => {
+axios.defaults.baseURL = '/api';
+axios.defaults.headers['Content-Type'] = 'application/json';
+
+axios.interceptors.request.use(config => {
     const token = getAuthToken();
 
-    if(token !== null) {
-        config.headers.Authorization = token;
+    if(token) {
+        config.headers['Authorization'] = token;
+    } else {
+        config.headers['Authorization'] = 'Bearer empty';
     }
 
     return config;
-});
+    },
+
+    error => {
+        Promise.reject(error);
+    }
+);
 
 baseRequest.interceptors.response.use(
     (response) => response,
     (error) => errorHandler(error),
 );
 
-authRequest.interceptors.response.use(
+axios.interceptors.response.use(
     (response) => response,
     (error) => errorHandler(error),
 );

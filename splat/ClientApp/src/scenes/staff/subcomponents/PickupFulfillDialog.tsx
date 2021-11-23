@@ -5,6 +5,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    InputAdornment,
     Table,
     TableBody,
     TableCell,
@@ -14,12 +15,12 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
 import { IPickupDialogProps } from '../pages/Pickups';
 
 interface PickupFulfillDialogProps extends IPickupDialogProps {
@@ -36,32 +37,70 @@ const validationSchema = yup.object({
 const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillDialogProps): ReactElement => {
 
     const initialValues = {
-        weight: undefined,
+        weight: 0,
     };
 
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            await baseRequest.patch(`/pickups/${props.selectedPickup?.id}`,
-                { weight: values.weight, status: PickupStatus.WAITING });
-            props.onClose();
+            await handleFulfill(props.selectedPickup?.id, PickupStatus.WAITING, values.weight);
         }
     })
 
-    const handleFulfill = async (id: string | undefined | null, newStatus: PickupStatus) => {
-        if(id) await baseRequest.patch(`/pickups/${id}`, { status: newStatus });
+    const handleFulfill = async (id: string | undefined | null, newStatus: PickupStatus, newWeight: number) => {
+        if(id)
+        try {
+            await axios.patch(`/pickups/${props.selectedPickup?.id}`,
+                [
+                    {
+                        op: "add",
+                        path: "/weight",
+                        value: newWeight,
+                    },
+                    {
+                        op: "add",
+                        path: "/pickupstatus",
+                        value: newStatus,
+                    },
+                ], { headers: { 'Content-Type': 'application/json-patch+json' }});
+        } catch (err) {
+
+        }
+
         props.onClose();
     };
+
+    const handlePickup = async () => {
+        if(props.selectedPickup?.id)
+        try {
+            await axios.patch(`/pickups/${props.selectedPickup?.id}`,
+                [
+                    {
+                        op: "add",
+                        path: "/pickupstatus",
+                        value: PickupStatus.DISBURSED,
+                    },
+                    {
+                        op: "add",
+                        path: "/pickuptime",
+                        value: new Date().toISOString(),
+                    }
+                ], { headers: { 'Content-Type': 'application/json-patch+json' }});
+        } catch(err) {
+
+        }
+
+        props.onClose();
+    }
 
     return (
         <>
         <Dialog 
         open={props.open} 
         onClose={props.onClose}
-        fullWidth
         >
-        {props.selectedPickup?.status === PickupStatus.PENDING ? (
+        {(props.selectedPickup?.pickupStatus === PickupStatus.PENDING) ? (
             <>
             <DialogTitle>
                 Fulfill Request
@@ -71,23 +110,17 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell colSpan={4} align="center">Items</TableCell>
+                                <TableCell colSpan={3} align="center">Items in request</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             <TableRow>
-                                <TableCell />
                                 <TableCell>Item Name</TableCell>
                                 <TableCell>Category Name</TableCell>
                                 <TableCell align="right">Quantity</TableCell>
                             </TableRow>
                             {props.selectedPickup?.itemRequests.map((row, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>
-                                        <Checkbox
-                                        color="primary"
-                                        />
-                                    </TableCell>
                                     <TableCell>{row.item.name}</TableCell>
                                     <TableCell>{row.category?.name}</TableCell>
                                     <TableCell>{row.quantity}</TableCell>
@@ -107,11 +140,15 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
                     onChange={formik.handleChange}
                     error={formik.touched.weight && Boolean(formik.errors.weight)}
                     helperText={formik.touched.weight && formik.errors.weight}
+                    InputProps={{
+                        endAdornment: <InputAdornment position="end">lb</InputAdornment>,
+                    }}
+                    sx={{ marginTop: 1 }}
                     />
                 </Form>
                 </FormikProvider>
             </DialogContent>
-            <DialogActions sx={{margin: 1}}>
+            <DialogActions sx={{ margin: 1 }}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
                 <Button variant="contained" onClick={() => formik.submitForm()} color="primary">
                     Fulfill
@@ -130,7 +167,7 @@ const PickupFulfillDialog: FC<PickupFulfillDialogProps> = (props: PickupFulfillD
             </DialogContent>
             <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="primary">Cancel</Button>
-                <Button variant="contained" onClick={() => handleFulfill(props.selectedPickup?.id, PickupStatus.DISBURSED)} color="success">
+                <Button variant="contained" onClick={() => handlePickup()} color="success">
                     Confirm Picked Up
                 </Button>
             </DialogActions>

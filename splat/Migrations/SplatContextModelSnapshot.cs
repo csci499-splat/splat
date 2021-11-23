@@ -401,6 +401,9 @@ namespace splat.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ApplicationUserEmail")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("CanceledTime")
                         .HasColumnType("timestamptz");
 
