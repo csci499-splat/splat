@@ -90,19 +90,25 @@ namespace splat.Controllers
         [HttpPost]
         public async Task<ActionResult<Pickup>> PostPickup(Pickup pickup)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            if (user != null)
+            if (identity != null)
             {
-                pickup.ApplicationUserEmail = user.Email;
-                _context.Pickups.Add(pickup);
-                await _context.SaveChangesAsync();
+                var username = identity.FindFirst("username").Value;
 
-                return CreatedAtAction("GetPickup", new { id = pickup.Id }, pickup);
+                var user = await _userManager.FindByNameAsync(username);
+
+                if (user != null)
+                {
+                    pickup.ApplicationUserEmail = user.Email;
+                    _context.Pickups.Add(pickup);
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction("GetPickup", new { id = pickup.Id }, pickup);
+                }
             }
 
             return Unauthorized(new { message = "Invalid request" });
-
         }
 
         // PATCH: api/Pickups/{id}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
-    //[Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TrendReportsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -25,21 +25,24 @@ namespace splat.Controllers
         }
 
         // GET: api/trendreports/?DateFrom=value&DateTo=value
-        /*
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange timePeriod)
         {
             var reportPickups = GetPickupsWithinDateRange(await GetPickupsFromContext(_context), timePeriod);
 
-            return await GenerateTrendReport(reportPickups, timePeriod);
+            return await GenerateTrendReportAsync(reportPickups, timePeriod);
         }
 
-        public static async Task<TrendReport> GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
+        public static async Task<TrendReport> GenerateTrendReportAsync(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
-            return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+            var report = await Task.Run(() =>
+            {
+                return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+            });
+
+            return report;
         }
-        */
+        
         public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
             TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
@@ -53,8 +56,11 @@ namespace splat.Controllers
         // Methods for getting and parsing pickups from the DB
         static async Task<IQueryable<Pickup>> GetPickupsFromContext(SplatContext context)
         {
-            return context.Pickups
+            return await Task.Run(() =>
+            {
+                return context.Pickups
                 .Where(p => p.PickupStatus != PickupStatus.CANCELED);
+            });
         }
 
         static IQueryable<Pickup> GetPickupsWithinDateRange(IQueryable<Pickup> pickups, DateRange range)
