@@ -1,9 +1,10 @@
 import { Dialog, DialogContent, DialogActions, DialogTitle, Paper, 
-    Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+    Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
 import { baseRequest } from '../../../services/api/genericRequest';
 import {TotalReport} from '../../../models/TotalReport';
 import axios from 'axios';
+import {ReportDialogProps} from '../pages/Reports';
 
 const TotalReportTest: TotalReport = {
     foodWeight:200,
@@ -13,9 +14,11 @@ const TotalReportTest: TotalReport = {
     individualVisits:30,
 }
 
-type TotalReportDialogProps = {
-    open: boolean;
-    onClose: () => void;
+interface TotalReportDialogProps {
+    open: ReportDialogProps["open"];
+    onClose: ReportDialogProps["onClose"];
+    startDateValue: ReportDialogProps["startDateValue"];
+    endDateValue: ReportDialogProps["endDateValue"];
 
 }
 const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogProps) : ReactElement => {
@@ -59,28 +62,28 @@ const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogPr
                     <TableBody>
                     <TableRow sx={{alignItems: 'right'}}>
                                 <TableCell> Food Weight:</TableCell>
-                                <TableCell> {TotalReportTest.foodWeight} </TableCell>                       
+                                <TableCell> {totalReport?.foodWeight} </TableCell>                       
                             </TableRow>
                             
                             <TableRow>
                                 <TableCell> Food Disbursements: </TableCell>
-                                <TableCell> {TotalReportTest.disbursements} </TableCell>
+                                <TableCell> {totalReport?.disbursements} </TableCell>
                                 
                             </TableRow>
 
                             <TableRow>
                             <TableCell> People Impacted: </TableCell>
-                            <TableCell> {TotalReportTest.peopleImpacted} </TableCell>
+                            <TableCell> {totalReport?.peopleImpacted} </TableCell>
                             </TableRow>
                             
                             <TableRow>
                                 <TableCell>Recurring Visits: </TableCell>
-                                <TableCell> {TotalReportTest.recurringVisits} </TableCell>
+                                <TableCell> {totalReport?.recurringVisits} </TableCell>
                             </TableRow>
                             
                             <TableRow>
                                 <TableCell> Individual Visits: </TableCell>
-                                <TableCell> {TotalReportTest.individualVisits} </TableCell>
+                                <TableCell> {totalReport?.individualVisits} </TableCell>
                             
                             </TableRow>
                     </TableBody>

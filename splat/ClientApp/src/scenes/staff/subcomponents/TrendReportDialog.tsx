@@ -8,6 +8,14 @@ import { BarChart, ComposedChart, Line, Bar, Cell, XAxis, YAxis, Tooltip as Tool
 import { Category } from '../../../models/BackendTypes';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 import { Refresh } from '@mui/icons-material';
+import {ReportDialogProps} from '../pages/Reports';
+
+interface TrendReportDialogProps {
+    open: ReportDialogProps["open"];
+    onClose: ReportDialogProps["onClose"];
+    startDateValue: ReportDialogProps["startDateValue"];
+    endDateValue: ReportDialogProps["endDateValue"];
+}
 
 const TrendReportTest: TrendReport = {
     entries: [
@@ -156,10 +164,6 @@ const TrendReportTest: TrendReport = {
     ]
 };
 
-type TrendReportDialogProps = {
-    open: boolean;
-    onClose: () => void;
-};
 
 type ParsedTrendResult = {
     itemCounts: any[];

@@ -13,6 +13,14 @@ interface ReportProps extends IStaffChild {
     
 }
 
+
+export interface ReportDialogProps{
+    open:boolean;
+    onClose: () => void;
+    startDateValue?: Date | null;
+    endDateValue?: Date|null;
+}
+
 type DialogType = 'totalReport' | 'trendReport' | '';
 
 const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
@@ -86,10 +94,14 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         <TotalReportDialog
         open={dialogOpen.totalReport}
         onClose={() => handleDialogClose('totalReport')}
+        startDateValue={startDateValue}
+        endDateValue={endDateValue}
         />
         <TrendReportDialog
         open={dialogOpen.trendReport}
         onClose={() => handleDialogClose('trendReport')} 
+        startDateValue={startDateValue}
+        endDateValue={endDateValue}
         />
         <Button
         variant="contained"
