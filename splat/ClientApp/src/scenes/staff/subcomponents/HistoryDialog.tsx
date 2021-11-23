@@ -13,6 +13,40 @@ import TablePagination from '@mui/material/TablePagination';
 import Pickups from '../pages/Pickups';
 
 
+const HistoryTest: Pickup = {
+    id: '2362353e-570b-477c-9c65-522c1487c848',
+    pickupStatus: PickupStatus.WAITING,
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+}
 
 type HistoryDialogProps = {
     open: boolean;
@@ -111,12 +145,14 @@ const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : React
         <Dialog
         open={props.open}
         onClose={props.onClose}
+        maxWidth="lg" 
+        fullWidth
         >
             <DialogTitle>History</DialogTitle>
             <DialogContent>
                 <div>
                     <TableContainer>
-                        <Table>
+                        <Table sx={{ minWidth: 650 }} >
                             <TableHead>
                                 <TableRow>
                                     <TableCell />
