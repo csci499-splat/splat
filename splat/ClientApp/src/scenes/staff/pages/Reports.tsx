@@ -14,31 +14,31 @@ interface ReportProps extends IStaffChild {
 }
 
 
-export interface ReportDialogProps{
+export interface ReportDialogProps {
     open:boolean;
     onClose: () => void;
     startDateValue?: Date | null;
     endDateValue?: Date | null;
 }
 
-type DialogType = 'totalReport' | 'trendReport' | '';
+type DialogType = 'totalReport' | 'trendReport' | 'historyReport' | '';
 
 const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     
     const [startDateValue, setStartDateValue] = React.useState<Date | null>();
     const [endDateValue, setEndDateValue] = React.useState<Date | null>();
-    //TODO Create a new type, if user want to add new report type, they don't need to change 3 lines. 
     const [reportType, setReportType] = React.useState<DialogType>('');
     const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false});
     
 
     const handleDialogOpen = (dialog: DialogType) => {
         setDialogOpen((prevState) => ({ ... prevState, [dialog]: true}));
-        
     };
+
     const handleDialogClose = (dialog: DialogType) => {
-        setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}))
+        setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}));
     };
+
     const handleTypeChange = (event: SelectChangeEvent) => {
         setReportType(event.target.value as DialogType);
     };
@@ -53,8 +53,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             left: '30%',
           }}
         >
-        <Stack direction="row" spacing={2}  >
-
+        <Stack direction="row" spacing={2}>
         <MobileDatePicker
             label="Select start date"
             value={startDateValue}
@@ -77,8 +76,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             renderInput={(params) => <TextField {...params} 
             disabled={!Boolean(startDateValue)}
             />}
-            />
-
+        />
         <Select
         id="reportType"
         value={reportType}
@@ -90,6 +88,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             <MenuItem value="" disabled><em>None</em></MenuItem>
             <MenuItem value="totalReport">Total</MenuItem>
             <MenuItem value="trendReport">Trend</MenuItem>
+            <MenuItem value="totalReport">Trend</MenuItem>
         </Select>
         <TotalReportDialog
         open={dialogOpen.totalReport}
