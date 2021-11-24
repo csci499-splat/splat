@@ -13,6 +13,84 @@ import TablePagination from '@mui/material/TablePagination';
 import Pickups from '../pages/Pickups';
 
 
+const HistoryTest: Pickup[] = [
+    {
+    id: '2362353e-570b-477c-9c65-522c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.WAITING,
+    pickupTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+/*{
+    id: '353e-570b-477c-9c65-522c1487c848sdfsdfd',
+    pickupStatus: PickupStatus.WAITING,
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},*/
+];
+
 type HistoryDialogProps = {
     open: boolean;
     onClose: () => void;
@@ -85,85 +163,14 @@ function Row(props: { row: Pickup}) {
 const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : ReactElement => {
     const [pickups, setPickups] = React.useState<Pickup[]>([]);
     const getPickups = async () => {
-        let res = await baseRequest.get<Pickup[]>('/history');
-        setPickups(res.data);
-        /*let testObj: Pickup[] = [
-            {
-                id: '2362353e-570b-477c-9c65-522c1487c848',
-                pickupStatus: PickupStatus.WAITING,
-                submittedAt: new Date(),
-                studentInfo: {
-                    studentId: '1234567',
-                    age: 25,
-                    onMealPlan: true
-                },
-                itemRequests: [
-                    {
-                        item: {
-                            id: '12uffd-sddfd-343fddf',
-                            name: 'Test item',
-                            category: {
-                                id: '123-fddd-3433fdf',
-                                name: 'Test category',
-                                limit: 4,
-                                icon: 'test icon',
-                                description: 'this is a test category',
-                                visible: true,
-                                createdAt: null,
-                            },
-                            categoryId: '123-fddd-3433fdf',
-                            description: 'this is a test item',
-                            visible: true,
-                            createdAt: null
-                        },
-                        quantity: 5,
-                    },
-                ],
-                requestedPickupTime: new Date(),
-                otherNotes: 'Test notes',
-            },
-            {
-                id: '353e-570b-477c-9c65-522c1487c848sdfsdfd',
-                pickupStatus: PickupStatus.WAITING,
-                submittedAt: new Date(),
-                studentInfo: {
-                    studentId: '1234567',
-                    age: 25,
-                    onMealPlan: true
-                },
-                itemRequests: [
-                    {
-                        item: {
-                            id: '12uffd-sddfd-343fddf',
-                            name: 'Test item',
-                            category: {
-                                id: '123-fddd-3433fdf',
-                                name: 'Test category',
-                                limit: 4,
-                                icon: 'test icon',
-                                description: 'this is a test category',
-                                visible: true,
-                                createdAt: null,
-                            },
-                            categoryId: '123-fddd-3433fdf',
-                            description: 'this is a test item',
-                            visible: true,
-                            createdAt: null
-                        },
-                        quantity: 5,
-                    },
-                ],
-                requestedPickupTime: new Date(),
-                otherNotes: 'Test notes',
-            },
-        ];
-        setPickups(testObj);
-*/
+        //let res = await baseRequest.get<Pickup[]>('/history');
+        //setPickups(res.data);
+        setPickups(HistoryTest);
     };
 
     React.useEffect(() => {
         getPickups();
-    });
+    },[]);
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
