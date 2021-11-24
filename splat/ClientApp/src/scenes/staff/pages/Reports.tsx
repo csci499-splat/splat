@@ -18,7 +18,7 @@ export interface ReportDialogProps{
     open:boolean;
     onClose: () => void;
     startDateValue?: Date | null;
-    endDateValue?: Date|null;
+    endDateValue?: Date | null;
 }
 
 type DialogType = 'totalReport' | 'trendReport' | '';

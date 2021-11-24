@@ -10,11 +10,8 @@ import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 import { Refresh } from '@mui/icons-material';
 import {ReportDialogProps} from '../pages/Reports';
 
-interface TrendReportDialogProps {
-    open: ReportDialogProps["open"];
-    onClose: ReportDialogProps["onClose"];
-    startDateValue: ReportDialogProps["startDateValue"];
-    endDateValue: ReportDialogProps["endDateValue"];
+interface TrendReportDialogProps extends ReportDialogProps {
+
 }
 
 const TrendReportTest: TrendReport = {
