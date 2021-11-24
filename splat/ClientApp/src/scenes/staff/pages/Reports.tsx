@@ -8,6 +8,7 @@ import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
 import TrendReportDialog from '../subcomponents/TrendReportDialog';
 import { Category } from '../../../models/BackendTypes';
+import HistoryDialog from '../subcomponents/HistoryDialog';
 
 interface ReportProps extends IStaffChild {
     
@@ -28,7 +29,8 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     const [startDateValue, setStartDateValue] = React.useState<Date | null>();
     const [endDateValue, setEndDateValue] = React.useState<Date | null>();
     const [reportType, setReportType] = React.useState<DialogType>('');
-    const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false});
+    const [dialogOpen, setDialogOpen] = useState({totalReport: false, 
+        trendReport: false, historyReport: false});
     
 
     const handleDialogOpen = (dialog: DialogType) => {
@@ -88,7 +90,7 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             <MenuItem value="" disabled><em>None</em></MenuItem>
             <MenuItem value="totalReport">Total</MenuItem>
             <MenuItem value="trendReport">Trend</MenuItem>
-            <MenuItem value="totalReport">Trend</MenuItem>
+            <MenuItem value="historyReport">History</MenuItem>
         </Select>
         <TotalReportDialog
         open={dialogOpen.totalReport}
@@ -99,6 +101,12 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         <TrendReportDialog
         open={dialogOpen.trendReport}
         onClose={() => handleDialogClose('trendReport')} 
+        startDateValue={startDateValue}
+        endDateValue={endDateValue}
+        />
+        <HistoryDialog
+        open={dialogOpen.historyReport}
+        onClose={() => handleDialogClose('historyReport')}
         startDateValue={startDateValue}
         endDateValue={endDateValue}
         />
