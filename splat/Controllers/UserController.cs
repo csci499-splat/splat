@@ -16,12 +16,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using splat.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "RequireAdministratorRole")]
+    [Authorize(Policy = "Default", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
         private readonly SplatContext _context;
@@ -96,12 +97,15 @@ namespace splat.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
                 new Claim("username", user.UserName),
-                new Claim("roles", roles[0])
             };
+
+            var claimsIdentity = new ClaimsIdentity(claims, "Token");
+
+            claimsIdentity.AddClaims(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var token = new JwtSecurityToken
             (
-                claims: claims,
+                claims: claimsIdentity.Claims,
                 expires: DateTime.UtcNow.AddDays(7),
                 notBefore: DateTime.UtcNow,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
@@ -121,7 +125,6 @@ namespace splat.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -157,6 +160,7 @@ namespace splat.Controllers
 
         
         [HttpGet]
+        [Authorize(Policy = "RequireAdministratorRole", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<ApplicationUserDTO>>> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -178,6 +182,7 @@ namespace splat.Controllers
         }
 
         [HttpPost("role")]
+        [Authorize(Policy = "RequireAdministratorRole", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ChangeRole([FromBody] ApplicationUserChangeRoleDTO roleChange)
         {
             var user = await _userManager.FindByNameAsync(roleChange.UserName);
