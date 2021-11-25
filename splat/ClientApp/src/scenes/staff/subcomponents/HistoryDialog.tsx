@@ -26,11 +26,6 @@ const HistoryTest: Pickup[] = [
         age: 25,
         onMealPlan: true
     },
-    /*householdInfo:{
-        numSeniors:9,
-        numAdults:5,
-        numMinors:10,
-    },*/
     itemRequests: [
         {
             item: {
@@ -109,6 +104,471 @@ const HistoryTest: Pickup[] = [
         },
     ],
     weight: 10,
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'asdsde-57sdf-sdfsd-dsfd-848sdfsdfd',
+    pickupStatus: PickupStatus.DISBURSED,
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '7747567',
+        age: 25,
+        onMealPlan: true
+    },
+    pickupTime: new Date(),
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 20,
+        },
+        {
+            item: {
+                id: '1jfd54745-fdhfd433-fdfdf',
+                name: 'Test item 2',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item 2',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 10,
+        },
+        {
+            item: {
+                id: 'asdadsd-asdasd-sdsd',
+                name: 'Test item 3',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item 3',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 10,
+        },
+        {
+            item: {
+                id: 'sasdss-asasddd-asddsd',
+                name: 'Test item 4',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item 4',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 10,
+        },
+    ],
+    weight: 10,
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'asdadsd-570b-477c-9c65-522c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'asdasddsd-sadasdasd-9c65-522c1487c848',
+    weight:100,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'asdasdddd-asdadsddd-99c65-522c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'asdalksdlajdl-asddasd-asdadsd-22c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: '849889as-asd-54545dasd-9c65-522c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'a9465464-qwe-asd-zxc487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: '54646-asds-asdasd-asd65-522c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: 'asdj-6465664-1231-asdac1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
+    requestedPickupTime: new Date(),
+    otherNotes: 'Test notes',
+},
+{
+    id: '4645-as564-asdasadddd-522c1487c848',
+    weight:5,
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
+    submittedAt: new Date(),
+    studentInfo: {
+        studentId: '1234567',
+        age: 25,
+        onMealPlan: true
+    },
+    householdInfo:{
+        numSeniors:9,
+        numAdults:5,
+        numMinors:10,
+    },
+    itemRequests: [
+        {
+            item: {
+                id: '12uffd-sddfd-343fddf',
+                name: 'Test item',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-666',
+                description:'123',
+                visible:true,
+                createdAt:new Date(),    
+            },
+            quantity: 5,
+        },
+    ],
     requestedPickupTime: new Date(),
     otherNotes: 'Test notes',
 },
