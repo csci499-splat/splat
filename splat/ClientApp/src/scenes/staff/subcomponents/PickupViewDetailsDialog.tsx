@@ -1,11 +1,13 @@
-import { Check } from '@mui/icons-material';
+import { Check, KeyboardArrowDown } from '@mui/icons-material';
 import {
+    Box,
     Button,
     CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
+    IconButton,
     Paper,
     Table,
     TableBody,
@@ -13,12 +15,16 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Typography,
+    Collapse,
 } from '@mui/material';
+import { KeyboardArrowUp } from '@mui/icons-material';
 import React, { FC, ReactElement } from 'react';
 
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
 import { IPickupDialogProps } from '../pages/Pickups';
+import axios from 'axios';
 
 interface PickupViewDetailsDialogProps extends IPickupDialogProps {
     
@@ -26,51 +32,22 @@ interface PickupViewDetailsDialogProps extends IPickupDialogProps {
 
 const PickupViewDetailsDialog: FC<PickupViewDetailsDialogProps> = (props: PickupViewDetailsDialogProps): ReactElement => {
 
-    const [pickupData, setPickupData] = React.useState<Pickup>();
+    const pickupData = props.selectedPickup;
 
-    React.useEffect(() => {
-        const fetchData = async () => {
-            let testObj: Pickup = {
-                id: '2362353e-570b-477c-9c65-522c1487c848',
-                pickupStatus: PickupStatus.WAITING,
-                submittedAt: new Date(),
-                studentInfo: {
-                    studentId: '1234567',
-                    age: 25,
-                    onMealPlan: true
-                },
-                itemRequests: [
-                    {
-                        item: {
-                            id: '12uffd-sddfd-343fddf',
-                            name: 'Test item',
-                            category: {
-                                id: '123-fddd-3433fdf',
-                                name: 'Test category',
-                                limit: 4,
-                                icon: 'test icon',
-                                description: 'this is a test category',
-                                visible: true,
-                                createdAt: null,
-                            },
-                            categoryId: '123-fddd-3433fdf',
-                            description: 'this is a test item',
-                            visible: true,
-                            createdAt: null
-                        },
-                        quantity: 5,
-                    },
-                ],
-                requestedPickupTime: new Date(),
-                otherNotes: 'Test notes',
-            };
-            setPickupData(testObj);
-            //let res = await fetchResourceAuth<Pickup>(`/pickup/${props.selectedPickup?.id}`);
-            //setPickupData(res.data);
-        };
-        
-        fetchData();
-    }, []);
+    const getStatusString = (status: PickupStatus): string => {
+        switch(status) {
+            case PickupStatus.PENDING:
+                return "Pending fulfillment";
+            case PickupStatus.WAITING:
+                return "Waiting for pickup";
+            case PickupStatus.DISBURSED:
+                return "Disbursed to student";
+            case PickupStatus.CANCELED:
+                return "Canceled";
+            default:
+                return "None";
+        }
+    };
 
     return (
         <>
@@ -83,148 +60,111 @@ const PickupViewDetailsDialog: FC<PickupViewDetailsDialogProps> = (props: Pickup
             <DialogTitle>View Details</DialogTitle>
             <DialogContent>
             {pickupData !== undefined ? (
-            <TableContainer component={Paper}>
-                <Table sx={{width: '100%'}}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="left">
-                                Pickup ID
-                            </TableCell>
-                            <TableCell align="left">
-                                Submitted At
-                            </TableCell>
-                            <TableCell align="center">
-                                Status
-                            </TableCell>
-                            <TableCell align="right">
-                                Requested Pickup Time
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell align="left">
-                                {pickupData.id}
-                            </TableCell>
-                            <TableCell align="left">
-                                {pickupData.submittedAt}
-                            </TableCell>
-                            <TableCell align="center">
-                                {pickupData.pickupStatus}
-                            </TableCell>
-                            <TableCell align="right">
-                                {pickupData.requestedPickupTime.toLocaleString()}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                Student ID
-                            </TableCell>
-                            <TableCell>
-                                Student Age
-                            </TableCell>
-                            <TableCell>
-                                On Meal Plan
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                {pickupData.studentInfo.studentId}
-                            </TableCell>
-                            <TableCell>
-                                {pickupData.studentInfo.age}
-                            </TableCell>
-                            <TableCell>
-                                {pickupData.studentInfo.onMealPlan ? <Check /> : <></>}
-                            </TableCell>
-                        </TableRow>
-                        {pickupData.householdInfo ? (
-                            <>
+            <TableContainer>
+            <Table sx={{ minWidth: 650 }} >
+                <TableHead>
+                    <TableRow>
+                        <TableCell align="left">Pickup ID</TableCell>
+                        <TableCell align="center"># Items</TableCell>
+                        <TableCell align="center">Requested Pickup Time</TableCell>
+                        <TableCell align="center">Student ID</TableCell>
+                        <TableCell align="center">Status</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow>
+                        <TableCell align="left">{pickupData.id}</TableCell>
+                        <TableCell align="center">{pickupData.itemRequests.length}</TableCell>
+                        <TableCell align="center">{pickupData.requestedPickupTime.toLocaleString()}</TableCell>
+                        <TableCell align="center">{pickupData.studentInfo.studentId}</TableCell>
+                        <TableCell align="center">{getStatusString(pickupData.pickupStatus)}</TableCell>
+                    </TableRow>
+                <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Typography variant="h6" align="center" sx={{ marginTop: 2 }}>
+                        Student information
+                    </Typography>
+                    <Table size="small" sx={{marginBottom: 2}}>
+                        <TableHead>
+                            <TableCell align="left">Student Age</TableCell>
+                            {pickupData.householdInfo && (
+                                <>
+                                <TableCell align="center"># Seniors</TableCell>
+                                <TableCell align="center"># Adults</TableCell>
+                                <TableCell align="center"># Minors</TableCell>
+                                </>
+                            )}
+                            <TableCell align="right">On Meal Plan?</TableCell>
+                        </TableHead>
+                        <TableBody>
                             <TableRow>
-                                <TableCell>
-                                    # of Minors (Up to 17)
-                                </TableCell>
-                                <TableCell>
-                                    # of Adults (18 to 64)
-                                </TableCell>
-                                <TableCell>
-                                    # of Seniors (65+)
-                                </TableCell>
+                                <TableCell align="left">{pickupData.studentInfo.age}</TableCell>
+                                {pickupData.householdInfo && (
+                                    <>
+                                    <TableCell align="center">{pickupData.householdInfo?.numSeniors}</TableCell>
+                                    <TableCell align="center">{pickupData.householdInfo?.numAdults}</TableCell>
+                                    <TableCell align="center">{pickupData.householdInfo?.numMinors}</TableCell>
+                                    </>
+                                )}
+                                <TableCell align="right">{pickupData.studentInfo.onMealPlan ? "Yes" : "No"}</TableCell>
                             </TableRow>
+                        </TableBody>
+                    </Table>
+                    <Typography variant="h6" align="center">
+                        Pickup weight and times
+                    </Typography>
+                    <Table size="small" sx={{marginBottom: 2}}>
+                        <TableHead>
                             <TableRow>
-                                <TableCell>
-                                    {pickupData.householdInfo.numMinors}
-                                </TableCell>
-                                <TableCell>
-                                    {pickupData.householdInfo.numAdults}
-                                </TableCell>
-                                <TableCell>
-                                    {pickupData.householdInfo.numSeniors}
-                                </TableCell>
+                                <TableCell align="left">Submit Time</TableCell>
+                                {Boolean(pickupData.canceledTime) || Boolean(pickupData.pickupTime) && (
+                                    <TableCell align="center">{pickupData.pickupTime ? "Pickup Time" : "Cancel Time"}</TableCell>
+                                )}
+                                <TableCell align="center">Weight</TableCell>
+                                <TableCell align="center">Notes</TableCell>
                             </TableRow>
-                            </>
-                        ) : (
+                        </TableHead>
+                        <TableBody>
                             <TableRow>
-                                <TableCell colSpan={4} align="center">
-                                    No household data
-                                </TableCell>
+                                <TableCell align="left">{pickupData.submittedAt?.toLocaleString()}</TableCell>
+                                {Boolean(pickupData.canceledTime) || Boolean(pickupData.pickupTime) && (
+                                    <TableCell align="center">{pickupData.pickupTime ? pickupData.pickupTime?.toLocaleString() : 
+                                        pickupData.canceledTime?.toLocaleString()}
+                                    </TableCell>
+                                )}
+                                
+                                <TableCell align="center">{pickupData.weight ? (pickupData.weight?.toFixed(2) + ' lbs') :
+                                    'N/A'}</TableCell>
+                                <TableCell align="center">{pickupData.otherNotes}</TableCell>
                             </TableRow>
-                        )}
-                        <TableRow>
-                            <TableCell>
-                                Category
-                            </TableCell>
-                            <TableCell>
-                                Item
-                            </TableCell>
-                            <TableCell>
-                                Quantity
-                            </TableCell>
-                        </TableRow>
-                        {pickupData.itemRequests.map((item, index: number) => (
-                        <TableRow key={index}>
-                            <TableCell>
-                                {item.item.category?.name}
-                            </TableCell>
-                            <TableCell>
-                                {item.item.name}
-                            </TableCell>
-                            <TableCell>
-                                {item.quantity}
-                            </TableCell>
-                        </TableRow>
-                        ))}
-                        <TableRow>
-                            <TableCell>
-                                Pickup Time
-                            </TableCell>
-                            <TableCell>
-                                Canceled At
-                            </TableCell>
-                            <TableCell>
-                                Weight
-                            </TableCell>
-                            <TableCell>
-                                Other Notes
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                {pickupData.pickupTime ? pickupData.pickupTime : 'N/A'}
-                            </TableCell>
-                            <TableCell>
-                                {pickupData.canceledTime ? pickupData.canceledTime : 'N/A'}
-                            </TableCell>
-                            <TableCell>
-                                {pickupData.weight ? pickupData.weight : 'N/A'}
-                            </TableCell>
-                            <TableCell>
-                                {pickupData.otherNotes === '' ? pickupData.otherNotes : 'No notes'}
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableBody>
+                    </Table>
+                    <Typography variant="h6" align="center">
+                        Items requested
+                    </Typography>
+                    <Table size="small" sx={{marginBottom: 2}}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="left">Item Category</TableCell>
+                                <TableCell align="center">Item Name</TableCell>
+                                <TableCell align="right">Quantity</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {pickupData.itemRequests.map((item, index: number) => (
+                                <TableRow key={index}>
+                                    <TableCell align="left">{item.item.category?.name}</TableCell>
+                                    <TableCell align="center">{item.item.name}</TableCell>
+                                    <TableCell align="right">{item.quantity}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableCell>
+            </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
             ) : (
                 <>
                 <h4>Loading...</h4>
