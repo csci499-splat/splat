@@ -18,19 +18,19 @@ const HistoryTest: Pickup[] = [
     {
     id: '2362353e-570b-477c-9c65-522c1487c848',
     weight:5,
-    pickupStatus: PickupStatus.WAITING,
-    pickupTime: new Date(),
+    pickupStatus: PickupStatus.DISBURSED,
+    canceledTime: new Date(),
     submittedAt: new Date(),
     studentInfo: {
         studentId: '1234567',
         age: 25,
         onMealPlan: true
     },
-    householdInfo:{
+    /*householdInfo:{
         numSeniors:9,
         numAdults:5,
         numMinors:10,
-    },
+    },*/
     itemRequests: [
         {
             item: {
@@ -56,15 +56,16 @@ const HistoryTest: Pickup[] = [
     requestedPickupTime: new Date(),
     otherNotes: 'Test notes',
 },
-/*{
+{
     id: '353e-570b-477c-9c65-522c1487c848sdfsdfd',
-    pickupStatus: PickupStatus.WAITING,
+    pickupStatus: PickupStatus.DISBURSED,
     submittedAt: new Date(),
     studentInfo: {
         studentId: '1234567',
         age: 25,
         onMealPlan: true
     },
+    pickupTime: new Date(),
     itemRequests: [
         {
             item: {
@@ -84,24 +85,60 @@ const HistoryTest: Pickup[] = [
                 visible: true,
                 createdAt: null
             },
-            quantity: 5,
+            quantity: 20,
+        },
+        {
+            item: {
+                id: '1jfd54745-fdhfd433-fdfdf',
+                name: 'Test item 2',
+                category: {
+                    id: '123-fddd-3433fdf',
+                    name: 'Test category',
+                    limit: 4,
+                    icon: 'test icon',
+                    description: 'this is a test category',
+                    visible: true,
+                    createdAt: null,
+                },
+                categoryId: '123-fddd-3433fdf',
+                description: 'this is a test item 2',
+                visible: true,
+                createdAt: null
+            },
+            quantity: 10,
         },
     ],
+    weight: 10,
     requestedPickupTime: new Date(),
     otherNotes: 'Test notes',
-},*/
+},
 ];
 
 interface HistoryDialogProps extends ReportDialogProps {
 
 }
 
-function Row(props: { row: Pickup}) {
+function Row(props: { row: Pickup }) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
 
+    const getStatusString = (status: PickupStatus): string => {
+        switch(status) {
+            case PickupStatus.PENDING:
+                return "Pending fulfillment";
+            case PickupStatus.WAITING:
+                return "Waiting for pickup";
+            case PickupStatus.DISBURSED:
+                return "Disbursed to student";
+            case PickupStatus.CANCELED:
+                return "Canceled";
+            default:
+                return "None";
+        }
+    };
+
     return (
-        <React.Fragment>
+        <>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <IconButton
@@ -113,41 +150,83 @@ function Row(props: { row: Pickup}) {
                 </TableCell>
                 <TableCell component="th" scope="row">{row.id}</TableCell>
                 <TableCell align="center">{row.itemRequests.length}</TableCell>
-                <TableCell align="center">{row.requestedPickupTime}</TableCell>
+                <TableCell align="center">{row.requestedPickupTime.toLocaleString()}</TableCell>
                 <TableCell align="center">{row.studentInfo.studentId}</TableCell>
-                <TableCell align="center">{row.pickupStatus}</TableCell>
+                <TableCell align="center">{getStatusString(row.pickupStatus)}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
-                            <Table size="small" aria-label="information">
+                            <Typography variant="h6" align="center">
+                                Student information
+                            </Typography>
+                            <Table size="small" sx={{marginBottom: 2}}>
                                 <TableHead>
-                                    <TableCell align="center">Student Age</TableCell>
-                                    <TableCell align="center">Meal Plan</TableCell>
-                                    <TableCell align="center"># Seniors</TableCell>
-                                    <TableCell align="center"># Adults</TableCell>
-                                    <TableCell align="center"># Minors</TableCell>
+                                    <TableCell align="left">Student Age</TableCell>
+                                    {row.householdInfo && (
+                                        <>
+                                        <TableCell align="center"># Seniors</TableCell>
+                                        <TableCell align="center"># Adults</TableCell>
+                                        <TableCell align="center"># Minors</TableCell>
+                                        </>
+                                    )}
+                                    <TableCell align="right">On Meal Plan?</TableCell>
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell align="center">{row.studentInfo.age}</TableCell>
-                                        <TableCell align="center">{row.studentInfo.onMealPlan}</TableCell>
-                                        <TableCell align="center">{row.householdInfo?.numSeniors}</TableCell>
-                                        <TableCell align="center">{row.householdInfo?.numAdults}</TableCell>
-                                        <TableCell align="center">{row.householdInfo?.numMinors}</TableCell>
+                                        <TableCell align="left">{row.studentInfo.age}</TableCell>
+                                        {row.householdInfo && (
+                                            <>
+                                            <TableCell align="center">{row.householdInfo?.numSeniors}</TableCell>
+                                            <TableCell align="center">{row.householdInfo?.numAdults}</TableCell>
+                                            <TableCell align="center">{row.householdInfo?.numMinors}</TableCell>
+                                            </>
+                                        )}
+                                        <TableCell align="right">{row.studentInfo.onMealPlan ? "Yes" : "No"}</TableCell>
                                     </TableRow>
+                                </TableBody>
+                            </Table>
+                            <Typography variant="h6" align="center">
+                                Pickup weight and times
+                            </Typography>
+                            <Table size="small" sx={{marginBottom: 2}}>
+                                <TableHead>
                                     <TableRow>
-                                        <TableCell align="center">Submit Time</TableCell>
-                                        <TableCell align="center">{row.pickupTime?("Pickup Time"):("Cancel Time")}</TableCell>
+                                        <TableCell align="left">Submit Time</TableCell>
+                                        <TableCell align="center">{row.pickupTime ? "Pickup Time" : "Cancel Time"}</TableCell>
                                         <TableCell align="center">Weight</TableCell>
-                                        <TableCell align="center">Note</TableCell>
+                                        <TableCell align="center">Notes</TableCell>
                                     </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell align="left">{row.submittedAt?.toLocaleString()}</TableCell>
+                                        <TableCell align="center">{row.pickupTime ? row.pickupTime?.toLocaleString() : 
+                                            row.canceledTime?.toLocaleString()}
+                                        </TableCell>
+                                        <TableCell align="center">{row.weight?.toFixed(2) + ' lbs'}</TableCell>
+                                        <TableCell align="center">{row.otherNotes}</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                            <Typography variant="h6" align="center">
+                                Items requested
+                            </Typography>
+                            <Table size="small" sx={{marginBottom: 2}}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell align="left">Item Category</TableCell>
+                                        <TableCell align="center">Item Name</TableCell>
+                                        <TableCell align="right">Quantity</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
                                     {row.itemRequests.map((item, index: number) => (
                                         <TableRow key={index}>
-                                            <TableCell>{item.item.category?.name}</TableCell>
-                                            <TableCell>{item.item.name}</TableCell>
-                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell align="left">{item.item.category?.name}</TableCell>
+                                            <TableCell align="center">{item.item.name}</TableCell>
+                                            <TableCell align="right">{item.quantity}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -156,21 +235,22 @@ function Row(props: { row: Pickup}) {
                     </Collapse>
                 </TableCell>
             </TableRow>
-        </React.Fragment>
-    )
+        </>
+    );
 }
 
 const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : ReactElement => {
     const [pickups, setPickups] = React.useState<Pickup[]>([]);
+
     const getPickups = async () => {
-        //let res = await baseRequest.get<Pickup[]>('/history');
+        //let res = await axios.get<Pickup[]>('/history');
         //setPickups(res.data);
         setPickups(HistoryTest);
     };
 
     React.useEffect(() => {
         getPickups();
-    },[]);
+    }, []);
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -225,7 +305,9 @@ const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : React
                     />
                 </div>
             </DialogContent>
-            
+            <DialogActions sx={{ margin: 1 }}>
+                <Button variant="outlined" onClick={props.onClose} color="secondary">Close</Button>
+            </DialogActions>
         </Dialog>
         </>
     )
