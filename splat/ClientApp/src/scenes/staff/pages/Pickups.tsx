@@ -51,7 +51,6 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     const handleDialogOpen = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation', currentRow: IPickupRow) => {
         setDialogOpen((prevState) => ({ ...prevState, [dialog]: true }));
         setSelectedPickup(currentRow);
-        console.log("Current row = ", currentRow);
     };
 
     const handleDialogClose = (dialog: 'viewDetails' | 'fulfill' | 'cancelConfirmation') => {
