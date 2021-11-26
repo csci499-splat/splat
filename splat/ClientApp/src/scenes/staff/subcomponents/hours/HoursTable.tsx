@@ -12,12 +12,12 @@ import {
     TableRow,
     TextField,
 } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { CurrentHours } from '../../../../models/BackendTypes';
-import { baseRequest } from '../../../../services/api/genericRequest';
 
 type HoursTableProps = {
     
@@ -170,7 +170,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            await baseRequest.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
+            await axios.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
             handleGetCurrentHours();
         },
     });
@@ -180,7 +180,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         formik.setValues({});
 
         try {
-            let res = await baseRequest.get<CurrentHours>('/Hours');
+            let res = await axios.get<CurrentHours>('/Hours');
             if(res.data !== "")
                 setInitialValues(res.data);
         } catch(error) {
@@ -231,7 +231,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
                     </TableCell>
                     <TableCell align="right">
                         <IconButton
-                        onClick={() => formik.setFieldValue(row.keyName, undefined)}
+                        onClick={() => { formik.setFieldValue(row.keyName, undefined); formik.setFieldTouched(row.keyName, true); }}
                         >
                             <Delete />
                         </IconButton>

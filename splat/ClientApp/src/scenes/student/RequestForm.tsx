@@ -1,6 +1,7 @@
 import { Add, Delete } from '@mui/icons-material';
 import {
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -30,12 +31,12 @@ import type { Pickup, }
 import PickupDateTimeSelector from './PickupDateTimeSelector';
 import { HourRange } from '../../models/CurrentHours';
 import moment from 'moment';
+import axios from 'axios';
 type RequestFormProps = {
     onClose: () => void,
 }
 
 const initialValues: Pickup = {
-    id: null,
     studentInfo: {
         studentId: '',
         age: undefined,
@@ -105,18 +106,15 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             numMinors: yup.number()
             .integer()
             .min(0, "Must be positive")
-            .max(10, "Maximum of 10")
-            .required("Required"),
+            .max(10, "Maximum of 10"),
             numAdults: yup.number()
             .integer()
             .min(0, "Must be positive")
-            .max(10, "Maximum of 10")
-            .required("Required"),
+            .max(10, "Maximum of 10"),
             numSeniors: yup.number()
             .integer()
             .min(0, "Must be positive")
-            .max(10, "Maximum of 10")
-            .required("Required"),
+            .max(10, "Maximum of 10"),
         }).optional().notRequired(),
         requestedPickupTime: yup.date()
         .test(
@@ -176,9 +174,17 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
+        enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
-            props.onClose();
+            values.submittedAt = new Date();
+            try {
+                await axios.post('/pickups', values);
+                props.onClose();
+            } catch(err) {
+
+            }
+            
         },
     });
 
@@ -223,7 +229,8 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         value={formik}
         >
         <Form
-        style={{maxHeight: '600px'}}>
+        style={{maxHeight: '600px'}}
+        >
             { /* TODO: Add StudentInfo fields here */}
             <Stack direction="row" spacing={2} sx={{marginTop: 1, marginBottom: 2}} alignItems="flex-start">
                 <TextField
@@ -266,21 +273,25 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             </Stack>
             <Divider />
             <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
+                <FormControlLabel
+                control={
+                    <Checkbox
+                    defaultChecked
+                    checked={formik.values.householdInfo === undefined}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>): void => {
+                        if(event.target.checked) {
+                            handleHouseholdRemove();
+                        } else {
+                            handleHouseholdAdd();
+                        }
+                    }}
+                    />
+                }
+                label="I am the only one in my household"
+                />
             {formik.values.householdInfo === undefined ? (
-                <Tooltip 
-                title="Add additional information if these items will be shared with people other than yourself" 
-                TransitionComponent={Zoom}
-                arrow
-                >
-                <Button
-                variant="outlined"
-                color="secondary"
-                startIcon={<Add />}
-                onClick={() => handleHouseholdAdd()}
-                >
-                    Add Household Information (optional)
-                </Button>
-                </Tooltip>
+                <>
+                </>
             ) : (
                 <>
                 <TextField
@@ -377,7 +388,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                 variant="outlined"
                                 name={`itemRequests[${index}].quantity`}
                                 value={formik.values.itemRequests[index].quantity}
-                                onChange={(event) => formik.setFieldValue(`itemRequests[${index}].quantity`, event.target.value)}
+                                onChange={(event) => formik.setFieldValue(`itemRequests[${index}].quantity`, Number(event.target.value))}
                                 // @ts-ignore
                                 error={(formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.quantity && Boolean((formik.errors.itemRequests[index])?.quantity)}
                                 // @ts-ignore
@@ -457,7 +468,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         </DialogContent>
         <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
-                <Button variant="contained" onClick={() => formik.submitForm()}>Submit</Button>
+                <Button variant="contained" onClick={() => {console.log("Submitting form"); formik.submitForm()}}>Submit</Button>
         </DialogActions>
         </Dialog>
         </>

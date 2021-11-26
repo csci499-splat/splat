@@ -15,7 +15,7 @@ import React, { FC, ReactElement, useState } from 'react';
 import * as yup from 'yup';
 
 type LoginProps = {
-    loginHandler: (email: string | null, password: string | null) => void,
+    loginHandler: (email: string, password: string) => void,
     onClose: () => void,
 }
 
@@ -35,8 +35,8 @@ const Login: FC<LoginProps> = (props: LoginProps): ReactElement => {
 
     const formik = useFormik({
         initialValues: {
-            email: null,
-            password: null
+            email: '',
+            password: '',
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -59,7 +59,7 @@ const Login: FC<LoginProps> = (props: LoginProps): ReactElement => {
                     onChange={formik.handleChange}
                     error={formik.touched.email && Boolean(formik.errors.email)}
                     helperText={formik.touched.email && formik.errors.email}
-                    sx={{display: 'block', margin: 0, minWidth: '100%', marginTop: 3, marginBottom: 3}}
+                    sx={{display: 'block', width: '200px', marginTop: 3, marginBottom: 3}}
                     />
                     <TextField 
                     id="password"
@@ -82,7 +82,7 @@ const Login: FC<LoginProps> = (props: LoginProps): ReactElement => {
                     onChange={formik.handleChange}
                     error={formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password}
-                    sx={{display: 'block', margin: 0, minWidth: '100%'}}
+                    sx={{display: 'block', margin: 0, width: '200px'}}
                     />
                 </form>
             </DialogContent>
