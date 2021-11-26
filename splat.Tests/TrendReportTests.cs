@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using splat.Models;
 using splat.Controllers;
-using System.Diagnostics.CodeAnalysis;
+using Moq;
 
 namespace splat.Tests
 {
@@ -13,12 +12,12 @@ namespace splat.Tests
         static DateTime startDate = new DateTime(2021, 01, 1, 0, 0, 0);
         static DateTime endDate = new DateTime(2021, 03, 1, 0, 0, 0);
         static DateRange timePeriod = new DateRange(startDate, endDate);
-        static IQueryable<Pickup> pickups = TestPickups.Pickups.AsQueryable();
-        TrendReport trendReport = TrendReportsController.GenerateTrendReport(pickups, timePeriod);
+        public Mock<IQueryable<Pickup>> mockPickups = new Mock<IQueryable<Pickup>>();
 
         [Fact]
-        public void GenerateTrendEntries_CheckIfTrendEntriesContainsCorrectNumberOfEntries()
+        public async void GenerateTrendEntries_CheckIfTrendEntriesContainsCorrectNumberOfEntries()
         {
+            mockPickups.Setup(p => p.)
             int expectedNumberOfEntries = 4;
             Assert.Equal(expectedNumberOfEntries, trendReport.Entries.Count());
         }

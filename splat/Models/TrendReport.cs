@@ -24,7 +24,7 @@ namespace splat.Models
     public class RequestHistogramBin
     {
         public int RequestedItemCount { get; set; }
-        // has to be sent as BinTIme
+        [JsonProperty("BinTime")]
         public Week Week { get; set; }
     }
 }

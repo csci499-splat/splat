@@ -40,6 +40,7 @@ namespace splat.Controllers
             return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
         }
         */
+
         public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
             TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
