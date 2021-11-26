@@ -25,7 +25,6 @@ namespace splat.Controllers
         }
 
         // GET: api/trendreports/?DateFrom=value&DateTo=value
-        /*
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange timePeriod)
@@ -37,12 +36,6 @@ namespace splat.Controllers
 
         public static async Task<TrendReport> GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
-            return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
-        }
-        */
-
-        public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
-        {
             TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
 
             foreach (TrendEntry entry in report.Entries)
@@ -50,6 +43,7 @@ namespace splat.Controllers
 
             return report;
         }
+     
 
         // Methods for getting and parsing pickups from the DB
         static async Task<IQueryable<Pickup>> GetPickupsFromContext(SplatContext context)
