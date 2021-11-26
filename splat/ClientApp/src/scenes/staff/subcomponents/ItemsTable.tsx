@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Stack } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -11,6 +11,7 @@ import {
 } from '@mui/x-data-grid';
 import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
+import FileUploader from '../../../components/common/FileUploader';
 
 import { Item } from '../../../models/Item';
 import ItemsAddDialog from './ItemsAddDialog';
@@ -154,12 +155,25 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         
     return (
         <>
-        <Button
-        variant="contained"
-        onClick={handleShowAddItems}
-        >
-            Create Item
-        </Button>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button
+            variant="contained"
+            onClick={handleShowAddItems}
+            >
+                Create Item
+            </Button>
+            <FileUploader
+            fileUploadEndpoint="/items/upload"
+            fileMimeType=".csv"
+            promptText="Select a CSV file for items"
+            sx={{ marginTop: '10px' }}
+            />
+        </Stack>
         <div style={{ height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
