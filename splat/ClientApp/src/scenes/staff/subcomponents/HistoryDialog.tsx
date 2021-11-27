@@ -18,7 +18,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import TableFooter from '@mui/material/TableFooter';
-
+import axios, { AxiosResponse } from 'axios';
 
 const HistoryTest: Pickup[] = [
     {
@@ -774,15 +774,25 @@ interface TablePaginationActionsProps {
 const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : ReactElement => {
     const [pickups, setPickups] = React.useState<Pickup[]>([]);
 
-    const getPickups = async () => {
-        //let res = await axios.get<Pickup[]>('/history');
-        //setPickups(res.data);
-        setPickups(HistoryTest);
+
+    
+    const getPickups = async (start: Date, end: Date) => {
+        let res = await axios.get<Pickup[]>('/pickups/history', {
+            params: {
+              startDate:start.toISOString(),
+              endDate:end.toISOString(),
+            }
+          });
+          setPickups(res.data);
     };
 
     React.useEffect(() => {
-        getPickups();
-    }, []);
+        if(Boolean(props.startDateValue) && Boolean(props.endDateValue))
+        {
+            // @ts-ignore
+            getPickups(props.startDateValue, props.endDateValue);
+        }
+    }, [props.startDateValue, props.endDateValue]);
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
