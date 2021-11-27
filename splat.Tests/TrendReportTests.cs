@@ -13,20 +13,5 @@ namespace splat.Tests
         static DateTime endDate = new DateTime(2021, 03, 1, 0, 0, 0);
         static DateRange timePeriod = new DateRange(startDate, endDate);
         public Mock<IQueryable<Pickup>> mockPickups = new Mock<IQueryable<Pickup>>();
-
-        [Fact]
-        public async void GenerateTrendEntries_CheckIfTrendEntriesContainsCorrectNumberOfEntries()
-        {
-            mockPickups.Setup(p => p.)
-            int expectedNumberOfEntries = 4;
-            Assert.Equal(expectedNumberOfEntries, trendReport.Entries.Count());
-        }
-
-        [Fact]
-        public void GenerateTrendEntries_CheckSpecificTrendItemEntryForCorrectAverage()
-        {
-            double expectedWeeklyAverageForBeans = 68.0/9;
-            Assert.Equal(expectedWeeklyAverageForBeans, trendReport.Entries[0].ItemEntries[0].Average);
-        }
     }
 }
