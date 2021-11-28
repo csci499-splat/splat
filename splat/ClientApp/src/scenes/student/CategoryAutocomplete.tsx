@@ -14,12 +14,16 @@ type CategoryAutocompleteProps = {
         error: boolean,
         helperText: string,
     };
+    options?: readonly Category[];
 };
 
 const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAutocompleteProps): ReactElement => {
     const [open, setOpen] = useState(false);
+    const [syncOpen, setSyncOpen] = useState(false);
     const [options, setOptions] = useState<readonly Category[]>([]);
     const loading = open && options.length === 0;
+
+    console.log(props.options);
 
     const filterOptions = (options: Category[], { inputValue }) => matchSorter(options, inputValue, 
         {keys: ['name', 'description']});
@@ -54,6 +58,7 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
 
     return (
         <>
+        {!Boolean(props.options) ? (
         <Autocomplete
         open={open}
         onOpen={() => setOpen(true)}
@@ -98,6 +103,52 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
         value={props.value}
         onChange={(event, value) => props.onValueChange(value)}
         />
+        ) : (
+            <Autocomplete
+            open={syncOpen}
+            onOpen={() => setSyncOpen(true)}
+            onClose={() => setSyncOpen(false)}
+            sx={{width: '100%'}}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            renderOption={(props, option) => {
+                return (
+                    <li {...props}>
+                        <Grid container alignItems="center" spacing={1}>
+                            <Grid item>
+                                {CategoryIcons[option.icon]}
+                            </Grid>
+                            <Grid item xs>
+                                {option.name}
+                            </Grid>
+                        </Grid>
+                    </li>
+                );
+            }}
+            getOptionLabel={(option) => option.name}
+            // @ts-ignore
+            options={props.options}
+            renderInput={(params) => (
+                <TextField
+                {...params}
+                label="Category"
+                InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                        <>
+                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                        </>
+                    )
+                }}
+                error={props.InputProps?.error}
+                helperText={props.InputProps?.helperText}
+                />
+            )}
+            filterOptions={filterOptions}
+            value={props.value}
+            onChange={(event, value) => props.onValueChange(value)}
+            />
+        )}
         </>
     )
 };
