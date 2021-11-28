@@ -4,7 +4,13 @@ type User = {
     name?: string | null;
     email: string;
     authHeader?: IAuthHeader;
-    roles?: string[];
+    role: string;
 };
+
+export const UserRoles = [
+    'Administrator',
+    'Staff',
+    'Student',
+];
 
 export default User;

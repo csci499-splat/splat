@@ -34,11 +34,14 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
         if(!loading) return undefined;
 
         (async () => {
+            try {
+                let res = await baseRequest.get<Category[]>('/categories');
 
-            let res = await baseRequest.get<Category[]>('/categories');
-
-            if (active) {
-                setOptions(res.data);
+                if (active) {
+                    setOptions(res.data);
+                }
+            } catch(err) {
+                
             }
         })();
 

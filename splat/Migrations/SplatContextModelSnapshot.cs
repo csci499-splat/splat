@@ -296,6 +296,23 @@ namespace splat.Migrations
                     b.ToTable("DayClosed");
                 });
 
+            modelBuilder.Entity("splat.Models.Discard", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DiscardedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discards");
+                });
+
             modelBuilder.Entity("splat.Models.Donation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -383,6 +400,9 @@ namespace splat.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("ApplicationUserEmail")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("CanceledTime")
                         .HasColumnType("timestamptz");

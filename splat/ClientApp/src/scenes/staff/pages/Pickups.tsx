@@ -7,13 +7,14 @@ import {
     GridRowData,
     GridSortModel,
     GridToolbar,
+    GridValueFormatterParams,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Pickup } from '../../../models/BackendTypes';
 import { PickupStatus } from '../../../models/Pickup';
-import { baseRequest } from '../../../services/api/genericRequest';
+import axios from 'axios';
 import { IStaffChild } from '../Staff';
 import PickupCancelConfirmDialog from '../subcomponents/PickupCancelConfirmDialog';
 import PickupFulfillDialog from '../subcomponents/PickupFulfillDialog';
@@ -59,14 +60,14 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
     };
 
     const getPickups = async () => {
-        let res = await baseRequest.get<Pickup[]>('/pickups');
+        let res = await axios.get<Pickup[]>('/pickups/active');
         setPickups(res.data);
         setCurrentWidth(1 - currentWidth);
     }
 
     React.useEffect(() => {
         getPickups();
-    });
+    }, []);
 
     const getStatusString = (status: PickupStatus): string => {
         switch(status) {
@@ -107,6 +108,9 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 flex: .9,
                 headerName: 'Requested Pickup Time',
                 type: 'dateTime',
+                valueFormatter: (params: GridValueFormatterParams) => {
+                    return new Date(params.value as string).toLocaleString();
+                },
                 headerAlign: 'center',
                 align: 'center',
             },
@@ -152,7 +156,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
                 renderCell: (params: GridRenderCellParams) => {
                     return (
                     <Tooltip
-                    title={params.row.pickupStatus === "PENDING" ? 
+                    title={(params.row.pickupStatus === PickupStatus.PENDING) ? 
                         'Fulfill request' : 'Picked up by student'}
                     >
                     <IconButton
@@ -190,7 +194,7 @@ const Pickups: FC<PickupProps> = (props: PickupProps): ReactElement => {
 
     return (
         <>
-        <div style={{ height: 800, width: `100% - ${currentWidth}px`}}>
+        <div style={{ height: 'calc(100vh - 210px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={pickups}

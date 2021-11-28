@@ -21,7 +21,7 @@ namespace splat.Models
         public string Description { get; set; }
         [Required]
 
-        public bool? Visible { get; set; }
+        public bool Visible { get; set; }
 
         [DataType(DataType.Date)]
         [Column(TypeName = "timestamptz")]

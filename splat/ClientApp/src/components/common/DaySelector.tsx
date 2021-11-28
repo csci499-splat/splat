@@ -1,10 +1,10 @@
 import { CalendarPickerSkeleton, DatePicker, PickersDay } from '@mui/lab';
 import { TextField } from '@mui/material';
+import axios from 'axios';
 import moment from 'moment';
 import React, { FC, ReactElement } from 'react';
 
 import { ClosedDay } from '../../models/ClosedDay';
-import { baseRequest } from '../../services/api/genericRequest';
 
 type DaySelectorProps = {
     value: Date | null;
@@ -19,15 +19,10 @@ const DaySelector: FC<DaySelectorProps> = (props: DaySelectorProps): ReactElemen
     const [disabledDays, setDisabledDays] = React.useState<Date[]>([]);
 
     const fetchDisabledDays = async () => {
-        let res = await baseRequest.get<ClosedDay[]>('/hours/days');
+        setIsLoading(true);
+        let res = await axios.get<ClosedDay[]>('/hours/days');
         setDisabledDays(res.data.map((item) => new Date(item.closedOn)));
         setIsLoading(false);
-    };
-
-    const handleMonthChange = (date: Date) => {
-        setIsLoading(true);
-        setDisabledDays([]);
-        fetchDisabledDays();
     };
 
     React.useEffect(() => {
@@ -40,7 +35,6 @@ const DaySelector: FC<DaySelectorProps> = (props: DaySelectorProps): ReactElemen
         value={props.value}
         onChange={props.onChange}
         loading={isLoading}
-        onMonthChange={handleMonthChange}
         renderInput={(params) => 
             <TextField 
             {...params}

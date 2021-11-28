@@ -1,5 +1,5 @@
 import { Delete } from '@mui/icons-material';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Stack } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -7,10 +7,10 @@ import {
     GridToolbar,
     GridValueFormatterParams,
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { Donation } from '../../../models/Donation';
-import { baseRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import DonationAddForm from '../subcomponents/DonationAddForm';
 
@@ -35,7 +35,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const handleDonationDelete = async (id: string) => {
         try {
-            await baseRequest.delete(`/donations/${id}`);
+            await axios.delete(`/donations/${id}`);
             getDonations();
         } catch (error) {
             
@@ -44,7 +44,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     const getDonations = async () => {
         try {
-            let res = await baseRequest.get<Donation[]>('/donations');
+            let res = await axios.get<Donation[]>('/donations');
             setRows(res.data);
             setCurrentWidth(1 - currentWidth);
         } catch (error) {
@@ -54,7 +54,7 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     React.useEffect(() => {
         getDonations();
-    });
+    }, []);
     
     const columns: GridColDef[] = React.useMemo(
         () => [
@@ -123,8 +123,20 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     return (
         <>
-        <Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Donation</Button>
-        <div style={{height: 800, width: `100% - ${currentWidth}px`}}>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button 
+            variant="contained" 
+            onClick={handleAddDialogOpen} 
+            color="primary">
+                Add Donation
+            </Button>
+        </Stack>
+        <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={rows}

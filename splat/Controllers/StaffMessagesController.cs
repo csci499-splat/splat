@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "ElevatedRights")]
     public class StaffMessagesController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -23,6 +25,7 @@ namespace splat.Controllers
         // GET: api/StaffMessages
         // Retrieve the latest staff message
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<StaffMessage>> GetStaffMessages()
         {
             return await _context.StaffMessages.OrderBy(c => c.CreatedAt).LastOrDefaultAsync();

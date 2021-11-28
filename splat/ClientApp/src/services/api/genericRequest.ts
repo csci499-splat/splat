@@ -10,7 +10,6 @@ const baseRequest = axios.create({
 const authRequest = axios.create({
     baseURL: '/api',
     headers: {
-        'Authorization': '',
         'Content-type': 'application/json',
     },
 });
