@@ -7,6 +7,7 @@ namespace splat.Models
     [Keyless]
     public class DateRange
     {
+        public DateRange() { }
         public DateRange(DateTime dateFrom, DateTime dateTo)
         {
             DateFrom = dateFrom;

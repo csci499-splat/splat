@@ -85,6 +85,17 @@ namespace splat.Controllers
                 .ToListAsync();
         }
 
+        // GET: api/Pickups/history?dateFrom=<date>&dateTo=<date>
+        [HttpGet("history")]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<IEnumerable<Pickup>>> GetHistoryPickups([FromQuery] DateRange dates)
+        {
+            return await _context.Pickups
+                .Where(p => p.PickupStatus == PickupStatus.DISBURSED || p.PickupStatus == PickupStatus.CANCELED)
+                .Where(p => p.SubmittedAt >= dates.DateFrom && p.SubmittedAt <= dates.DateTo)
+                .ToListAsync();
+        }
+
         // POST: api/Pickups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]

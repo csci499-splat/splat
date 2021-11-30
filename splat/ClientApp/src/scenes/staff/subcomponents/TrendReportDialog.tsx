@@ -9,6 +9,7 @@ import { Category } from '../../../models/BackendTypes';
 import CategoryAutocomplete from '../../student/CategoryAutocomplete';
 import { Refresh } from '@mui/icons-material';
 import {ReportDialogProps} from '../pages/Reports';
+import axios from 'axios';
 
 interface TrendReportDialogProps extends ReportDialogProps {
 
@@ -204,11 +205,27 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
     }
 
     const getTrendReport = async () => {
-        // let res = await axios.get<TrendReport>('/trendReport');
-        // setChartData(tranformData(res.data));
-        setCategories(extractCategories(TrendReportTest));
-        setTrendReport(TrendReportTest);
+        try {
+            let res = await axios.get<TrendReport>('/trendReports', {
+                params: {
+                    // @ts-ignore
+                    dateFrom: props.startDateValue.toISOString(),
+                    // @ts-ignore
+                    dateTo: props.endDateValue.toISOString(),
+                }
+            });
+
+            setCategories(extractCategories(res.data));
+            setTrendReport(res.data);
+        } catch(err) {
+
+        }
     };
+
+    useEffect(() => {
+        if(props.open)
+            getTrendReport();
+    }, [props.open]);
 
     type LineOfBestFit = {
         m: number;
