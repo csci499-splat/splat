@@ -6,8 +6,13 @@ import {
     GridRenderCellParams,
     GridRowData,
     GridToolbar,
+    GridToolbarContainer,
+    GridToolbarDensitySelector,
+    GridToolbarExport,
+    GridToolbarFilterButton,
     GridValueFormatterParams,
     GridValueGetterParams,
+    gridClasses,
 } from '@mui/x-data-grid';
 import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
@@ -20,6 +25,17 @@ import ItemsEditDialog from './ItemsEditDialog';
 
 type ItemsTableProps = {
     
+}
+
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer className={gridClasses.toolbarContainer}>
+            <GridToolbarExport csvOptions={{ 
+                fileName: `splat-items-${new Date().getTime()}` }} />
+            <GridToolbarDensitySelector />
+            <GridToolbarFilterButton />
+        </GridToolbarContainer>
+    );
 }
 
 const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement => {
@@ -76,6 +92,13 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
                 headerAlign: 'left',
             },
             {
+                field: 'categoryId',
+                flex: 0.5,
+                headerName: 'Category ID',
+                align: 'left',
+                headerAlign: 'left',
+            },
+            {
                 field: 'name',
                 flex: 0.5,
                 headerName: 'Name',
@@ -91,6 +114,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
                 valueGetter: (params: GridValueGetterParams) => {
                     return `${params.row.category.name}`;
                 },
+                disableExport: true,
             },
             {
                 field: 'description',
@@ -169,9 +193,11 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
             </Button>
             <FileUploader
             fileUploadEndpoint="/items/upload"
-            fileMimeType=".csv"
+            fileMimeType="text/csv"
+            acceptType=".csv"
             promptText="Select a CSV file for items"
             sx={{ marginTop: '10px' }}
+            onFileUploaded={() => getItems()}
             />
         </Stack>
         <div style={{ height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
@@ -179,7 +205,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
             columns={columns}
             rows={items}
             components={{
-                Toolbar: GridToolbar,
+                Toolbar: CustomToolbar,
             }}
             />
         </div>

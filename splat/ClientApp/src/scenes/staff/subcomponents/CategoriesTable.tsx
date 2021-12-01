@@ -7,6 +7,11 @@ import {
     GridRowData,
     GridToolbar,
     GridValueFormatterParams,
+    gridClasses,
+    GridToolbarContainer,
+    GridToolbarExport,
+    GridToolbarDensitySelector,
+    GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { useTheme } from '@mui/styles';
 import axios from 'axios';
@@ -20,6 +25,18 @@ import FileUploader from '../../../components/common/FileUploader';
 
 type CategoriesTableProps = {
     
+}
+
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer className={gridClasses.toolbarContainer}>
+            <GridToolbarExport csvOptions={{ 
+                fields: ['id', 'name', 'limit', 'description', 'visible', 'createdAt', 'icon'],
+                fileName: `splat-categories-${new Date().getTime()}` }} />
+            <GridToolbarDensitySelector />
+            <GridToolbarFilterButton />
+        </GridToolbarContainer>
+    );
 }
 
 const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) : ReactElement => {
@@ -189,9 +206,11 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
             </Button>
             <FileUploader
             fileUploadEndpoint="/categories/upload"
-            fileMimeType=".csv"
+            fileMimeType="text/csv"
+            acceptType=".csv"
             promptText="Select a CSV file for categories"
             sx={{ marginTop: '10px' }}
+            onFileUploaded={() => getCategories()}
             />
         </Stack>
         
@@ -200,7 +219,7 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
             columns={columns}
             rows={categories}
             components={{
-                Toolbar: GridToolbar,
+                Toolbar: CustomToolbar,
             }}
             />
         </div>
