@@ -67,7 +67,7 @@ const ItemAutocomplete: FC<ItemAutocompleteProps> = (props: ItemAutocompleteProp
         onClose={() => setOpen(false)}
         sx={{width: '100%'}}
         isOptionEqualToValue={(option, value) => option.id === value.id}
-        getOptionLabel={(option) => option.name}
+        getOptionLabel={(option) => `${option.name} - ${option.description}`}
         options={options}
         loading={loading}
         renderInput={(params) => (
