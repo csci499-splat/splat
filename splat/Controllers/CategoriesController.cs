@@ -88,8 +88,15 @@ namespace splat.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+            } 
+            catch
+            {
+                return BadRequest(new { message = "Unable to add category (maybe the name already exists?)" });
+            }
 
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
         }

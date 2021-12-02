@@ -176,11 +176,13 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
                 headerAlign: 'center',
                 renderCell: (params: GridRenderCellParams) => {
                     return (
+                        <Tooltip title="WARNING! Removing a category will also delete ALL associated items!">
                         <IconButton
-                        onClick={() => handleDeleteCategory(params.row)}                       
+                        onClick={() => handleDeleteCategory(params.row)}              
                         >
                             <Delete />
                         </IconButton>
+                        </Tooltip>
                     )
                 },
                 disableExport: true,
