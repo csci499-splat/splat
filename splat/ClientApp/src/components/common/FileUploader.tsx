@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 type FileUploaderProps = {
     fileUploadEndpoint: string;
     fileMimeType: string;
+    acceptType: string;
     promptText?: string;
     sx?: SxProps<Theme>;
     onFileAdded?: (file: File) => void;
@@ -82,9 +83,12 @@ const FileUploader: FC<FileUploaderProps> = (props: FileUploaderProps): ReactEle
         setCurrentlyUploading(true);
 
         try {
-            await axios.post(props.fileUploadEndpoint, currentFile, {
+            let formData = new FormData();
+            formData.append("files", currentFile, currentFile.name);
+
+            await axios.post(props.fileUploadEndpoint, formData, {
                 headers: {
-                    'Content-Type': currentFile.type,
+                    'Content-Type': 'multipart/form-data',
                 },
                 cancelToken: source.token,
                 onUploadProgress: handleUploadProgressChange,
@@ -102,6 +106,8 @@ const FileUploader: FC<FileUploaderProps> = (props: FileUploaderProps): ReactEle
                 draggable: false,
                 progress: 0,
             });
+
+            if(props.onFileUploaded) props.onFileUploaded();
             
         } catch(err) {
     
@@ -131,7 +137,7 @@ const FileUploader: FC<FileUploaderProps> = (props: FileUploaderProps): ReactEle
             { !Boolean(currentFile) && !currentlyUploading && (
                 <label htmlFor="uploadFile" style={{ marginBottom: 0 }}>
                     <input 
-                    accept={props.fileMimeType} 
+                    accept={props.acceptType} 
                     style={{ display: 'none' }} 
                     id="uploadFile" 
                     type="file"
