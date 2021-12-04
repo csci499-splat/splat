@@ -10,20 +10,30 @@ namespace splat.Services.Emails
 {
     public class RequestReceivedEmail : EmailBase
     {
-        private readonly EmailExchangeOptions _emailExchangeOptions;
-
         public RequestReceivedEmail(Pickup pickup, EmailExchangeOptions options) :
             base(pickup, options)
-        {
-            _emailExchangeOptions = options;
-        }
+        { }
 
-        public override string CreateMessageBody()
+        public override string GetMessageBody()
         {
-            var body = new StringBuilder("<html><body>");
-            body.AppendFormat("<h1>We have received your request</h1>");
+            var body = new StringBuilder();
+            body.Append("<h3>We have received your request for the following items:</h3>");
+            body.Append("<table role=\"presentation\" width=\"100%\" border=\"1\" cellspacing=\"0\" " +
+                        "cellpadding=\"5\" style=\"border:1px solid black; border-collapse:collapse\">");
+            body.Append("<tr style=\"background-color:white\">");
+            body.Append("<th>Category</th><th>Item</th><th>Description</th><th>Quantity</th>");
+            body.Append("</tr>");
 
-            return HttpUtility.HtmlEncode(body);
+            foreach(var entry in _pickup.ItemRequests)
+            {
+                body.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>", 
+                                  entry.Item.Category.Name, entry.Item.Name, entry.Item.Description,
+                                  entry.Quantity);
+            }
+
+            body.Append("</table>");
+
+            return HttpUtility.HtmlEncode(body.ToString());
         }
     }
 }

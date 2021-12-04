@@ -9,16 +9,25 @@ using System.Threading.Tasks;
 
 namespace splat.Services.Emails
 {
+    public enum EmailTypes
+    {
+        RequestSent,
+        PickupReady,
+        PickupDisbursed
+    }
+
     public abstract class EmailBase
     {
         private readonly EmailExchangeOptions _emailExchangeOptions;
         private SmtpClient _client;
 
         protected MailMessage message;
+        protected Pickup _pickup;
 
         public EmailBase(Pickup pickup, EmailExchangeOptions options)
         {
             _emailExchangeOptions = options;
+            _pickup = pickup;
 
             message = new MailMessage(options.Sender, pickup.ApplicationUserEmail);
             message.IsBodyHtml = true;
@@ -34,18 +43,21 @@ namespace splat.Services.Emails
         /// Provides an HTML message body based on the pickup and email type
         /// </summary>
         /// <returns>HTML message body</returns>
-        public abstract string CreateMessageBody();
+        public abstract string GetMessageBody();
 
         /// <summary>
         /// Populate the message with the relevant subject and HTML body then send the email
         /// </summary>
         /// <returns></returns>
-        public void SendMail(string subject, string body)
+        public async Task SendMailAsync(string subject, string body)
         {
-            message.Subject = subject;
-            message.Body = body;
+            await Task.Run(() =>
+            {
+                message.Subject = subject;
+                message.Body = body;
 
-            _client.Send(message);
+                _client.Send(message);
+            });
         }
     }
 }
