@@ -164,6 +164,14 @@ namespace splat.Controllers
 
                     await email.SendMailAsync("UWS Food Pantry - Thanks!", email.GetMessageBody());
                 }
+                else if (pickup.PickupStatus == PickupStatus.CANCELED)
+                {
+                    PickupCancellationEmail email = (PickupCancellationEmail)EmailFactory.Create(
+                        EmailTypes.PickupCancelled, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email.SendMailAsync("UWS Food Pantry - Pickup Cancelled", email.GetMessageBody());
+                }
             }
 
             return Ok(pickup);
