@@ -11,9 +11,7 @@ export async function login(username: string, password: string, onSuccess: () =>
     let res = await baseRequest.post<LoginResponse>('user/login', { userName: username, password: password });
     let user = res.data.user;
     user.authHeader = { token: 'Bearer ' + res.data.token };
-    console.log(user);
     localStorage.setItem('userInfo', JSON.stringify(user));
-    console.log(getCurrentUserInfo());
     onSuccess();
 }
 

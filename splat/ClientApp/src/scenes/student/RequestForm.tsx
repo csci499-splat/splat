@@ -176,7 +176,6 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
             values.submittedAt = new Date();
             try {
                 await axios.post('/pickups', values);
@@ -468,7 +467,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
         </DialogContent>
         <DialogActions sx={{margin: 1}}>
                 <Button variant="outlined" onClick={props.onClose} color="secondary">Cancel</Button>
-                <Button variant="contained" onClick={() => {console.log("Submitting form"); formik.submitForm()}}>Submit</Button>
+                <Button variant="contained" onClick={() => {formik.submitForm()}}>Submit</Button>
         </DialogActions>
         </Dialog>
         </>

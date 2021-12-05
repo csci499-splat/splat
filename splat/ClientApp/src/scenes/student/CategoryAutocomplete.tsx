@@ -23,8 +23,6 @@ const CategoryAutocomplete: FC<CategoryAutocompleteProps> = (props: CategoryAuto
     const [options, setOptions] = useState<readonly Category[]>([]);
     const loading = open && options.length === 0;
 
-    console.log(props.options);
-
     const filterOptions = (options: Category[], { inputValue }) => matchSorter(options, inputValue, 
         {keys: ['name', 'description']});
 
