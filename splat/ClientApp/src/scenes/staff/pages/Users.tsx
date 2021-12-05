@@ -8,9 +8,9 @@ import {
     GridToolbar,
     GridValueGetterParams
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 import User from '../../../models/User';
-import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import UserAddForm from '../subcomponents/UserAddForm';
 
@@ -26,6 +26,7 @@ type UserRolePickerProps = {
 const roles = [
     'Administrator',
     'Staff',
+    'Student',
 ]
 
 const UserRolePicker: FC<UserRolePickerProps> = (props: UserRolePickerProps): ReactElement => {
@@ -96,7 +97,7 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
 
     const handleUserChangeRole = async (id: string, newRole: string) => {
         try {
-            await authRequest.patch(`/users/${id}`, { roles: [newRole] });
+            await axios.post(`/user/role`, { username: id, newRole: newRole });
             getUsers();
         } catch(error) {
 
@@ -105,22 +106,14 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
 
     const getUsers = async () => {
         try {
-            // let res = await authRequest.get<User[]>('/users');
-            let res: User[] & GridRowData[] = 
-            [
-                {
-                    email: 'tester@test.com',
-                    role: 'Administrator',
-                    id: 'tester@test.com',
-                },
-                {
-                    email: 'staffTest1@gmail.com',
-                    role: 'Staff',
-                    id: 'staffTest1@gmail.com',
-                }
-            ]
-            // setRows(res.data);
-            setRows(res);
+            let res = await axios.get<User[]>('/user');
+
+            let dataRows = res.data.map((row) => {
+                row['id'] = row.email;
+                return row;
+            });
+            
+            setRows(dataRows);
             setCurrentWidth(1 - currentWidth);
         } catch (error) {
             
@@ -148,11 +141,11 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
                 align: 'center',
                 renderCell: (params: GridRenderCellParams) => (
                     <UserRolePicker
-                    initialRole={params.row.roles[0]}
+                    initialRole={params.row.role}
                     changeRole={(newRole) => handleUserChangeRole(params.row.email, newRole)}
                     />
                 ),
-                valueGetter: (params: GridValueGetterParams) => params.row.roles[0],
+                valueGetter: (params: GridValueGetterParams) => params.row.roles,
             },
             {
                 field: 'remove',
@@ -174,7 +167,8 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
 
     return (
         <>
-        <Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Privileged User</Button>
+        {//<Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Privileged User</Button>
+        }
         <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}

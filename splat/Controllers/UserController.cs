@@ -14,12 +14,15 @@ using Microsoft.Extensions.Logging;
 using splat.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using splat.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "RequireAdministratorRole")]
+    [Authorize(Policy = "Default", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
         private readonly SplatContext _context;
@@ -35,6 +38,7 @@ namespace splat.Controllers
             RoleManager<ApplicationRole> roleManager,
             IConfiguration configuration)
         {
+
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,72 +50,162 @@ namespace splat.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent: true, lockoutOnFailure: true);
-            if(result.Succeeded)
+            var loginUser = new ApplicationUser
             {
-                var user = await _userManager.FindByNameAsync(login.UserName);
-                // return success and token
-                var claims = new[]
+                UserName = login.UserName
+            };
+            
+            var user = await _userManager.FindByNameAsync(loginUser.UserName);
+
+            if (user == null)
+            {
+                // attempt to register
+                var ldapCheckSucceeded = await _userManager.CheckPasswordAsync(loginUser, login.Password);
+                
+                if (!ldapCheckSucceeded)
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
+                    return Unauthorized(new { message = "Username or password is incorrect" });
+                }
 
-                var token = new JwtSecurityToken
-                    (
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddDays(60),
-                        notBefore: DateTime.UtcNow,
-                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
-                            SecurityAlgorithms.HmacSha256)
-                    );
+                var registerSucceeded = await Register(loginUser);
 
-                return Ok(new { 
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        roles = await _userManager.GetRolesAsync(user)
-                        });
-            } 
-            else if(result.IsLockedOut)
-            {
-                // return locked out message
-                return Unauthorized(new { message = "Locked out. Contact your administrator" });
-            } 
+                if (!registerSucceeded)
+                    return StatusCode(500);
+
+                user = await _userManager.FindByNameAsync(loginUser.UserName);
+            }
             else
             {
-                // return generic login failure
-                return BadRequest(new { message = "Username or password is incorrect" });
+                // attempt to sign in a user
+                var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, true, false);
+
+                if (!result.Succeeded)
+                {
+                    // return generic login failure
+                    return Unauthorized(new { message = "Username or password is incorrect" });
+                }
             }
+
+            IdentityOptions _options = new();
+
+            var roles = await _userManager.GetRolesAsync(user);
+            // return success and token
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, login.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(_options.ClaimsIdentity.UserNameClaimType, user.UserName),
+                new Claim("username", user.UserName),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, "Token");
+
+            claimsIdentity.AddClaims(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var token = new JwtSecurityToken
+            (
+                claims: claimsIdentity.Claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                notBefore: DateTime.UtcNow,
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"])),
+                    SecurityAlgorithms.HmacSha256)
+            );
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                user = new
+                {
+                    name = user.Name ?? user.Email,
+                    email = user.UserName,
+                    role = roles.Count == 0 ? "" : roles[0]
+                }
+            });
         }
 
         [HttpPost("logout")]
-        [AllowAnonymous]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
 
             return Ok(new { message = "Signed out successfully" });
         }
-        
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel newUser)
+
+        private async Task<string> GetLdapNameAsync(ApplicationUser user)
         {
-            ApplicationUser user = new ApplicationUser 
-            { 
-                UserName = newUser.UserName,
-                Email = newUser.Email 
-            };
-
-            var result = await _userManager.CreateAsync(user, newUser.Password);
-
-            result = await _userManager.AddToRoleAsync(user, newUser.Role);
-
-            if(result.Succeeded)
+            var name = await Task.Run(() =>
             {
-                return CreatedAtAction("RegisterUser", new { id = user.Id }, user);
+                using var auth = new LDAPAuthentication(_configuration.GetSection("LdapAuth").Get<LDAPAuthenticationOptions>());
+                return auth.GetName(user.UserName);
+            });
+
+            return name;
+        }
+
+        private async Task<bool> Register(ApplicationUser newUser)
+        {
+            if (newUser == null) return false;
+
+            newUser.Email = newUser.UserName;
+            newUser.Name = await GetLdapNameAsync(newUser);
+
+            var result = await _userManager.CreateAsync(newUser);
+            await _userManager.AddToRoleAsync(newUser, "Student");
+
+            var roles = await _userManager.GetRolesAsync(newUser);
+
+            return result.Succeeded;
+        }
+
+        
+        [HttpGet]
+        [Authorize(Policy = "RequireAdministratorRole", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<IEnumerable<ApplicationUserDTO>>> GetAllUsers()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            var usersDTO = new List<ApplicationUserDTO>();
+
+            foreach(var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                usersDTO.Add(new ApplicationUserDTO
+                {
+                    Name = user.Name,
+                    Email = user.Email,
+                    Role = roles[0]
+                });
             }
 
-            return UnprocessableEntity();
+            return usersDTO;
+        }
+
+        [HttpPost("role")]
+        [Authorize(Policy = "RequireAdministratorRole", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ChangeRole([FromBody] ApplicationUserChangeRoleDTO roleChange)
+        {
+            var user = await _userManager.FindByNameAsync(roleChange.UserName);
+
+            if(user == null)
+            {
+                return NotFound(new { message = "User does not exist" });
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            await _userManager.RemoveFromRoleAsync(user, currentRoles[0]);
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleChange.NewRole);
+
+            if(!roleExists)
+            {
+                return NotFound(new { message = "Role does not exist" });
+            }
+
+            await _userManager.AddToRoleAsync(user, roleChange.NewRole);
+
+            return Ok(new { message = "Role changed successfully" });
         }
     }
 }

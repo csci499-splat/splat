@@ -5,7 +5,6 @@ import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { UserRoles } from '../../../models/User';
-import { authRequest } from '../../../services/api/genericRequest';
 
 type UserAddFormProps = {
     open: boolean;
@@ -80,7 +79,7 @@ const UserAddForm: FC<UserAddFormProps> = (props: UserAddFormProps): ReactElemen
                         name="role"
                         onChange={formik.handleChange}
                         >
-                            <MenuItem value="None">
+                            <MenuItem value="None" disabled>
                                 <em>None</em>
                             </MenuItem>
                             <MenuItem value="Staff">Staff</MenuItem>

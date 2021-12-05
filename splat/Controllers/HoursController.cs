@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class HoursController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -25,6 +26,7 @@ namespace splat.Controllers
         // GET: api/Hours
         // gets the most recent set of hours
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<CurrentHours>> GetHours()
         {
             return await _context.CurrentHours.OrderBy(b => b.CreatedAt).LastOrDefaultAsync();
@@ -43,6 +45,7 @@ namespace splat.Controllers
 
         // GET: api/Hours/Days
         [HttpGet("Days")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DayClosed>>> GetDaysClosed()
         {
             return await _context.DayClosed.Where(b => b.ClosedOn >= DateTime.Today).OrderBy(p => p.ClosedOn).ToListAsync();

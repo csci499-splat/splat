@@ -1,96 +1,124 @@
 import React, { FC, ReactElement } from 'react';
-import { DatePicker, LocalizationProvider} from '@mui/lab';
 import { Button, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import { IStaffChild } from '../Staff';
-import {TotalReport} from '../../../models/TotalReport';
 import { useState } from 'react';
-import DateRangePicker, { DateRange } from '@mui/lab/DateRangePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import DesktopDateRangePicker from '@mui/lab/DesktopDateRangePicker';
-import MobileDateRangePicker from '@mui/lab/MobileDateRangePicker';
-import FormControl from '@mui/material/FormControl';
-import ItemsAddDialog from '../subcomponents/ItemsAddDialog';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import TotalReportDialog from '../subcomponents/TotalReportDialog';
-
+import TrendReportDialog from '../subcomponents/TrendReportDialog';
+import { Category } from '../../../models/BackendTypes';
+import HistoryDialog from '../subcomponents/HistoryDialog';
 
 interface ReportProps extends IStaffChild {
     
 }
 
+
+export interface ReportDialogProps {
+    open:boolean;
+    onClose: () => void;
+    startDateValue?: Date | null;
+    endDateValue?: Date | null;
+}
+
+type DialogType = 'totalReport' | 'trendReport' | 'historyReport' | '';
+
 const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     
-    const [dateValue, setDateValue] = React.useState<DateRange<Date>>([null, null]);
-    const [type, setType] = React.useState('');
-
-    const [dialogOpen, setDialogOpen] = useState({totalReport: false, trendReport: false});
+    const [startDateValue, setStartDateValue] = React.useState<Date | null>();
+    const [endDateValue, setEndDateValue] = React.useState<Date | null>();
+    const [reportType, setReportType] = React.useState<DialogType>('');
+    const [dialogOpen, setDialogOpen] = useState({totalReport: false, 
+        trendReport: false, historyReport: false});
     
 
-    const handleDialogOpen = (dialog: 'totalReport' | 'trendReport') => {
+    const handleDialogOpen = (dialog: DialogType) => {
         setDialogOpen((prevState) => ({ ... prevState, [dialog]: true}));
-        
-    };
-    const handleDialogClose = (dialog: 'totalReport' | 'trendReport') => {
-        setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}))
     };
 
+    const handleDialogClose = (dialog: DialogType) => {
+        setDialogOpen((prevState) => ({ ...prevState, [dialog]: false}));
+    };
 
     const handleTypeChange = (event: SelectChangeEvent) => {
-        setType(event.target.value as string);
+        setReportType(event.target.value as DialogType);
     };
-
     
-
-    
-
     return (
         <>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-        <h1>{props.pageName}</h1>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Stack spacing={3}>
-            <MobileDateRangePicker
-                startText="Please select date range"
-                value={dateValue}
-                onChange={(newDateValue) => {
-                    setDateValue(newDateValue);
-                }}
-                renderInput={(startProps, endProps) => (
-                    <React.Fragment>
-                        <TextField {...startProps} />
-                        <Box sx = {{ mx:2}}> to </Box>
-                        <TextField { ...endProps}/>
-                    </React.Fragment>
-                )}
-                />
-            </Stack>
-        </LocalizationProvider>
-
+        
+        <Box
+        sx={{
+            textAlign: 'center',
+            position: 'absolute',
+            left: '30%',
+          }}
+        >
+        <Stack direction="row" spacing={2}>
+        <MobileDatePicker
+            label="Select start date"
+            value={startDateValue}
+            maxDate={(endDateValue) ? endDateValue : new Date()}
+            onChange={(newStartDateValue) => {
+                setStartDateValue(newStartDateValue)
+            }}
+            renderInput={(params) => <TextField {...params} />}
+            />
+            <Box sx = {{alignItems: 'center',fontSize: 21}}> To </Box>
+            <MobileDatePicker
+            label="Select end date"
+            value={endDateValue}
+            minDate={startDateValue}
+            
+            maxDate={new Date()}
+            onChange={(newEndDateValue) => {
+                setEndDateValue(newEndDateValue)
+            }}
+            renderInput={(params) => <TextField {...params} 
+            disabled={!Boolean(startDateValue)}
+            />}
+        />
         <Select
         id="reportType"
-        value={type}
+        value={reportType}
         onChange={handleTypeChange}
-        label="Type"
+        label="Report Type"
+        sx={{ minWidth: 70 }}
+        disabled={!(Boolean(startDateValue) || Boolean(endDateValue))}
         >
-            <MenuItem value="">
-                <em>None</em>
-            </MenuItem>
-            <MenuItem value="totalReport" 
-            onClick={() => handleDialogOpen('totalReport')}
-
-            >Total Report
-            </MenuItem>
-            <MenuItem value="trendReport"
-            onClick={() => handleDialogOpen('trendReport')}          
-            >Trend Report</MenuItem>
+            <MenuItem value="" disabled><em>None</em></MenuItem>
+            <MenuItem value="totalReport">Total</MenuItem>
+            <MenuItem value="trendReport">Trend</MenuItem>
+            <MenuItem value="historyReport">History</MenuItem>
         </Select>
-        </FormControl>
         <TotalReportDialog
         open={dialogOpen.totalReport}
         onClose={() => handleDialogClose('totalReport')}
+        startDateValue={startDateValue}
+        endDateValue={endDateValue}
         />
-        
+        <TrendReportDialog
+        open={dialogOpen.trendReport}
+        onClose={() => handleDialogClose('trendReport')} 
+        startDateValue={startDateValue}
+        endDateValue={endDateValue}
+        />
+        <HistoryDialog
+        open={dialogOpen.historyReport}
+        onClose={() => handleDialogClose('historyReport')}
+        startDateValue={startDateValue}
+        endDateValue={endDateValue}
+        />
+        <Button
+        variant="contained"
+        disabled={!Boolean(startDateValue) || !Boolean(endDateValue) || !Boolean(reportType)}
+        onClick={()=> handleDialogOpen(reportType)}
+        >Open</Button>
+        </Stack>
+        </Box>
+
+
         </>
     )
 };

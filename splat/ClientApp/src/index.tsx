@@ -6,8 +6,8 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { baseRequest, authRequest } from './services/api/genericRequest';
-import { getAuthToken } from './services/util/login';
+import { baseRequest } from './services/api/genericRequest';
+import { getAuthToken, logout } from './services/util/login';
 import axios from 'axios';
 
 //const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
@@ -17,6 +17,11 @@ const rootElement = document.getElementById('root');
 
 const errorHandler = error => {
     let errorText = error.response.data?.message ? error.response.data?.message : error.response.statusText;
+
+    if(error.response.status === 401) {
+        errorText = "Try signing out and back in";
+    }
+
     toast.error(`Error ${error.request.status}: ${errorText}`, {
         position: 'top-center',
         autoClose: 6000,

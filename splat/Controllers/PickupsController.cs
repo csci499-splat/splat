@@ -11,43 +11,56 @@ using splat.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using splat.Services.Emails;
 
 namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
-    //[Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "Default", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PickupsController : ControllerBase
     {
         private readonly SplatContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public PickupsController(SplatContext context, UserManager<ApplicationUser> userManager)
+        public PickupsController(SplatContext context, 
+                                 UserManager<ApplicationUser> userManager,
+                                 IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         // GET: api/Pickups
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetUserPickups()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            if (user != null)
+            if(identity != null)
             {
-                var pickups = await _context.Pickups.Where(p => p.ApplicationUserEmail == user.Email).ToListAsync();
-                return pickups;
+                var username = identity.FindFirst("username").Value;
+
+                var user = await _userManager.FindByNameAsync(username);
+
+                if (user != null)
+                {
+                    var pickups = await _context.Pickups.Where(p => p.ApplicationUserEmail == user.Email).ToListAsync();
+                    return pickups;
+                }
             }
 
-            return NotFound(new { message = "Invalid user" });
+            return Unauthorized(new { message = "Invalid request. Try signing out and back in" });
         }
 
         // GET: api/Pickups/all
         [HttpGet("all")]
-        [AllowAnonymous]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetAllPickups()
         {
             return await _context.Pickups.ToListAsync();
@@ -55,7 +68,7 @@ namespace splat.Controllers
 
         // GET: api/Pickups/id
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Pickup>> GetPickups(Guid id)
         {
             var pickup = await _context.Pickups.FindAsync(id);
@@ -70,7 +83,7 @@ namespace splat.Controllers
 
         // GET: api/Pickups/active
         [HttpGet("active")]
-        [AllowAnonymous]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Pickup>>> GetActivePickups()
         {
             return await _context.Pickups
@@ -83,23 +96,39 @@ namespace splat.Controllers
         [HttpPost]
         public async Task<ActionResult<Pickup>> PostPickup(Pickup pickup)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            if (user != null)
+            if (identity != null)
             {
-                pickup.ApplicationUserEmail = user.Email;
-                _context.Pickups.Add(pickup);
-                await _context.SaveChangesAsync();
+                var username = identity.FindFirst("username").Value;
 
-                return CreatedAtAction("GetPickup", new { id = pickup.Id }, pickup);
+                var user = await _userManager.FindByNameAsync(username);
+
+                if (user != null)
+                {
+                    pickup.ApplicationUserEmail = user.Email;
+                    _context.Pickups.Add(pickup);
+                    await _context.SaveChangesAsync();
+
+                    if(_configuration.GetValue<bool>("EnableEmail"))
+                    {
+                        RequestReceivedEmail email = (RequestReceivedEmail)EmailFactory.Create(
+                            EmailTypes.RequestSent, pickup,
+                            _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                        await email.SendMailAsync("UWS Food Pantry - Your Request Has Been Received", email.GetMessageBody());
+                    }
+
+                    return CreatedAtAction("GetPickup", new { id = pickup.Id }, pickup);
+                }
             }
 
-            return NotFound(new { message = "Invalid user" });
-
+            return Unauthorized(new { message = "Invalid request" });
         }
 
         // PATCH: api/Pickups/{id}
         [HttpPatch("{id}")]
+        [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> UpdatePatch(Guid id, [FromBody] JsonPatchDocument<Pickup> patch)
         {
             var pickup = await _context.Pickups.FindAsync(id);
@@ -116,6 +145,26 @@ namespace splat.Controllers
                 return BadRequest(new { message = "Invalid update request" });
 
             await _context.SaveChangesAsync();
+
+            if (_configuration.GetValue<bool>("EnableEmail"))
+            {
+                if(pickup.PickupStatus == PickupStatus.WAITING)
+                {
+                    PickupReadyEmail email = (PickupReadyEmail)EmailFactory.Create(
+                        EmailTypes.PickupReady, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email.SendMailAsync("UWS Food Pantry - Your Request Is Ready", email.GetMessageBody());
+                }
+                else if(pickup.PickupStatus == PickupStatus.DISBURSED)
+                {
+                    PickupDisbursedEmail email = (PickupDisbursedEmail)EmailFactory.Create(
+                        EmailTypes.PickupDisbursed, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email.SendMailAsync("UWS Food Pantry - Thanks!", email.GetMessageBody());
+                }
+            }
 
             return Ok(pickup);
         }

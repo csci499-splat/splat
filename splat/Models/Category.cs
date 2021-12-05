@@ -23,12 +23,13 @@ namespace splat.Models
         [Required]
         public string Description { get; set; }
         [Required]
-        public bool? Visible { get; set; }
+        public bool Visible { get; set; }
         [DataType(DataType.DateTime)]
         [Column(TypeName = "timestamptz")]
         public DateTime CreatedAt { get; set; }
 
         [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         public List<Item> Items { get; set; }
     }
 }

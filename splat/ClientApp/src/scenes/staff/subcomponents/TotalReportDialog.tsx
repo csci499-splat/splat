@@ -1,64 +1,107 @@
-import { CancelOutlined, Done, Outbound, Visibility } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, FormControl, IconButton, Tooltip,Typography } from '@mui/material';
-import {
-    DataGrid,
-    GridColDef,
-    GridRenderCellParams,
-    GridRowData,
-    GridSortModel,
-    GridToolbar,
-    GridValueGetterParams,
-} from '@mui/x-data-grid';
+import { Dialog, DialogContent, DialogActions, DialogTitle, Paper, 
+    Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import React, { FC, ReactElement, useState } from 'react';
-
-import { Pickup } from '../../../models/BackendTypes';
-import { PickupStatus } from '../../../models/Pickup';
 import { baseRequest } from '../../../services/api/genericRequest';
-import { IStaffChild } from '../Staff';
 import {TotalReport} from '../../../models/TotalReport';
+import axios from 'axios';
+import {ReportDialogProps} from '../pages/Reports';
 
-type TotalReportDialogProps = {
-    open: boolean;
-    onClose: () => void;
+const TotalReportTest: TotalReport = {
+    foodWeight:200,
+    disbursements:20,
+    peopleImpacted:22,
+    recurringVisits:300,
+    individualVisits:30,
+}
+
+interface TotalReportDialogProps extends ReportDialogProps {
 
 }
 const TotalReportDialog: FC<TotalReportDialogProps> = (props:TotalReportDialogProps) : ReactElement => {
 
-    const [totalReport, setTotalReport] = useState<TotalReport[]>([]);
+    const [totalReport, setTotalReport] = useState<TotalReport>();
+    const [startDateValue, endDateValue] = useState<ReportDialogProps>();
     const getTotalReport = async () => {
-        let res = await baseRequest.get<TotalReport[]> ('/totalReport');
-        setTotalReport(res.data);
+        try {
+            let res = await axios.get<TotalReport> ('/totalReport');
+            setTotalReport(res.data);
+        } catch(err) {
+
+        }
     };
 
     React.useEffect(() => {
         getTotalReport();
-
     }, [])
-
+/*
+    if(!Boolean(startDateValue) || Boolean(endDateValue)){
+        return(
+            <Typography>Date not valid</Typography>
+        );
+    }
+    */
+        return(
+            <>
+            <Dialog
+            open={props.open}
+            onClose={props.onClose}
+            >
+                <DialogTitle>Total Report</DialogTitle>
+                <DialogContent>
+                <div>
+                    {(!Boolean(startDateValue) || !Boolean(endDateValue)) ?(
+                    <Typography>Date not valid</Typography>
+                    ):(
+                        <TableContainer component={Paper}>
+                        <Table sx = {{ maxWidth: 700, maxHeight: 600, alignItems: 'left'}} aria-label="total report">
+                            <TableHead >
+                                <TableRow >
+                                    <TableCell align="left">Total</TableCell>
+                                    <TableCell align="right">Count</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            
+                        </Table>
+                        <TableBody
+                        >
+                        <TableRow sx={{alignItems: 'right'}}>
+                                    <TableCell> Food Weight:</TableCell>
+                                    <TableCell> {totalReport?.foodWeight} </TableCell>                       
+                                </TableRow>
+                                
+                                <TableRow>
+                                    <TableCell> Food Disbursements: </TableCell>
+                                    <TableCell> {totalReport?.disbursements} </TableCell>
+                                    
+                                </TableRow>
     
-
-    return(
-        <>
-        <Dialog
-        open={props.open}
-        onClose={props.onClose}
-        >
-            <DialogTitle>TotalReport</DialogTitle>
-            <DialogContent>
-            <div>
-            <FormControl>
-                <Typography>FoodWeight: {totalReport[0]} </Typography>
-                <Typography>Disbursements: {totalReport[1]}</Typography>
-                <Typography>People Impacted: {totalReport[2]} </Typography>
-                <Typography>Recurring Visits: {totalReport[3]}</Typography>
-                <Typography>Individual Visits: {totalReport[4]}</Typography>
-            </FormControl>
-        </div>
-            </DialogContent>
-        </Dialog>
-        
-        </>
-    )
+                                <TableRow>
+                                <TableCell> People Impacted: </TableCell>
+                                <TableCell> {totalReport?.peopleImpacted} </TableCell>
+                                </TableRow>
+                                
+                                <TableRow>
+                                    <TableCell>Recurring Visits: </TableCell>
+                                    <TableCell> {totalReport?.recurringVisits} </TableCell>
+                                </TableRow>
+                                
+                                <TableRow>
+                                    <TableCell> Individual Visits: </TableCell>
+                                    <TableCell> {totalReport?.individualVisits} </TableCell>
+                                
+                                </TableRow>
+                        </TableBody>
+                    </TableContainer>
+                    )}
+            </div>
+                </DialogContent>
+                <DialogActions sx={{margin: 1}}>
+                <Button variant="outlined" onClick={props.onClose} color="secondary">Closed</Button>
+                </DialogActions>
+            </Dialog>
+            
+            </>
+        )
 };
 
 export default TotalReportDialog; 

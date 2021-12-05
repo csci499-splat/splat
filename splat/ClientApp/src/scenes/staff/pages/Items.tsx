@@ -11,29 +11,9 @@ interface ItemProps extends IStaffChild {
 
 const Items: FC<ItemProps> = (props: ItemProps): ReactElement => {
 
-    const [addItemsOpen, setAddItemsOpen] = React.useState(false);
-    
-    const handleShowAddItems = () => {
-        setAddItemsOpen(true);
-    }
-
-    // TODO: refresh data in the table when a new item is added
-
     return (
-        <>
-        <Button
-        variant="contained"
-        onClick={handleShowAddItems}
-        >
-            Create Item
-        </Button>
         <ItemsTable />
-        <ItemsAddDialog
-        onClose={() => setAddItemsOpen(false)}
-        open={addItemsOpen}
-        />
-        </>
-    )
+    );
 };
 
 export default Items;

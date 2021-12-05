@@ -1,5 +1,5 @@
 import { Delete } from '@mui/icons-material';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Stack } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -7,10 +7,10 @@ import {
     GridToolbar,
     GridValueFormatterParams,
 } from '@mui/x-data-grid';
+import axios from 'axios';
 import React, { FC, ReactElement } from 'react';
 
 import { Discard } from '../../../models/Discard';
-import { authRequest } from '../../../services/api/genericRequest';
 import { IStaffChild } from '../Staff';
 import DiscardAddForm from '../subcomponents/DiscardAddForm';
 
@@ -35,7 +35,7 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
 
     const handleDiscardDelete = async (id: string) => {
         try {
-            await authRequest.delete(`/discards/${id}`);
+            await axios.delete(`/discards/${id}`);
             getDiscards();
         } catch (error) {
             
@@ -44,7 +44,7 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
 
     const getDiscards = async () => {
         try {
-            let res = await authRequest.get<Discard[]>('/discards');
+            let res = await axios.get<Discard[]>('/discards');
             setRows(res.data);
             setCurrentWidth(1 - currentWidth);
         } catch (error) {
@@ -105,7 +105,19 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
 
     return (
         <>
-        <Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Discard Entry</Button>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button 
+            variant="contained" 
+            onClick={handleAddDialogOpen} 
+            color="primary">
+                Add Discard Entry
+            </Button>
+        </Stack>
         <div style={{height: 800, width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}

@@ -16,12 +16,12 @@ import {
     Switch,
     TextField,
 } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { CategoryIcons } from '../../../models/CategoryIcons';
-import { authRequest } from '../../../services/api/genericRequest';
 
 type CategoriesAddDialogProps = {
     onClose: () => void,
@@ -63,10 +63,14 @@ const CategoriesAddDialog: FC<CategoriesAddDialogProps> = (props: CategoriesAddD
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
+        enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
-            await authRequest.post('/categories', values);
-            props.onClose();
+            try {
+                await axios.post('/categories', values);
+                props.onClose();
+            } catch(err) {
+                
+            }
         },
     });
     return(

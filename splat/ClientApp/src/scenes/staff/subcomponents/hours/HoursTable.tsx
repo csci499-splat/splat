@@ -12,12 +12,12 @@ import {
     TableRow,
     TextField,
 } from '@mui/material';
+import axios from 'axios';
 import { Form, FormikProvider, useFormik } from 'formik';
 import React, { FC, ReactElement } from 'react';
 import * as yup from 'yup';
 
 import { CurrentHours } from '../../../../models/BackendTypes';
-import { authRequest } from '../../../../services/api/genericRequest';
 
 type HoursTableProps = {
     
@@ -170,7 +170,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         validationSchema: validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            await authRequest.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
+            await axios.post<CurrentHours>('/Hours', {...values, createdAt: undefined});
             handleGetCurrentHours();
         },
     });
@@ -180,7 +180,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
         formik.setValues({});
 
         try {
-            let res = await authRequest.get<CurrentHours>('/Hours');
+            let res = await axios.get<CurrentHours>('/Hours');
             if(res.data !== "")
                 setInitialValues(res.data);
         } catch(error) {
@@ -231,7 +231,7 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
                     </TableCell>
                     <TableCell align="right">
                         <IconButton
-                        onClick={() => formik.setFieldValue(row.keyName, undefined)}
+                        onClick={() => { formik.setFieldValue(row.keyName, undefined); formik.setFieldTouched(row.keyName, true); }}
                         >
                             <Delete />
                         </IconButton>
@@ -273,25 +273,6 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
     return (
         <>
         <Stack direction="column" alignItems="center" spacing={2}>
-        <FormikProvider value={formik}>
-        <Form>
-        <TableContainer sx={{maxWidth: '1000px'}}>
-            <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Day</TableCell>
-                    <TableCell align="center">Start Time</TableCell>
-                    <TableCell align="center">End Time</TableCell>
-                    <TableCell align="right">Remove</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {rows.map((row, index) => renderRow(row))}
-            </TableBody>
-            </Table>
-        </TableContainer>
-        </Form>
-        </FormikProvider>
         {Object.keys(formik.touched).length > 0 && (
             <>
             <Stack direction="row" spacing={2}>
@@ -312,6 +293,25 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
             </Stack>
             </>
         )}
+        <FormikProvider value={formik}>
+        <Form>
+        <TableContainer sx={{maxWidth: '1000px'}}>
+            <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Day</TableCell>
+                    <TableCell align="center">Start Time</TableCell>
+                    <TableCell align="center">End Time</TableCell>
+                    <TableCell align="right">Remove</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {rows.map((row, index) => renderRow(row))}
+            </TableBody>
+            </Table>
+        </TableContainer>
+        </Form>
+        </FormikProvider>
         </Stack>
         </>
     )
