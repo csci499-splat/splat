@@ -33,7 +33,7 @@ namespace splat.Services.Emails
 
             body.Append("</table>");
 
-            return HttpUtility.HtmlEncode(body.ToString());
+            return body.ToString();
         }
     }
 }

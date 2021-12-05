@@ -20,7 +20,7 @@ namespace splat.Services.Emails
             body.Append("<h3>Thank you for picking up your requested items</h3>");
             body.Append("<p>- The UWS Food Pantry</p>");
 
-            return HttpUtility.HtmlEncode(body.ToString());
+            return body.ToString();
         }
     }
 }

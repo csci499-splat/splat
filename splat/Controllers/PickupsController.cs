@@ -151,7 +151,7 @@ namespace splat.Controllers
                 if(pickup.PickupStatus == PickupStatus.WAITING)
                 {
                     PickupReadyEmail email = (PickupReadyEmail)EmailFactory.Create(
-                        EmailTypes.RequestSent, pickup,
+                        EmailTypes.PickupReady, pickup,
                         _configuration.GetSection("Email").Get<EmailExchangeOptions>());
 
                     await email.SendMailAsync("UWS Food Pantry - Your Request Is Ready", email.GetMessageBody());
@@ -159,7 +159,7 @@ namespace splat.Controllers
                 else if(pickup.PickupStatus == PickupStatus.DISBURSED)
                 {
                     PickupDisbursedEmail email = (PickupDisbursedEmail)EmailFactory.Create(
-                        EmailTypes.RequestSent, pickup,
+                        EmailTypes.PickupDisbursed, pickup,
                         _configuration.GetSection("Email").Get<EmailExchangeOptions>());
 
                     await email.SendMailAsync("UWS Food Pantry - Thanks!", email.GetMessageBody());

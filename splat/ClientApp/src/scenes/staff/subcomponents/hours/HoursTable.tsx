@@ -181,7 +181,6 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
 
         try {
             let res = await axios.get<CurrentHours>('/Hours');
-            console.log(res.data);
             if(res.data !== "")
                 setInitialValues(res.data);
         } catch(error) {

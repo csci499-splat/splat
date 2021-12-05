@@ -12,5 +12,11 @@ namespace splat.Services.Emails
         public int SMTPPort { get; set; }
         public string SMTPServerUser { get; set; }
         public string SMTPServerPassword { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("Sender={0}; Host={1}; Port={2}; User={3}; Password={4}", Sender,
+                SMTPServerHost, SMTPPort, SMTPServerUser, SMTPServerPassword);
+        }
     }
 }
