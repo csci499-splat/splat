@@ -23,7 +23,7 @@ namespace splat.Controllers
         {
             _context = context;
         }
-
+        
         // GET: api/trendreports/?DateFrom=value&DateTo=value
         [HttpGet]
         public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange timePeriod)
@@ -43,6 +43,7 @@ namespace splat.Controllers
             return report;
         }
 
+        // method to help with the wrapping of the return in the above method in a Task.Run()
         public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
             TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
