@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Button, IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Stack, Tooltip } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -7,6 +7,11 @@ import {
     GridRowData,
     GridToolbar,
     GridValueFormatterParams,
+    gridClasses,
+    GridToolbarContainer,
+    GridToolbarExport,
+    GridToolbarDensitySelector,
+    GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { useTheme } from '@mui/styles';
 import axios from 'axios';
@@ -16,9 +21,22 @@ import { Category } from '../../../models/Category';
 import { CategoryIcons } from '../../../models/CategoryIcons';
 import CategoriesAddDialog from './CategoriesAddDialog';
 import CategoriesEditDialog from './CategoriesEditDialog';
+import FileUploader from '../../../components/common/FileUploader';
 
 type CategoriesTableProps = {
     
+}
+
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer className={gridClasses.toolbarContainer}>
+            <GridToolbarExport csvOptions={{ 
+                fields: ['id', 'name', 'limit', 'description', 'visible', 'createdAt', 'icon'],
+                fileName: `splat-categories-${new Date().getTime()}` }} />
+            <GridToolbarDensitySelector />
+            <GridToolbarFilterButton />
+        </GridToolbarContainer>
+    );
 }
 
 const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) : ReactElement => {
@@ -158,11 +176,13 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
                 headerAlign: 'center',
                 renderCell: (params: GridRenderCellParams) => {
                     return (
+                        <Tooltip title="WARNING! Removing a category will also delete ALL associated items!">
                         <IconButton
-                        onClick={() => handleDeleteCategory(params.row)}                       
+                        onClick={() => handleDeleteCategory(params.row)}              
                         >
                             <Delete />
                         </IconButton>
+                        </Tooltip>
                     )
                 },
                 disableExport: true,
@@ -173,18 +193,35 @@ const CategoriesTable: FC<CategoriesTableProps> = (props: CategoriesTableProps) 
         
     return (
         <>
-        <Button
-        variant="contained"
-        onClick={handleOpenAddCategories}
-        >
-            Create Category
-        </Button>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button
+            variant="contained"
+            onClick={handleOpenAddCategories}
+            sx={{ height: 40 }}
+            >
+                Create Category
+            </Button>
+            <FileUploader
+            fileUploadEndpoint="/categories/upload"
+            fileMimeType="text/csv"
+            acceptType=".csv"
+            promptText="Select a CSV file for categories"
+            sx={{ marginTop: '10px' }}
+            onFileUploaded={() => getCategories()}
+            />
+        </Stack>
+        
         <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={categories}
             components={{
-                Toolbar: GridToolbar,
+                Toolbar: CustomToolbar,
             }}
             />
         </div>

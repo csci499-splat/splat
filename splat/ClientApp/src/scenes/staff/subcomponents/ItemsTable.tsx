@@ -1,16 +1,22 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Stack } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
     GridRenderCellParams,
     GridRowData,
     GridToolbar,
+    GridToolbarContainer,
+    GridToolbarDensitySelector,
+    GridToolbarExport,
+    GridToolbarFilterButton,
     GridValueFormatterParams,
     GridValueGetterParams,
+    gridClasses,
 } from '@mui/x-data-grid';
 import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
+import FileUploader from '../../../components/common/FileUploader';
 
 import { Item } from '../../../models/Item';
 import ItemsAddDialog from './ItemsAddDialog';
@@ -19,6 +25,17 @@ import ItemsEditDialog from './ItemsEditDialog';
 
 type ItemsTableProps = {
     
+}
+
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer className={gridClasses.toolbarContainer}>
+            <GridToolbarExport csvOptions={{ 
+                fileName: `splat-items-${new Date().getTime()}` }} />
+            <GridToolbarDensitySelector />
+            <GridToolbarFilterButton />
+        </GridToolbarContainer>
+    );
 }
 
 const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement => {
@@ -75,6 +92,13 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
                 headerAlign: 'left',
             },
             {
+                field: 'categoryId',
+                flex: 0.5,
+                headerName: 'Category ID',
+                align: 'left',
+                headerAlign: 'left',
+            },
+            {
                 field: 'name',
                 flex: 0.5,
                 headerName: 'Name',
@@ -90,6 +114,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
                 valueGetter: (params: GridValueGetterParams) => {
                     return `${params.row.category.name}`;
                 },
+                disableExport: true,
             },
             {
                 field: 'description',
@@ -154,18 +179,33 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
         
     return (
         <>
-        <Button
-        variant="contained"
-        onClick={handleShowAddItems}
-        >
-            Create Item
-        </Button>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button
+            variant="contained"
+            onClick={handleShowAddItems}
+            >
+                Create Item
+            </Button>
+            <FileUploader
+            fileUploadEndpoint="/items/upload"
+            fileMimeType="text/csv"
+            acceptType=".csv"
+            promptText="Select a CSV file for items"
+            sx={{ marginTop: '10px' }}
+            onFileUploaded={() => getItems()}
+            />
+        </Stack>
         <div style={{ height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={items}
             components={{
-                Toolbar: GridToolbar,
+                Toolbar: CustomToolbar,
             }}
             />
         </div>

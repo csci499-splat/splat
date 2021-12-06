@@ -1,5 +1,5 @@
 import { Delete } from '@mui/icons-material';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Stack } from '@mui/material';
 import {
     DataGrid,
     GridColDef,
@@ -123,7 +123,19 @@ const Donations: FC<DonationProps> = (props: DonationProps): ReactElement => {
 
     return (
         <>
-        <Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Donation</Button>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button 
+            variant="contained" 
+            onClick={handleAddDialogOpen} 
+            color="primary">
+                Add Donation
+            </Button>
+        </Stack>
         <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}

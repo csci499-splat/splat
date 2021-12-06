@@ -63,9 +63,14 @@ const CategoriesAddDialog: FC<CategoriesAddDialogProps> = (props: CategoriesAddD
     const formik = useFormik({
         initialValues: initialValues,
         validationSchema: validationSchema,
+        enableReinitialize: true,
         onSubmit: async (values) => {
-            await axios.post('/categories', values);
-            props.onClose();
+            try {
+                await axios.post('/categories', values);
+                props.onClose();
+            } catch(err) {
+                
+            }
         },
     });
     return(

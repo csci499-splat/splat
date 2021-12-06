@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CsvHelper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using splat.Models;
+using splat.Util.CSVFileUploads;
 
 namespace splat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "ElevatedRights")]
+    [Authorize(Policy = "ElevatedRights", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ItemsController : ControllerBase
     {
         private readonly SplatContext _context;
@@ -96,6 +101,44 @@ namespace splat.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetItem", new { id = item.Id }, item);
+        }
+
+        // POST: api/Items/upload
+        [HttpPost("upload")]
+        public async Task<ActionResult<IEnumerable<Item>>> PostItemUpload(List<IFormFile> files)
+        {
+            if (files.Count == 0)
+                return BadRequest(new { message = "File not found" });
+
+            var file = files[0];
+
+            IEnumerable<Item> records;
+
+            try
+            {
+                records = CsvFileParser.ParseCsvFile<Item, ItemMap>(file);
+            } 
+            catch
+            {
+                return BadRequest(new { message = "Unable to parse records (try checking the headers)" });
+            }
+            
+            var addedRecords = new List<Item>();
+
+            foreach(var record in records)
+            {
+                // If item hasn't already been added to the DB
+                if(await _context.Items.FindAsync(record.Id) == null &&
+                    await _context.Categories.FindAsync(record.CategoryId) != null)
+                {
+                    addedRecords.Add(record);
+                    _context.Items.Add(record);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return addedRecords;
         }
 
         // DELETE: api/Items/id

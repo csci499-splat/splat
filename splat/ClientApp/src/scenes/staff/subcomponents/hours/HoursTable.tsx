@@ -273,25 +273,6 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
     return (
         <>
         <Stack direction="column" alignItems="center" spacing={2}>
-        <FormikProvider value={formik}>
-        <Form>
-        <TableContainer sx={{maxWidth: '1000px'}}>
-            <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Day</TableCell>
-                    <TableCell align="center">Start Time</TableCell>
-                    <TableCell align="center">End Time</TableCell>
-                    <TableCell align="right">Remove</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {rows.map((row, index) => renderRow(row))}
-            </TableBody>
-            </Table>
-        </TableContainer>
-        </Form>
-        </FormikProvider>
         {Object.keys(formik.touched).length > 0 && (
             <>
             <Stack direction="row" spacing={2}>
@@ -312,6 +293,25 @@ const HoursTable: FC<HoursTableProps> = (props: HoursTableProps): ReactElement =
             </Stack>
             </>
         )}
+        <FormikProvider value={formik}>
+        <Form>
+        <TableContainer sx={{maxWidth: '1000px'}}>
+            <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Day</TableCell>
+                    <TableCell align="center">Start Time</TableCell>
+                    <TableCell align="center">End Time</TableCell>
+                    <TableCell align="right">Remove</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {rows.map((row, index) => renderRow(row))}
+            </TableBody>
+            </Table>
+        </TableContainer>
+        </Form>
+        </FormikProvider>
         </Stack>
         </>
     )

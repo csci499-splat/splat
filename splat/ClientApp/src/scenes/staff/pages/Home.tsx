@@ -11,8 +11,6 @@ interface HomeProps extends IStaffChild {
 
 const Home: FC<HomeProps> = (props: HomeProps): ReactElement => {
 
-
-
     return (
         <>
         <Grid container spacing={3} sx={{ margin: 1 }}>
