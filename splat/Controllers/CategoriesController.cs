@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using splat.Models;
+using splat.Util.CSVFileUploads;
 
 namespace splat.Controllers
 {
@@ -87,10 +88,54 @@ namespace splat.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+            } 
+            catch
+            {
+                return BadRequest(new { message = "Unable to add category (maybe the name already exists?)" });
+            }
 
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
+        }
+
+        // POST: api/Categories/upload
+        [HttpPost("upload")]
+        public async Task<ActionResult<IEnumerable<Category>>> PostItemUpload(List<IFormFile> files)
+        {
+            if (files.Count == 0)
+                return BadRequest(new { message = "File not found" });
+
+            var file = files[0];
+
+            IEnumerable<Category> records;
+
+            try
+            {
+                records = CsvFileParser.ParseCsvFile<Category, CategoryMap>(file);
+            }
+            catch
+            {
+                return BadRequest(new { message = "Unable to parse records (try checking the headers)" });
+            }
+
+            var addedRecords = new List<Category>();
+
+            foreach (var record in records)
+            {
+                // If item hasn't already been added to the DB
+                if (await _context.Categories.FindAsync(record.Id) == null)
+                {
+                    addedRecords.Add(record);
+                    _context.Categories.Add(record);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return addedRecords;
         }
 
         // DELETE: api/Examples/5

@@ -69,7 +69,6 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
                 description: values.description,
                 visible: values.visible,
             }
-            console.log(newValues);
             await axios.post('/items', newValues);
             props.onClose();
         },
