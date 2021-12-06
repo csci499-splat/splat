@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using splat.Services.Emails;
 
 namespace splat.Controllers
 {
@@ -23,11 +25,15 @@ namespace splat.Controllers
     {
         private readonly SplatContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public PickupsController(SplatContext context, UserManager<ApplicationUser> userManager)
+        public PickupsController(SplatContext context, 
+                                 UserManager<ApplicationUser> userManager,
+                                 IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         // GET: api/Pickups
@@ -115,6 +121,15 @@ namespace splat.Controllers
                     _context.Pickups.Add(pickup);
                     await _context.SaveChangesAsync();
 
+                    if(_configuration.GetValue<bool>("EnableEmail"))
+                    {
+                        RequestReceivedEmail email = (RequestReceivedEmail)EmailFactory.Create(
+                            EmailTypes.RequestSent, pickup,
+                            _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                        await email.SendMailAsync("UWS Food Pantry - Your Request Has Been Received", email.GetMessageBody());
+                    }
+
                     return CreatedAtAction("GetPickup", new { id = pickup.Id }, pickup);
                 }
             }
@@ -141,6 +156,26 @@ namespace splat.Controllers
                 return BadRequest(new { message = "Invalid update request" });
 
             await _context.SaveChangesAsync();
+
+            if (_configuration.GetValue<bool>("EnableEmail"))
+            {
+                if(pickup.PickupStatus == PickupStatus.WAITING)
+                {
+                    PickupReadyEmail email = (PickupReadyEmail)EmailFactory.Create(
+                        EmailTypes.PickupReady, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email.SendMailAsync("UWS Food Pantry - Your Request Is Ready", email.GetMessageBody());
+                }
+                else if(pickup.PickupStatus == PickupStatus.DISBURSED)
+                {
+                    PickupDisbursedEmail email = (PickupDisbursedEmail)EmailFactory.Create(
+                        EmailTypes.PickupDisbursed, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email.SendMailAsync("UWS Food Pantry - Thanks!", email.GetMessageBody());
+                }
+            }
 
             return Ok(pickup);
         }
