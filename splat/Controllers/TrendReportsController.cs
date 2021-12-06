@@ -33,7 +33,17 @@ namespace splat.Controllers
             return await GenerateTrendReportAsync(reportPickups, timePeriod);
         }
 
-        public static async Task<TrendReport> GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
+        public static async Task<TrendReport> GenerateTrendReportAsync(IQueryable<Pickup> pickups, DateRange timePeriod)
+        {
+            var report = await Task.Run(() =>
+            {
+                return GenerateTrendReport(pickups, timePeriod);
+            });
+
+            return report;
+        }
+
+        public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
             TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
 
