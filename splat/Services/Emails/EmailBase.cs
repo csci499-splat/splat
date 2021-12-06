@@ -14,7 +14,7 @@ namespace splat.Services.Emails
         RequestSent,
         PickupReady,
         PickupDisbursed,
-        PickupCancelled
+        PickupCanceled
     }
 
     public abstract class EmailBase

@@ -19,7 +19,7 @@ namespace splat.Services.Emails
         public override string GetMessageBody()
         {
             var body = new StringBuilder();
-            body.Append("<h3>Your requested pickup along with its item contents have been cancelled:</h3>");
+            body.Append("<h3>Your item request has been canceled:</h3>");
             body.Append("<table role=\"presentation\" width=\"100%\" border=\"1\" cellspacing=\"0\" " +
                         "cellpadding=\"5\" style=\"border:1px solid black; border-collapse:collapse\">");
             body.Append("<tr style=\"background-color:white\">");

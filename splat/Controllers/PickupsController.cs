@@ -148,34 +148,55 @@ namespace splat.Controllers
 
             if (_configuration.GetValue<bool>("EnableEmail"))
             {
-                if(pickup.PickupStatus == PickupStatus.WAITING)
+                try
                 {
-                    PickupReadyEmail email = (PickupReadyEmail)EmailFactory.Create(
-                        EmailTypes.PickupReady, pickup,
-                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
-
-                    await email.SendMailAsync("UWS Food Pantry - Your Request Is Ready", email.GetMessageBody());
+                    await HandlePickupEmailing(prevStatus, pickup);
                 }
-                else if(pickup.PickupStatus == PickupStatus.DISBURSED)
+                catch (Exception)
                 {
-                    PickupDisbursedEmail email = (PickupDisbursedEmail)EmailFactory.Create(
-                        EmailTypes.PickupDisbursed, pickup,
-                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
-
-                    await email.SendMailAsync("UWS Food Pantry - Thanks!", email.GetMessageBody());
-                }
-                else if (pickup.PickupStatus == PickupStatus.CANCELED)
-                {
-                    PickupCancellationEmail email = (PickupCancellationEmail)EmailFactory.Create(
-                        EmailTypes.PickupCancelled, pickup,
-                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
-
-                    await email.SendMailAsync("UWS Food Pantry - Pickup Cancelled", email.GetMessageBody());
+                    return NotFound(new { message = "Unable to send email, Pickup update successful" });
                 }
             }
 
             return Ok(pickup);
         }
+
+        public async Task HandlePickupEmailing(PickupStatus status, Pickup pickup)
+        {
+            switch (status)
+            {
+                case PickupStatus.WAITING:
+                    PickupReadyEmail email = (PickupReadyEmail)EmailFactory.Create(
+                        EmailTypes.PickupReady, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email.SendMailAsync("UWS Food Pantry - Your Request Is Ready", email.GetMessageBody());
+
+                    break;
+
+                case PickupStatus.DISBURSED:
+                    PickupDisbursedEmail email2 = (PickupDisbursedEmail)EmailFactory.Create(
+                        EmailTypes.PickupDisbursed, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email2.SendMailAsync("UWS Food Pantry - Thanks!", email2.GetMessageBody());
+
+                    break;
+
+                case PickupStatus.CANCELED:
+                    PickupCancellationEmail email3 = (PickupCancellationEmail)EmailFactory.Create(
+                        EmailTypes.PickupCanceled, pickup,
+                        _configuration.GetSection("Email").Get<EmailExchangeOptions>());
+
+                    await email3.SendMailAsync("UWS Food Pantry - Pickup Canceled", email3.GetMessageBody());
+
+                    break;
+
+                default:
+                    throw new Exception("Invalid pickup status.");
+            }
+        }
+
 
         private static bool ValidatePickupPatch(Pickup pickup, PickupStatus prevStatus)
         {
