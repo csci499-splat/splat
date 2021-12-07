@@ -150,11 +150,11 @@ namespace splat.Controllers
             {
                 try
                 {
-                    await HandlePickupEmailing(prevStatus, pickup);
+                    await HandlePickupEmailing(pickup.PickupStatus, pickup);
                 }
                 catch (Exception)
                 {
-                    return NotFound(new { message = "Unable to send email, Pickup update successful" });
+                    return StatusCode(500);
                 }
             }
 
@@ -166,29 +166,29 @@ namespace splat.Controllers
             switch (status)
             {
                 case PickupStatus.WAITING:
-                    PickupReadyEmail email = (PickupReadyEmail)EmailFactory.Create(
+                    PickupReadyEmail waitingEmail = (PickupReadyEmail)EmailFactory.Create(
                         EmailTypes.PickupReady, pickup,
                         _configuration.GetSection("Email").Get<EmailExchangeOptions>());
 
-                    await email.SendMailAsync("UWS Food Pantry - Your Request Is Ready", email.GetMessageBody());
+                    await waitingEmail.SendMailAsync("UWS Food Pantry - Your Request Is Ready", waitingEmail.GetMessageBody());
 
                     break;
 
                 case PickupStatus.DISBURSED:
-                    PickupDisbursedEmail email2 = (PickupDisbursedEmail)EmailFactory.Create(
+                    PickupDisbursedEmail disbursedEmail = (PickupDisbursedEmail)EmailFactory.Create(
                         EmailTypes.PickupDisbursed, pickup,
                         _configuration.GetSection("Email").Get<EmailExchangeOptions>());
 
-                    await email2.SendMailAsync("UWS Food Pantry - Thanks!", email2.GetMessageBody());
+                    await disbursedEmail.SendMailAsync("UWS Food Pantry - Thanks!", disbursedEmail.GetMessageBody());
 
                     break;
 
                 case PickupStatus.CANCELED:
-                    PickupCancellationEmail email3 = (PickupCancellationEmail)EmailFactory.Create(
+                    PickupCancellationEmail canceledEmail = (PickupCancellationEmail)EmailFactory.Create(
                         EmailTypes.PickupCanceled, pickup,
                         _configuration.GetSection("Email").Get<EmailExchangeOptions>());
 
-                    await email3.SendMailAsync("UWS Food Pantry - Pickup Canceled", email3.GetMessageBody());
+                    await canceledEmail.SendMailAsync("UWS Food Pantry - Pickup Canceled", canceledEmail.GetMessageBody());
 
                     break;
 
