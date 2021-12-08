@@ -40,5 +40,10 @@ namespace splat.Services.Emails
 
             return body.ToString();
         }
+
+        public override string GetMessageSubject()
+        {
+            return "UWS Food Pantry - Request Canceled";
+        }
     }
 }
