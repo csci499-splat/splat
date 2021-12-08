@@ -1,6 +1,6 @@
 import {
     Dialog, DialogContent, DialogActions, DialogTitle,
-    Button, Autocomplete, TextField, CircularProgress, Stack, IconButton, Tooltip
+    Button, Autocomplete, TextField, CircularProgress, Stack, IconButton, Tooltip, Typography
 } from '@mui/material';
 import React, { FC, ReactElement, useState, useEffect } from 'react';
 import { DateRange, TrendEntry, TrendItemEntry, TrendReport } from '../../../models/TrendReport'
@@ -283,10 +283,6 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
         return { itemCounts: itemCounts, trendLines: trendLines };
     };
 
-    React.useEffect(() => {
-        getTrendReport();
-    }, []);
-
     return (
         <Dialog
         open={props.open}
@@ -295,78 +291,85 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
         >
             <DialogTitle>Trend Report</DialogTitle>
             <DialogContent>
-            <Stack direction="row" justifyContent="center" alignItems="center">
-                <div style={{ width: '50%', paddingTop: 20, marginBottom: 20 }}>
-                    <CategoryAutocomplete
-                    value={selectedCategory}
-                    onValueChange={(option) => handleChangeCategory(option)}
-                    options={categories?.map((elem) => elem.category)}
-                    />
-                </div>
-                {Boolean(selectedCategory) && (
-                <Tooltip title="Change colors">
-                    <IconButton
-                    color="primary"
-                    onClick={handleUpdateColors}
-                    sx={{ width: 45, height: 45, marginLeft: 1 }}
+            { trendReport !== undefined ? (
+                <>
+                <Stack direction="row" justifyContent="center" alignItems="center">
+                    <div style={{ width: '50%', paddingTop: 20, marginBottom: 20 }}>
+                        <CategoryAutocomplete
+                        value={selectedCategory}
+                        onValueChange={(option) => handleChangeCategory(option)}
+                        options={categories?.map((elem) => elem.category)}
+                        />
+                    </div>
+                    {Boolean(selectedCategory) && (
+                    <Tooltip title="Change colors">
+                        <IconButton
+                        color="primary"
+                        onClick={handleUpdateColors}
+                        sx={{ width: 45, height: 45, marginLeft: 1 }}
+                        >
+                            <Refresh />
+                        </IconButton>
+                    </Tooltip>
+                    )}
+                </Stack>
+                
+                {Boolean(selectedCategory) ? (
+                <>
+                <ResponsiveContainer width={800} height={500}>
+                    <BarChart
+                    data={parseTrendData(trendReport.entries[categoryIndex]).itemCounts}
+                    margin={{
+                        top: 20,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                    }}
                     >
-                        <Refresh />
-                    </IconButton>
-                </Tooltip>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <TooltipCharts />
+                        <Legend 
+                        height={10}
+                        verticalAlign="top"
+                        />
+                        { trendReport.entries[categoryIndex].trendItemEntries.map((entry, index) => (
+                            <Bar key={index} dataKey={entry.item.name} stackId="a" fill={colorArray[index]} />
+                        )) }
+                    </BarChart>
+                </ResponsiveContainer>
+                <ResponsiveContainer width={800} height={400}>
+                    <LineChart
+                    data={parseTrendData(trendReport.entries[categoryIndex]).trendLines}
+                    margin={{
+                        top: 20,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                    }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis padding={{ left: 50, right: 50 }} dataKey="name" />
+                        <YAxis />
+                        <Legend 
+                        height={36}
+                        verticalAlign="top"
+                        />
+                        { trendReport.entries[categoryIndex].trendItemEntries.map((entry, index) => (
+                            <Line key={index} dataKey={entry.item.name} stroke={colorArray[index]} />
+                        )) }
+                    </LineChart>
+                </ResponsiveContainer>
+                </>
+                ) : (
+                    <h3 style={{ marginTop: 50 }} >Select a category to get started</h3>
                 )}
-            </Stack>
-            
-            
-            {Boolean(selectedCategory) ? (
-            <>
-            <ResponsiveContainer width={800} height={500}>
-                <BarChart
-                data={parseTrendData(TrendReportTest.entries[categoryIndex]).itemCounts}
-                margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <TooltipCharts />
-                    <Legend 
-                    height={10}
-                    verticalAlign="top"
-                    />
-                    { TrendReportTest.entries[categoryIndex].trendItemEntries.map((entry, index) => (
-                        <Bar key={index} dataKey={entry.item.name} stackId="a" fill={colorArray[index]} />
-                    )) }
-                </BarChart>
-            </ResponsiveContainer>
-            <ResponsiveContainer width={800} height={400}>
-                <LineChart
-                data={parseTrendData(TrendReportTest.entries[categoryIndex]).trendLines}
-                margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis padding={{ left: 50, right: 50 }} dataKey="name" />
-                    <YAxis />
-                    <Legend 
-                    height={36}
-                    verticalAlign="top"
-                    />
-                    { TrendReportTest.entries[categoryIndex].trendItemEntries.map((entry, index) => (
-                        <Line key={index} dataKey={entry.item.name} stroke={colorArray[index]} />
-                    )) }
-                </LineChart>
-            </ResponsiveContainer>
-            </>
-            ) : (
-                <h3 style={{ marginTop: 50 }} >Select a category to get started</h3>
+                </>
+            ): (
+                <Typography variant="h3">
+                    Loading...
+                </Typography>
             )}
             </DialogContent>
             <DialogActions sx={{ margin: 1 }}>
