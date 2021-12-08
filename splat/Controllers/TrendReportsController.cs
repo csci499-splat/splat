@@ -246,7 +246,7 @@ namespace splat.Controllers
 
         static List<ItemRequest> GetRequestsForGivenItemAndWeek(IQueryable<Pickup> pickups, Item item, Week week)
         {
-            List<ItemRequest> requestsForItem = new List<ItemRequest>();
+            IEnumerable<ItemRequest> requestsForItem = new List<ItemRequest>();
 
             var pickupsForWeek = pickups.Where(p => DateFallsWithinWeek(p.SubmittedAt, week));
 
@@ -255,11 +255,11 @@ namespace splat.Controllers
                 foreach (ItemRequest request in pickup.ItemRequests)
                 {
                     if(request.Item.Id.Equals(item.Id))
-                        requestsForItem.Add(request);
+                        requestsForItem.Append(request);
                 }           
             }
 
-            return requestsForItem;
+            return requestsForItem.ToList();
         }
 
         static bool DateFallsWithinWeek(DateTime submittedAt, Week week)
