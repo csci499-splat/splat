@@ -263,8 +263,8 @@ const TrendReportDialog: FC<TrendReportDialogProps> = (props: TrendReportDialogP
 
         for(let binIndex = 0; binIndex < binCount; binIndex++) {
             let currentWeek: DateRange = data.trendItemEntries[0].requestBin[binIndex].binTime;
-            let itemCountsEntry = { name: `${currentWeek.startDate.toLocaleDateString()} - ${currentWeek.endDate.toLocaleDateString()}` };
-            let trendLinesEntry = { name: `${currentWeek.startDate.toLocaleDateString()} - ${currentWeek.endDate.toLocaleDateString()}` };
+            let itemCountsEntry = { name: `${new Date(currentWeek.startDate).toLocaleDateString()} - ${new Date(currentWeek.endDate).toLocaleDateString()}` };
+            let trendLinesEntry = { name: `${new Date(currentWeek.startDate).toLocaleDateString()} - ${new Date(currentWeek.endDate).toLocaleDateString()}` };
 
             for(let i = 0; i < data.trendItemEntries.length; i++) {
                 let entry: TrendItemEntry = data.trendItemEntries[i];

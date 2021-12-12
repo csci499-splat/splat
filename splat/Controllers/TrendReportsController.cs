@@ -231,6 +231,7 @@ namespace splat.Controllers
             }
         }
 
+
         public class CategoryComparitor : IEqualityComparer<Category>
         {
             public bool Equals(Category x, Category y)
@@ -244,11 +245,18 @@ namespace splat.Controllers
             }
         }
 
+
         static List<ItemRequest> GetRequestsForGivenItemAndWeek(IQueryable<Pickup> pickups, Item item, Week week)
         {
             List<ItemRequest> requestsForItem = new List<ItemRequest>();
 
-            var pickupsForWeek = pickups.Where(p => DateFallsWithinWeek(p.SubmittedAt, week));
+            List<Pickup> pickupsForWeek = new List<Pickup>();
+
+            foreach(Pickup pickup in pickups)
+            {
+                if (DateFallsWithinWeek(pickup.SubmittedAt, week))
+                    pickupsForWeek.Add(pickup);
+            };
 
             foreach(Pickup pickup in pickupsForWeek)
             {

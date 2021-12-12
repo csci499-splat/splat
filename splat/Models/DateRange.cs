@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace splat.Models
 {
@@ -21,10 +22,12 @@ namespace splat.Models
 
         [Required]
         [DataType(DataType.Date)]
+        [JsonProperty("startDate")]
         public DateTime DateFrom { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
+        [JsonProperty("endDate")]
         public DateTime DateTo { get; set; }
 
         public TimeSpan GetDuratrion()
