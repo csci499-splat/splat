@@ -25,11 +25,11 @@ namespace splat.Controllers
         // GET: api/TotalReports
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<TotalReport>> GetTotalReport(DateTime dateTimeFrom, DateTime dateTimeTo)
+        public async Task<ActionResult<TotalReport>> GetTotalReport([FromQuery] DateRange dates)
         {
             var pickups = _context.Pickups
                 .Where(p => p.PickupStatus == PickupStatus.DISBURSED)
-                .Where(p => p.PickupTime > dateTimeFrom && p.PickupTime < dateTimeTo);
+                .Where(p => p.PickupTime >= dates.DateFrom && p.PickupTime <= dates.DateTo);
 
             return new TotalReport 
             {

@@ -13,10 +13,11 @@ namespace splat.Services.Emails
     {
         RequestSent,
         PickupReady,
-        PickupDisbursed
+        PickupDisbursed,
+        PickupCanceled
     }
 
-    public abstract class EmailBase
+    public abstract class EmailBase : IEmail
     {
         private readonly EmailExchangeOptions _emailExchangeOptions;
         private SmtpClient _client;
@@ -45,6 +46,8 @@ namespace splat.Services.Emails
         /// <returns>HTML message body</returns>
         public abstract string GetMessageBody();
 
+        public abstract string GetMessageSubject();
+
         /// <summary>
         /// Populate the message with the relevant subject and HTML body then send the email
         /// </summary>
@@ -59,5 +62,15 @@ namespace splat.Services.Emails
                 _client.Send(message);
             });
         }
+
+        public static EmailTypes GetEmailTypeFromPickupStatus(PickupStatus status)
+            => status switch
+            {
+                PickupStatus.PENDING => EmailTypes.RequestSent,
+                PickupStatus.WAITING => EmailTypes.PickupReady,
+                PickupStatus.DISBURSED => EmailTypes.PickupDisbursed,
+                PickupStatus.CANCELED => EmailTypes.PickupCanceled,
+                _ => throw new ArgumentException("Invalid PickupStatus")
+            };
     }
 }

@@ -23,7 +23,7 @@ namespace splat.Controllers
         {
             _context = context;
         }
-
+        
         // GET: api/trendreports/?DateFrom=value&DateTo=value
         [HttpGet]
         public async Task<ActionResult<TrendReport>> GetTrendReport([FromQuery] DateRange timePeriod)
@@ -37,13 +37,25 @@ namespace splat.Controllers
         {
             var report = await Task.Run(() =>
             {
-                return new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+                return GenerateTrendReport(pickups, timePeriod);
             });
 
             return report;
         }
-        
+
+        // method to help with the wrapping of the return in the above method in a Task.Run()
         public static TrendReport GenerateTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
+        {
+            TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
+
+            foreach (TrendEntry entry in report.Entries)
+                FillTrendEntry(pickups, entry);
+
+            return report;
+        }
+
+        // duplicate of the GenerateTrendReport() method above made for testing because I could not get the Moq package to work
+        public static TrendReport GetTrendReport(IQueryable<Pickup> pickups, DateRange timePeriod)
         {
             TrendReport report = new TrendReport { Entries = GenerateTrendEntries(pickups, timePeriod) };
 
@@ -167,7 +179,7 @@ namespace splat.Controllers
             return count;
         }
 
-        static List<ItemRequest> GetItemRequests(IQueryable<Pickup> pickups)
+        public static List<ItemRequest> GetItemRequests(IQueryable<Pickup> pickups)
         {
             List<ItemRequest> itemRequests = new List<ItemRequest>();
 
@@ -219,6 +231,7 @@ namespace splat.Controllers
             }
         }
 
+
         public class CategoryComparitor : IEqualityComparer<Category>
         {
             public bool Equals(Category x, Category y)
@@ -232,11 +245,18 @@ namespace splat.Controllers
             }
         }
 
+
         static List<ItemRequest> GetRequestsForGivenItemAndWeek(IQueryable<Pickup> pickups, Item item, Week week)
         {
             List<ItemRequest> requestsForItem = new List<ItemRequest>();
 
-            var pickupsForWeek = pickups.Where(p => DateFallsWithinWeek(p.SubmittedAt, week));
+            List<Pickup> pickupsForWeek = new List<Pickup>();
+
+            foreach(Pickup pickup in pickups)
+            {
+                if (DateFallsWithinWeek(pickup.SubmittedAt, week))
+                    pickupsForWeek.Add(pickup);
+            };
 
             foreach(Pickup pickup in pickupsForWeek)
             {
@@ -252,8 +272,8 @@ namespace splat.Controllers
 
         static bool DateFallsWithinWeek(DateTime submittedAt, Week week)
         {
-            bool IsLaterThan = submittedAt.CompareTo(week.DateFrom) >= 0;
-            bool IsEarlierThan = submittedAt.CompareTo(week.DateTo) <= 0;
+            bool IsLaterThan = submittedAt.Date.CompareTo(week.DateFrom) >= 0;
+            bool IsEarlierThan = submittedAt.Date.CompareTo(week.DateTo) <= 0;
 
             return IsLaterThan && IsEarlierThan;
         }
