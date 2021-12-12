@@ -1,4 +1,4 @@
-import { Add, Delete } from '@mui/icons-material';
+import { Add, Category, Delete } from '@mui/icons-material';
 import {
     Button,
     Checkbox,
@@ -167,6 +167,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             quantity: yup.number()
             .integer()
             .positive("Quantity must be 1 or more")
+            .max(10, "Quantity must be less than the limit")
             .required("Quantity is required"),
         }))
     });
