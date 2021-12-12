@@ -55,7 +55,7 @@ function Row(props: { row: Pickup }) {
                 </TableCell>
                 <TableCell component="th" scope="row">{row.id}</TableCell>
                 <TableCell align="center">{row.itemRequests.length}</TableCell>
-                <TableCell align="center">{row.requestedPickupTime.toLocaleString()}</TableCell>
+                <TableCell align="center">{new Date(row.requestedPickupTime).toLocaleString()}</TableCell>
                 <TableCell align="center">{row.studentInfo.studentId}</TableCell>
                 <TableCell align="center">{getStatusString(row.pickupStatus)}</TableCell>
             </TableRow>
@@ -106,9 +106,15 @@ function Row(props: { row: Pickup }) {
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell align="left">{row.submittedAt?.toLocaleString()}</TableCell>
-                                        <TableCell align="center">{row.pickupTime ? row.pickupTime?.toLocaleString() : 
-                                            row.canceledTime?.toLocaleString()}
+                                        <TableCell align="left">{
+                                            // @ts-ignore
+                                            new Date(row.submittedAt)
+                                            .toLocaleString()}
+                                        </TableCell>
+                                        <TableCell align="center">{row.pickupTime ? new Date(row.pickupTime).toLocaleString() : 
+                                            // @ts-ignore
+                                            new Date(row.canceledTime)
+                                            .toLocaleString()}
                                         </TableCell>
                                         <TableCell align="center">{row.weight?.toFixed(2) + ' lbs'}</TableCell>
                                         <TableCell align="center">{row.otherNotes}</TableCell>
@@ -219,8 +225,8 @@ const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : React
         try {
             let res = await axios.get<Pickup[]>('/pickups/history', {
                 params: {
-                    startDate: start.toISOString(),
-                    endDate: end.toISOString(),
+                    dateFrom: start.toISOString(),
+                    dateTo: end.toISOString(),
                 }
             });
             setPickups(res.data);
@@ -231,11 +237,11 @@ const HistoryDialog: FC<HistoryDialogProps> = (props:HistoryDialogProps) : React
     };
 
     React.useEffect(() => {
-        if(Boolean(props.startDateValue) && Boolean(props.endDateValue)) {
+        if(Boolean(props.startDateValue) && Boolean(props.endDateValue) && props.open) {
             // @ts-ignore
             getPickups(props.startDateValue, props.endDateValue);
         }
-    }, []);
+    }, [props.open]);
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);

@@ -182,13 +182,6 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                     >
                         UW-Superior Yellowjacket Food Pantry
                     </Link>
-                    <Link to="/privacy"
-                    color="inherit"
-                    underline="always"
-                    component={RouterLink}
-                    >
-                        Privacy
-                    </Link>
                     <Link to="/staff/home"
                     color="inherit"
                     underline="always"
