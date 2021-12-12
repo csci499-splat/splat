@@ -27,6 +27,8 @@ namespace splat.Tests
         const int BREAD = 0;
         // ITEM named constants for CANNED_SOUP      
         const int SOUP = 0;
+        // named constant for asserting doubles are equal
+        const int PRECISION = 3;
 
         readonly Week WEEK1 = new Week(new DateTime(2021, 01, 1, 0, 0, 0), new DateTime(2021, 01, 7, 0, 0, 0));
         readonly Week WEEK2 = new Week(new DateTime(2021, 01, 8, 0, 0, 0), new DateTime(2021, 01, 14, 0, 0, 0));
@@ -133,48 +135,48 @@ namespace splat.Tests
         public void TestGetTrendReport_CheckAveragesPerWeekForBeans()
         {
             TrendReport report = TrendReportsController.GetTrendReport(pickups, timePeriod);
-            double expectedAverage = 5.333333333333333;
-            Assert.Equal(expectedAverage, report.Entries[VEGGIES].ItemEntries[CARROTS].Average);
+            double expectedAverage = 5.33333;
+            Assert.Equal(expectedAverage, report.Entries[VEGGIES].ItemEntries[CARROTS].Average, PRECISION);
         }
 
         [Fact]
         public void TestGetTrendReport_CheckAveragesPerWeekForCarrots()
         {
             TrendReport report = TrendReportsController.GetTrendReport(pickups, timePeriod);
-            double expectedAverage = 7.555555555555555;
-            Assert.Equal(expectedAverage, report.Entries[VEGGIES].ItemEntries[BEANS].Average);
+            double expectedAverage = 7.55555;
+            Assert.Equal(expectedAverage, report.Entries[VEGGIES].ItemEntries[BEANS].Average, PRECISION);
         }
 
         [Fact]
         public void TestGetTrendReport_CheckAveragesPerWeekForSoup()
         {
             TrendReport report = TrendReportsController.GetTrendReport(pickups, timePeriod);
-            double expectedAverage = 0.7777777777777778;
-            Assert.Equal(expectedAverage, report.Entries[CANNED_SOUP].ItemEntries[SOUP].Average);
+            double expectedAverage = 0.77777;
+            Assert.Equal(expectedAverage, report.Entries[CANNED_SOUP].ItemEntries[SOUP].Average, PRECISION);
         }
 
         [Fact]
         public void TestGetTrendReport_CheckAveragesPerWeekForBread()
         {
             TrendReport report = TrendReportsController.GetTrendReport(pickups, timePeriod);
-            double expectedAverage = 1.8888888888888888;
-            Assert.Equal(expectedAverage, report.Entries[BREAD_STUFFS].ItemEntries[BREAD].Average);
+            double expectedAverage = 1.88888;
+            Assert.Equal(expectedAverage, report.Entries[BREAD_STUFFS].ItemEntries[BREAD].Average, PRECISION);
         }
 
         [Fact]
         public void TestGetTrendReport_CheckAveragesPerWeekForTuna()
         {
             TrendReport report = TrendReportsController.GetTrendReport(pickups, timePeriod);
-            double expectedAverage = 0.5555555555555556;
-            Assert.Equal(expectedAverage, report.Entries[CANNED_MEATS].ItemEntries[TUNA].Average);
+            double expectedAverage = 0.555556;
+            Assert.Equal(expectedAverage, report.Entries[CANNED_MEATS].ItemEntries[TUNA].Average, PRECISION);
         }
 
         [Fact]
         public void TestGetTrendReport_CheckAveragesPerWeekForSpam()
         {
             TrendReport report = TrendReportsController.GetTrendReport(pickups, timePeriod);
-            double expectedAverage = 11.666666666666666;
-            Assert.Equal(expectedAverage, report.Entries[CANNED_MEATS].ItemEntries[SPAM].Average);
+            double expectedAverage = 11.66666;
+            Assert.Equal(expectedAverage, report.Entries[CANNED_MEATS].ItemEntries[SPAM].Average, PRECISION);
         }
 
         public class WeekComparitor : IEqualityComparer<Week>
