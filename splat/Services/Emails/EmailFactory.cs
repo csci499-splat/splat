@@ -19,6 +19,7 @@ namespace splat.Services.Emails
                 EmailTypes.RequestSent => new RequestReceivedEmail(pickup, options),
                 EmailTypes.PickupReady => new PickupReadyEmail(pickup, options),
                 EmailTypes.PickupDisbursed => new PickupDisbursedEmail(pickup, options),
+                EmailTypes.PickupCanceled => new PickupCancellationEmail(pickup, options),
                 _ => throw new ArgumentException("The given email type is not valid", "type")
             };
     }
