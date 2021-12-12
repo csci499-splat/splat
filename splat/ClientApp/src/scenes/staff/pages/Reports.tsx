@@ -27,7 +27,7 @@ type DialogType = 'totalReport' | 'trendReport' | 'historyReport' | '';
 const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
     
     const [startDateValue, setStartDateValue] = React.useState<Date | null>();
-    const [endDateValue, setEndDateValue] = React.useState<Date | null>();
+    const [endDateValue, setEndDateValue] = React.useState<Date | null>(null);
     const [reportType, setReportType] = React.useState<DialogType>('');
     const [dialogOpen, setDialogOpen] = useState({totalReport: false, 
         trendReport: false, historyReport: false});
@@ -51,33 +51,31 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         <Box
         sx={{
             textAlign: 'center',
-            position: 'absolute',
-            left: '30%',
+            margin: 5,
           }}
         >
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
         <MobileDatePicker
-            label="Select start date"
-            value={startDateValue}
-            maxDate={(endDateValue) ? endDateValue : new Date()}
-            onChange={(newStartDateValue) => {
-                setStartDateValue(newStartDateValue)
-            }}
-            renderInput={(params) => <TextField {...params} />}
-            />
-            <Box sx = {{alignItems: 'center',fontSize: 21}}> To </Box>
-            <MobileDatePicker
-            label="Select end date"
-            value={endDateValue}
-            minDate={startDateValue}
-            
-            maxDate={new Date()}
-            onChange={(newEndDateValue) => {
-                setEndDateValue(newEndDateValue)
-            }}
-            renderInput={(params) => <TextField {...params} 
-            disabled={!Boolean(startDateValue)}
-            />}
+        label="Select start date"
+        value={startDateValue}
+        maxDate={(endDateValue) ? endDateValue : new Date()}
+        onChange={(newStartDateValue) => {
+            setStartDateValue(newStartDateValue)
+        }}
+        renderInput={(params) => <TextField {...params} />}
+        />
+        <Box sx = {{alignItems: 'center',fontSize: 21}}> To </Box>
+        <MobileDatePicker
+        label="Select end date"
+        value={endDateValue}
+        minDate={startDateValue}
+        maxDate={new Date()}
+        onChange={(newEndDateValue) => {
+            setEndDateValue(newEndDateValue)
+        }}
+        renderInput={(params) => <TextField {...params} 
+        disabled={!Boolean(startDateValue)}
+        />}
         />
         <Select
         id="reportType"
@@ -92,6 +90,16 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
             <MenuItem value="trendReport">Trend</MenuItem>
             <MenuItem value="historyReport">History</MenuItem>
         </Select>
+        
+        <Button
+        variant="contained"
+        disabled={!Boolean(startDateValue) || !Boolean(endDateValue) || !Boolean(reportType)}
+        onClick={()=> handleDialogOpen(reportType)}
+        sx={{ height: '100%' }}
+        >Open</Button>
+        </Stack>
+        </Box>
+
         <TotalReportDialog
         open={dialogOpen.totalReport}
         onClose={() => handleDialogClose('totalReport')}
@@ -110,15 +118,6 @@ const Reports: FC<ReportProps> = (props: ReportProps): ReactElement => {
         startDateValue={startDateValue}
         endDateValue={endDateValue}
         />
-        <Button
-        variant="contained"
-        disabled={!Boolean(startDateValue) || !Boolean(endDateValue) || !Boolean(reportType)}
-        onClick={()=> handleDialogOpen(reportType)}
-        >Open</Button>
-        </Stack>
-        </Box>
-
-
         </>
     )
 };

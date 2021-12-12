@@ -200,7 +200,7 @@ const ItemsTable: FC<ItemsTableProps> = (props: ItemsTableProps) : ReactElement 
             onFileUploaded={() => getItems()}
             />
         </Stack>
-        <div style={{ height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
+        <div style={{ height: 'calc(100vh - 275px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={items}
