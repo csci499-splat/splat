@@ -79,7 +79,7 @@ const CategoriesAddDialog: FC<CategoriesAddDialogProps> = (props: CategoriesAddD
         open={props.open} 
         onClose={props.onClose}
         >
-        <DialogTitle>New Item</DialogTitle>
+        <DialogTitle>New Category</DialogTitle>
         <DialogContent>
         <FormikProvider value={formik}
         >
