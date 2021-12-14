@@ -79,7 +79,7 @@ const ItemsAddDialog: FC<ItemsAddDialogProps> = (props: ItemsAddDialogProps): Re
         open={props.open} 
         onClose={props.onClose}
         >
-        <DialogTitle>New Item</DialogTitle>
+        <DialogTitle>Create New Item</DialogTitle>
         <DialogContent>
         <FormikProvider value={formik}
         >

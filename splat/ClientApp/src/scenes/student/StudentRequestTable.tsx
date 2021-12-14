@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { DataGrid, GridColDef, GridSortModel, GridToolbar, GridValueFormatterParams, GridValueGetterParams } from '@mui/x-data-grid';
 import axios from 'axios';
 import React, { FC, ReactElement, useState } from 'react';
@@ -115,10 +115,17 @@ const StudentRequestTable: FC<StudentRequestTableProps> = (props: StudentRequest
 
     return (
         <>
-        <Button
-        variant="contained"
-        onClick={handleShowRequestForm}
-        >New Request</Button>
+        <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        spacing={2} 
+        sx={{ margin: 2, width: "100%" }}>
+            <Button
+            variant="contained"
+            onClick={handleShowRequestForm}
+            >New Request</Button>
+        </Stack>
         {requestFormOpen && (
             <RequestForm 
             onClose={() => handlePickupRequestFormClose()}
