@@ -10,7 +10,9 @@ interface CategoryProps extends IStaffChild {
 const Categories: FC<CategoryProps> = (props: CategoryProps): ReactElement => {
 
     return (
-        <CategoriesTable />
+        <div style={{ width: '100%' }}>
+            <CategoriesTable />
+        </div>
     );
 };
 

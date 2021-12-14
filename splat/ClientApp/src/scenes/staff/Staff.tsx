@@ -41,6 +41,7 @@ const Staff: FC<StaffProps> = (props: StaffProps): ReactElement => {
             })}
         </Tabs>
         </Box>
+        <div style={{ width: '100%' }}>
         <Switch>
         { staffRoutes.map((value: StaffRoute, index) => {
             return <PrivateRoute 
@@ -56,6 +57,7 @@ const Staff: FC<StaffProps> = (props: StaffProps): ReactElement => {
             <h1>404: Staff page not found</h1>
         </Route>
         </Switch>
+        </div>
         </>
     )
 }

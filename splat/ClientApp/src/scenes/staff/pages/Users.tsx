@@ -91,10 +91,6 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
         setAddDialogOpen(false);
     };
 
-    const handleUserRemove = async (id: string) => {
-        await handleUserChangeRole(id, 'Student');
-    };
-
     const handleUserChangeRole = async (id: string, newRole: string) => {
         try {
             await axios.post(`/user/role`, { username: id, newRole: newRole });
@@ -146,21 +142,6 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
                     />
                 ),
                 valueGetter: (params: GridValueGetterParams) => params.row.roles,
-            },
-            {
-                field: 'remove',
-                flex: 0.2,
-                headerName: 'Remove from Staff',
-                headerAlign: 'center',
-                align: 'center',
-                renderCell: (params: GridRenderCellParams) => (
-                    <IconButton
-                    onClick={() => handleUserRemove(params.row.email)}
-                    >
-                        <Delete />
-                    </IconButton>
-                ),
-                disableExport: true,
             }
         ], []);
 
@@ -169,7 +150,7 @@ const Users: FC<UsersProps> = (props: UsersProps): ReactElement => {
         <>
         {//<Button variant="contained" onClick={handleAddDialogOpen} color="primary">Add Privileged User</Button>
         }
-        <div style={{height: 'calc(100vh - 250px)', width: `100% - ${currentWidth}px`}}>
+        <div style={{height: 'calc(100vh - 275px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={rows}

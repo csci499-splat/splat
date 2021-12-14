@@ -87,7 +87,7 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
                 <Toolbar>
                     <div style={{flexGrow: 1, justifyContent: 'center', alignItems: 'center', 
                                 display: 'flex'}}>
-                    <Button component={RouterLink} sx={{textAlign: 'center'}} to="/">
+                    <Button component={RouterLink} sx={{ textAlign: 'center', marginLeft: '5%' }} to="/">
                         <Typography variant='h5' component='div' sx={{color: 'text.primary'}}>
                             SPLAT
                         </Typography>
@@ -171,9 +171,9 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps): ReactElement => {
             <AppBar
             color="primary"
             position="fixed"
-            sx={{top: 'auto', bottom: 0}}
+            sx={{ top: 'auto', bottom: 0, left: 0, marginLeft: 0, width: '100vw' }}
             >
-                <Stack direction="row" spacing={2} padding={2}>
+                <Stack direction="row" spacing={2} padding={2} sx={{ paddingRight: 0 }}>
                     <Link href="https://www.uwsuper.edu/campuslife/services/food-shelf.cfm"
                     color="inherit"
                     underline="always"

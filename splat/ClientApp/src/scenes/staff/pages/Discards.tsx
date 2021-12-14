@@ -118,7 +118,7 @@ const Discards: FC<DiscardsProps> = (props: DiscardsProps): ReactElement => {
                 Add Discard Entry
             </Button>
         </Stack>
-        <div style={{height: 800, width: `100% - ${currentWidth}px`}}>
+        <div style={{height: 'calc(100vh - 275px)', width: `100% - ${currentWidth}px`}}>
             <DataGrid
             columns={columns}
             rows={rows}
