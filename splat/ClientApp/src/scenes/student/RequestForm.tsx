@@ -462,6 +462,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 onChange={formik.handleChange}
                 sx={{width: '30%'}}
                 />
+                <label>Pickup Date & Time</label>
                 <PickupDateTimeSelector
                 value={pickupTimes}
                 onChange={(newValue) => handleDateChange(newValue)}
@@ -469,6 +470,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 error={formik.touched.requestedPickupTime && Boolean(formik.errors.requestedPickupTime)}
                 // @ts-ignore
                 helperText={formik.touched.requestedPickupTime && (formik.errors.requestedPickupTime)}
+                //helperText={`Select your pick up date and time`}
                 />
             </Stack>
         </Form>
