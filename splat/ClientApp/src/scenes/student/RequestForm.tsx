@@ -167,6 +167,15 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             quantity: yup.number()
             .integer()
             .positive("Quantity must be 1 or more")
+            .test(
+                'maxQuantity',
+                'Must not be greater than the max allowed',
+                function(item) {
+                    if(!item) return false;
+
+                    return item <= this.parent.category.limit;
+                }
+            )
             .required("Quantity is required"),
         }))
     });
@@ -382,7 +391,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                             </Grid>
                             <Grid item xs={1}>
                                 <TextField
-                                label="Count"
+                                label="Quantity"
                                 type="number"
                                 variant="outlined"
                                 name={`itemRequests[${index}].quantity`}
@@ -391,7 +400,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                                 // @ts-ignore
                                 error={(formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.quantity && Boolean((formik.errors.itemRequests[index])?.quantity)}
                                 // @ts-ignore
-                                helperText={(formik.errors.itemRequests && formik.touched.itemRequests) && (formik.touched.itemRequests[index])?.quantity && (formik.errors.itemRequests[index])?.quantity}
+                                helperText={`Limit ${formik.values.itemRequests[index].category?.limit}`}
                                 />
                             </Grid>
                             <Grid item xs={1}>
