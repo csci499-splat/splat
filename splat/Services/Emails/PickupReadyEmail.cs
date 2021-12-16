@@ -33,12 +33,16 @@ namespace splat.Services.Emails
 
             body.Append("</table>");
 
+            body.Append("<p>Problems? The contact information for the Director of Student Development can be found below.</p>");
+            body.Append("<p>Jennifer Bird<br>Director of Student Development<br><a href=\"mailto:jbird2@uwsuper.edu\">jbird2@uwsuper.edu</a>");
+            body.Append("<br><a href=\"tel:7153948571\">715-394-8571</a></p>");
+
             return body.ToString();
         }
 
         public override string GetMessageSubject()
         {
-            return "UWS Food Pantry - Your Request Is Ready";
+            return "UW-Superior Food Pantry - Your Request Is Ready";
         }
     }
 }

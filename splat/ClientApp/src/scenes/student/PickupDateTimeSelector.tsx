@@ -24,6 +24,7 @@ const PickupDateTimeSelector: FC<PickupDateTimeSelectorProps> = (props: PickupDa
 
     const [isLoading, setIsLoading] = React.useState(false);
     const [disabledDays, setDisabledDays] = React.useState<Date[]>([]);
+    const [hours, setHours] = React.useState<CurrentHours>();
     const [currentHours, setCurrentHours] = React.useState<HourRange>(
         {timeStart: new Date(0, 0, 0, 0, 0), timeEnd: new Date(0, 0, 0, 23, 59)});
 
@@ -31,8 +32,26 @@ const PickupDateTimeSelector: FC<PickupDateTimeSelectorProps> = (props: PickupDa
         setIsLoading(true);
         try {
             let res = await baseRequest.get<ClosedDay[]>('/hours/days');
-            setDisabledDays(res.data.map((item) => new Date(item.closedOn)));
+
+            let localDisabledDays: Date[] = [];
+
+            res.data.forEach(element => {
+                localDisabledDays.push(new Date(element.closedOn));
+            });
+
+            setDisabledDays(localDisabledDays);
             setIsLoading(false);
+        } catch(err) {
+
+        }
+    };
+
+    const fetchHours = async() => {
+        try {
+            let res = await baseRequest.get<CurrentHours>('/hours');
+            delete res.data.createdAt;
+
+            setHours(res.data);
         } catch(err) {
 
         }
@@ -57,6 +76,7 @@ const PickupDateTimeSelector: FC<PickupDateTimeSelectorProps> = (props: PickupDa
 
     React.useEffect(() => {
         fetchDisabledDays();
+        fetchHours();
     }, []);
 
     React.useEffect(() => {
@@ -81,6 +101,15 @@ const PickupDateTimeSelector: FC<PickupDateTimeSelectorProps> = (props: PickupDa
         renderLoading={() => <CalendarPickerSkeleton />}
         renderDay={(date, _value, DayComponentProps) => {
             let isDisabled = moment(date).isBefore(new Date(), 'day') || moment(date).isAfter(new Date( Date.now() + (6.048e+8 * 2) ), 'day');
+            let dayOfWeek = moment(date).day();
+
+            if(hours) {
+                let key = Object.keys(hours)[dayOfWeek];
+                
+                if(!Boolean(hours[key])) {
+                    isDisabled = true;
+                }
+            }
             
             disabledDays.forEach(day => {
                 if(moment(day).isSame(date, 'day')) {
@@ -95,6 +124,7 @@ const PickupDateTimeSelector: FC<PickupDateTimeSelectorProps> = (props: PickupDa
                 />
             )
         }}
+        label="Date"
         />
         <TimePicker
         {...props}

@@ -32,6 +32,8 @@ import PickupDateTimeSelector from './PickupDateTimeSelector';
 import { HourRange } from '../../models/CurrentHours';
 import moment from 'moment';
 import axios from 'axios';
+import { filter, get, isEmpty } from 'lodash';
+
 type RequestFormProps = {
     onClose: () => void,
 }
@@ -84,6 +86,40 @@ type DateTimeObj = {
     date: Date | null;
     time: Date | null;
 };
+
+/*declare module 'yup' {
+    // tslint:disable-next-line
+    interface ArraySchema<T> {
+        unique(mapper: (a: T) => T, message?: any): ArraySchema<T>;
+    }
+}*/
+
+yup.addMethod(yup.array, 'uniqueProperty', function(propertyPath, message) {
+    return this.test('unique', '', function(list) {
+        let errors: any[] = [];
+
+        if(list) {
+            list.forEach((item, index) => {
+                const propertyValue = get(item, propertyPath);
+
+                if (propertyValue && filter(list, [propertyPath, propertyValue]).length > 1) {
+                    errors.push(
+                        this.createError({
+                            path: `${this.path}[${index}].${propertyPath}`,
+                            message,
+                        })
+                    );
+                }
+            });
+
+            if (!isEmpty(errors)) {
+                throw new yup.ValidationError(errors);
+            }
+        }
+
+        return true;
+    });
+});
 
 const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElement => {
 
@@ -178,6 +214,8 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
             )
             .required("Quantity is required"),
         }))
+        // @ts-ignore
+        .uniqueProperty('item.id', 'Item cannot be a duplicate')
     });
 
     const formik = useFormik({
@@ -452,7 +490,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 )}
             </FieldArray>
             <Divider />
-            <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-start">
+            <Stack direction="row" spacing={2} sx={{marginTop: 2, marginBottom: 2}} alignItems="flex-end">
                 <TextField
                 label="Notes for the staff"
                 multiline
@@ -462,7 +500,7 @@ const RequestForm: FC<RequestFormProps> = (props: RequestFormProps): ReactElemen
                 onChange={formik.handleChange}
                 sx={{width: '30%'}}
                 />
-                <label>Pickup Date & Time</label>
+                <label>Requested time to pick up items:</label>
                 <PickupDateTimeSelector
                 value={pickupTimes}
                 onChange={(newValue) => handleDateChange(newValue)}
