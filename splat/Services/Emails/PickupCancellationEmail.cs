@@ -35,15 +35,16 @@ namespace splat.Services.Emails
 
             body.Append("</table>");
 
-            body.Append("<p>If this cancellation was made in error please contact the Director of Student Development found below.");
-            body.Append("<p>Jennifer Bird<br>Director of Student Development<br>jbird2@uwsuper.edu<br>ph.715-394-8571<br>office. YellowJacket Union 145</p>");
+            body.Append("<p>If this cancellation was made in error please contact the Director of Student Development found below.</p>");
+            body.Append("<p>Jennifer Bird<br>Director of Student Development<br><a href=\"mailto:jbird2@uwsuper.edu\">jbird2@uwsuper.edu</a>");
+            body.Append("<br><a href=\"tel:7153948571\">715-394-8571</a></p>");
 
             return body.ToString();
         }
 
         public override string GetMessageSubject()
         {
-            return "UWS Food Pantry - Request Canceled";
+            return "UW-Superior Food Pantry - Request Canceled";
         }
     }
 }
