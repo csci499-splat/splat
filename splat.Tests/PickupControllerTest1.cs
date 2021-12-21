@@ -71,6 +71,40 @@ namespace splat.Tests
             Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.PENDING, PickupStatus.PENDING));
         }
 
+        [Fact]
+        public void UpdateStatusFromWaitingToWaiting_ShouldThrowExceptionError()
+        {
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.WAITING, PickupStatus.WAITING));
+        }
+
+        [Fact]
+        public void UpdateStatusFromWaitingToPending_ShouldThrowExceptionError()
+        {
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.WAITING, PickupStatus.PENDING));
+        }
+
+        public void UpdateStatusFromCanceledToPending_ShouldThrowExceptionError()
+        {
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.CANCELED, PickupStatus.PENDING));
+        }
+
+        [Fact]
+        public void UpdateStatusFromCanceledToDisbursed_ShouldThrowExceptionError()
+        {
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.CANCELED, PickupStatus.DISBURSED));
+        }
+
+        [Fact]
+        public void UpdateStatusFromDisbursedToWaiting_ShouldThrowExceptionError()
+        {
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.DISBURSED, PickupStatus.WAITING));
+        }
+
+        [Fact]
+        public void UpdateStatusFromDisbursedToPending_ShouldThrowExceptionError()
+        {
+            Assert.ThrowsAny<Exception>(() => PickupsController.TestUpdateStatus(PickupStatus.DISBURSED, PickupStatus.PENDING));
+        }
 
         private Pickup GeneratePickupWithStatus(PickupStatus status)
         {

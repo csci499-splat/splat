@@ -1,0 +1,18 @@
+﻿Build started...
+1>------ Build started: Project: splat, Configuration: Debug Any CPU ------
+1>C:\Users\John\source\repos\splat\splat\splat\Controllers\TrendReportsController.cs(292,30,292,31): warning CS0168: The variable 'e' is declared but never used
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(18,27,18,122): warning CA1416: 'PrincipalContext' is supported on 'windows'
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(18,48,18,66): warning CA1416: 'ContextType.Domain' is supported on 'windows'
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(28,13,28,34): warning CA1416: 'PrincipalContext.Dispose()' is supported on 'windows'
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(44,20,44,80): warning CA1416: 'PrincipalContext.ValidateCredentials(string, string)' is supported on 'windows'
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(59,71,59,101): warning CA1416: 'IdentityType.DistinguishedName' is supported on 'windows'
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(64,20,64,41): warning CA1416: 'Principal.DisplayName.get' is supported on 'windows'
+1>C:\Users\John\source\repos\splat\splat\splat\Services\LDAPAuthentication.cs(59,29,59,121): warning CA1416: 'UserPrincipal.FindByIdentity(PrincipalContext, IdentityType, string)' is supported on 'windows'
+1>splat -> C:\Users\John\source\repos\splat\splat\splat\bin\Debug\net5.0\splat.dll
+1>splat -> C:\Users\John\source\repos\splat\splat\splat\bin\Debug\net5.0\splat.Views.dll
+1>Done building project "splat.csproj".
+2>------ Build started: Project: splat.Tests, Configuration: Debug Any CPU ------
+2>C:\Users\John\source\repos\splat\splat\splat.Tests\PickupControllerTest1.cs(86,21,86,80): warning xUnit1013: Public method 'UpdateStatusFromCanceledToPending_ShouldThrowExceptionError' on test class 'PickupControllerTest1' should be marked as a Fact.
+2>splat.Tests -> C:\Users\John\source\repos\splat\splat\splat.Tests\bin\Debug\net5.0\splat.Tests.dll
+2>Done building project "splat.Tests.csproj".
+========== Build: 2 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
