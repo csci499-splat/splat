@@ -5,7 +5,7 @@ namespace splat.Tests
 {
     public static class TestPickups
     {
-        public const int NUM_TEST_PICKUPS = 10;
+        public const int NUM_TEST_PICKUPS = 16;
 
         public static readonly Pickup P0 = new Pickup
         {
@@ -257,6 +257,167 @@ namespace splat.Tests
             SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
         };
 
+        public static readonly Pickup P10 = new Pickup
+        {
+            Id = Guid.NewGuid(),
+            PickupStatus = PickupStatus.CANCELED,
+            StudentInfo = TestStudents.Dave,
+            ItemRequests = new ItemRequest[]
+    {
+                new ItemRequest
+                {
+                    Item = TestItems.Evian,
+                    Quantity = 9
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Mango,
+                    Quantity = 20
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.LavaCake,
+                    Quantity = 7
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Snapple,
+                    Quantity = 4
+                },
+    },
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
+        };
+
+        public static readonly Pickup P11 = new Pickup
+        {
+            Id = Guid.NewGuid(),
+            PickupStatus = PickupStatus.CANCELED,
+            StudentInfo = TestStudents.Sara,
+            ItemRequests = new ItemRequest[]
+    {
+                new ItemRequest
+                {
+                    Item = TestItems.Sarris,
+                    Quantity = 6
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Hershey,
+                    Quantity = 5
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Orange,
+                    Quantity = 3
+                },
+    },
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
+        };
+
+        public static readonly Pickup P12 = new Pickup
+        {
+            Id = Guid.NewGuid(),
+            PickupStatus = PickupStatus.CANCELED,
+            StudentInfo = TestStudents.Mike,
+            ItemRequests = new ItemRequest[]
+    {
+                new ItemRequest
+                {
+                    Item = TestItems.Mango,
+                    Quantity = 9
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Icecream,
+                    Quantity = 3
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Evian,
+                    Quantity = 2
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Orange,
+                    Quantity = 8
+                },
+    },
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
+        };
+
+        public static readonly Pickup P13 = new Pickup
+        {
+            Id = Guid.NewGuid(),
+            PickupStatus = PickupStatus.CANCELED,
+            StudentInfo = TestStudents.Jesse,
+            ItemRequests = new ItemRequest[]
+    {
+                new ItemRequest
+                {
+                    Item = TestItems.Snapple,
+                    Quantity = 2
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Sarris,
+                    Quantity = 11
+                },
+    },
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
+        };
+
+        public static readonly Pickup P14 = new Pickup
+        {
+            Id = Guid.NewGuid(),
+            PickupStatus = PickupStatus.CANCELED,
+            StudentInfo = TestStudents.Erica,
+            ItemRequests = new ItemRequest[]
+    {
+                new ItemRequest
+                {
+                    Item = TestItems.Icecream,
+                    Quantity = 3
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.LavaCake,
+                    Quantity = 1
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Evian,
+                    Quantity = 7
+                },
+    },
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
+        };
+
+        public static readonly Pickup P15 = new Pickup
+        {
+            Id = Guid.NewGuid(),
+            PickupStatus = PickupStatus.CANCELED,
+            StudentInfo = TestStudents.Carly,
+            ItemRequests = new ItemRequest[]
+    {
+                new ItemRequest
+                {
+                    Item = TestItems.Mango,
+                    Quantity = 9
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Evian,
+                    Quantity = 6
+                },
+                new ItemRequest
+                {
+                    Item = TestItems.Snapple,
+                    Quantity = 4
+                },
+    },
+            SubmittedAt = new DateTime(2021, 2, 27, 12, 0, 0)
+        };
+
         public static readonly Pickup[] Pickups = new Pickup[NUM_TEST_PICKUPS]
         {
             P0,
@@ -268,7 +429,13 @@ namespace splat.Tests
             P6,
             P7,
             P8,
-            P9
+            P9,
+            P10,
+            P11,
+            P12,
+            P13,
+            P14,    
+            P15
         };
     }
 }
