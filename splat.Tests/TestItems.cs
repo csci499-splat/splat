@@ -72,5 +72,99 @@ namespace splat.Tests
             CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
             Category = TestCategories.CannedMeat
         };
+
+        public static readonly Item Snapple = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Snapple",
+            CategoryId = TestCategories.Drink.Id,
+            Description = "Snapple tea: peach flavor",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Drink
+        };
+
+        public static readonly Item Evian = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Evian",
+            CategoryId = TestCategories.Drink.Id,
+            Description = "21oz bottle of freshwater",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Drink
+        };
+
+        public static readonly Item Sarris = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Sarris",
+            CategoryId = TestCategories.Candy.Id,
+            Description = "Sarris Candy chocholate bar",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Candy
+        };
+
+        public static readonly Item Hershey = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Hershey",
+            CategoryId = TestCategories.Candy.Id,
+            Description = "Hershey large chocholate bar",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Candy
+        };
+
+        public static readonly Item Orange = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Orange",
+            CategoryId = TestCategories.Fruit.Id,
+            Description = "The orange is the fruit of various citrus species in the family Rutaceae;"+
+            " it primarily refers to Citrus × sinensis, which is also called sweet orange,"+
+            " to distinguish it from the related Citrus × aurantium, referred to as bitter orange.",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Fruit
+        };
+
+        public static readonly Item Mango = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Mango",
+            CategoryId = TestCategories.Fruit.Id,
+            Description = "A mango is an edible stone fruit produced by the tropical tree Mangifera indica"+
+            " which is believed to have originated from the region between northwestern Myanmar, Bangladesh, and northeastern India.",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Fruit
+        };
+
+        public static readonly Item LavaCake = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "LavaCake",
+            CategoryId = TestCategories.Dessert.Id,
+            Description = "Molten chocolate cake is a popular dessert that combines the elements of a chocolate cake and a soufflé."+
+            " Its name derives from the dessert's liquid chocolate center, and it is also known as chocolate moelleux, chocolate lava cake, or simply lava cake.",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Dessert
+        };
+
+        public static readonly Item Icecream = new Item
+        {
+            Id = Guid.NewGuid(),
+            Name = "Icecream",
+            CategoryId = TestCategories.Dessert.Id,
+            Description = "Ice cream is a sweetened frozen food typically eaten as a snack or dessert."+
+            " It may be made from milk or cream and is flavoured with a sweetener, either sugar or an alternative,"+
+            " and a spice, such as cocoa or vanilla, or with fruit such as strawberries or peaches.",
+            Visible = true,
+            CreatedAt = new DateTime(2020, 12, 1, 12, 30, 0),
+            Category = TestCategories.Dessert
+        };
     }
 }
