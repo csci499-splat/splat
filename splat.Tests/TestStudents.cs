@@ -47,5 +47,47 @@ namespace splat.Tests
             Age = 30,
             OnMealPlan = false
         };
+
+        public static readonly Student Dave = new Student
+        {
+            StudentId = "7429624",
+            Age = 20,
+            OnMealPlan = false
+        };
+
+        public static readonly Student Sara = new Student
+        {
+            StudentId = "7492017",
+            Age = 23,
+            OnMealPlan = false
+        };
+
+        public static readonly Student Mike = new Student
+        {
+            StudentId = "7419562",
+            Age = 18,
+            OnMealPlan = true
+        };
+
+        public static readonly Student Jesse = new Student
+        {
+            StudentId = "7401783",
+            Age = 19,
+            OnMealPlan = false
+        };
+
+        public static readonly Student Erica = new Student
+        {
+            StudentId = "7418391",
+            Age = 21,
+            OnMealPlan = true
+        };
+
+        public static readonly Student Carly = new Student
+        {
+            StudentId = "7419374",
+            Age = 28,
+            OnMealPlan = true
+        };
     }
 }
